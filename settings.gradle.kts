@@ -1,4 +1,7 @@
 pluginManagement {
+
+    includeBuild("build-logic")
+
     repositories {
         google {
             content {
@@ -21,3 +24,14 @@ dependencyResolutionManagement {
 
 rootProject.name = "RunCombi_Android"
 include(":app")
+include(":feature:login")
+include(":feature:onboarding")
+include(":core:data:user")
+include(":core:domain:user")
+include(":core:designsystem")
+include(":core:navigation")
+include(":core:ui")
+include(":core:network")
+include(":feature:main")
+include(":core:data:common")
+include(":core:domain:common")
