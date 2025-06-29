@@ -1,0 +1,53 @@
+# Gradle
+.gradle/
+**/build/
+
+# Gradle local configuration
+local.properties
+
+# Android Studio & IntelliJ
+.idea/
+*.iml
+
+# IntelliJ specific
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Android Generated Files
+*.apk
+*.ap_
+*.app
+output.json
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Android Profiling
+*.hprof
+
+# NDK / JNI
+*.so
+
+# Keystore (Do NOT upload)
+*.jks
+*.keystore
+
+# Firebase / Google Services
+google-services.json
+crashlytics.properties
+fabric.properties
+
+# Logs / Environment / OS
+*.log
+.env
+.DS_Store
