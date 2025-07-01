@@ -2,5 +2,5 @@ package com.combo.runcombi.feature.login
 
 sealed interface LoginEvent {
     data object Error : LoginEvent
-    data class Success(val isProfileSet: Boolean) : LoginEvent
+    data object Success : LoginEvent
 }

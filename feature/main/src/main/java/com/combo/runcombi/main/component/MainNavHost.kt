@@ -15,6 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.combo.runcombi.core.designsystem.util.setStatusBar
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.feature.login.loginNavGraph
+import com.combo.runcombi.onboarding.onboardingNavGraph
 
 @Composable
 internal fun MainNavHost(
@@ -42,9 +43,11 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = {
-                    navigator.navigateToLogin()
+                    navigator.navigationToOnboarding()
                 }
             )
+
+            onboardingNavGraph()
         }
     }
 }

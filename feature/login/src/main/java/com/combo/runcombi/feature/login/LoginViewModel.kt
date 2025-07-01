@@ -9,6 +9,6 @@ class LoginViewModel() : ViewModel() {
     val eventFlow = _eventFlow.asSharedFlow()
 
     suspend fun login() {
-
+        _eventFlow.emit(LoginEvent.Success)
     }
 }
