@@ -27,3 +27,5 @@
 -keep class dagger.hilt.** { *; }
 -keep class javax.inject.** { *; }
 -keep class javax.annotation.** { *; }
+-keep class javax.lang.model.** { *; }
+-dontwarn javax.lang.model.**
