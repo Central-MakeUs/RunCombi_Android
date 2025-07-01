@@ -1,7 +1,7 @@
 [versions]
 # Kotlin
-kotlin = "2.0.21"
-jetbrainsKotlinJvm = "2.0.21"
+kotlin = "2.0.0"
+jetbrainsKotlinJvm = "2.0.0"
 kotlinxSerializationJson = "1.7.0"
 
 # Android Gradle Plugin
