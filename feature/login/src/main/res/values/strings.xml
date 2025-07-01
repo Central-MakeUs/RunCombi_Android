@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">loglin</string>
+    <string name="app_title">RUNCOMBI</string>
+    <string name="kakao_login">카카오로 시작하기</string>
 </resources>

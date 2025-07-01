@@ -21,8 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,7 +83,7 @@ fun LoginScreen(
             .systemBarsPadding()
     ) {
         Text(
-            text = "RUNCOMBI",
+            text = stringResource(R.string.app_title),
             color = Color(0xFFD7FE63),
             fontSize = 40.sp,
             fontWeight = FontWeight.ExtraBold,
@@ -108,13 +110,13 @@ fun LoginScreen(
             ) {
                 StableImage(
                     drawableResId = R.drawable.ic_kakao,
-                    description = "카카오톡",
                     modifier = Modifier.size(22.dp)
                 )
                 Text(
-                    text = "카카오로 시작하기",
+                    text = stringResource(id = R.string.kakao_login),
                     style = RunCombiTypography.body1,
                     textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
             }
