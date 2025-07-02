@@ -69,8 +69,7 @@ fun NavGraphBuilder.signupNavGraph(
     ) {
         composable<RouteModel.SignupRoute.Terms> {
             TermsScreen(
-                onNext = onTermsNext,
-                viewModel = hiltViewModel()
+                onNext = onTermsNext
             )
         }
         inputNavGraph(
@@ -84,8 +83,7 @@ fun NavGraphBuilder.signupNavGraph(
 
         composable<RouteModel.SignupRoute.Complete> {
             CompleteScreen(
-                onDone = onSignupComplete,
-                viewModel = hiltViewModel()
+                onDone = onSignupComplete
             )
         }
     }
@@ -103,47 +101,37 @@ fun NavGraphBuilder.inputNavGraph(
         startDestination = RouteModel.SignupRoute.InputRoute.Profile,
     ) {
         composable<RouteModel.SignupRoute.InputRoute.Profile> {
-            val viewModel: SignupViewModel = hiltViewModel()
             SignupInputStepScaffold(currentStep = 0, onBack = onBack) {
                 ProfileScreen(
-                    onNext = onProfileNext,
-                    viewModel = viewModel
+                    onNext = onProfileNext
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.Gender> {
-            val viewModel: SignupViewModel = hiltViewModel()
             SignupInputStepScaffold(currentStep = 1, onBack = onBack) {
                 GenderScreen(
-                    onNext = onGenderNext,
-                    viewModel = viewModel
+                    onNext = onGenderNext
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.Body> {
-            val viewModel: SignupViewModel = hiltViewModel()
             SignupInputStepScaffold(currentStep = 2, onBack = onBack) {
                 BodyScreen(
-                    onNext = onBodyNext,
-                    viewModel = viewModel
+                    onNext = onBodyNext
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.PetInfo> {
-            val viewModel: SignupViewModel = hiltViewModel()
             SignupInputStepScaffold(currentStep = 3, onBack = onBack) {
                 PetInfoScreen(
-                    onNext = onPetInfoNext,
-                    viewModel = viewModel
+                    onNext = onPetInfoNext
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.PetStyle> {
-            val viewModel: SignupViewModel = hiltViewModel()
             SignupInputStepScaffold(currentStep = 4, onBack = onBack) {
                 PetStyleScreen(
-                    onSuccess = onPetStyleSuccess,
-                    viewModel = viewModel
+                    onSuccess = onPetStyleSuccess
                 )
             }
         }

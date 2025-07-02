@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import com.combo.runcombi.signup.component.SignupButton
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun TermsScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
+fun TermsScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     Column {
         Spacer(Modifier.weight(1f))
         SignupButton(
@@ -24,5 +26,5 @@ fun TermsScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewTermsScreen() {
-    TermsScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    TermsScreen(onNext = {})
 } 

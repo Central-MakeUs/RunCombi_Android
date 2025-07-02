@@ -10,9 +10,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.combo.runcombi.signup.component.SignupButton
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun GenderScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
+fun GenderScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         viewModel.clearGender()
     }
@@ -28,5 +30,5 @@ fun GenderScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewGenderScreen() {
-    GenderScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    GenderScreen(onNext = {})
 } 

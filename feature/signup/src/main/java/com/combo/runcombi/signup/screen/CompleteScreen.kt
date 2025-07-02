@@ -11,9 +11,11 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.SignupViewModel
 import com.combo.runcombi.signup.component.SignupButton
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel) {
+fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     Box {
         Column {
             Spacer(Modifier.weight(1f))
@@ -32,5 +34,5 @@ fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewCompleteScreen() {
-    CompleteScreen(onDone = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    CompleteScreen(onDone = {})
 } 

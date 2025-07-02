@@ -10,9 +10,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.combo.runcombi.signup.component.SignupButton
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun ProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
+fun ProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         viewModel.clearProfile()
     }
@@ -28,5 +30,5 @@ fun ProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewProfileScreen() {
-    ProfileScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    ProfileScreen(onNext = {})
 } 

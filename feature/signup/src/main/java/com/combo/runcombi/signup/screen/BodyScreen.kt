@@ -8,9 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.combo.runcombi.signup.SignupViewModel
 import com.combo.runcombi.signup.component.SignupButton
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun BodyScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
+fun BodyScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         viewModel.clearBody()
     }
@@ -26,5 +28,5 @@ fun BodyScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewBodyScreen() {
-    BodyScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    BodyScreen(onNext = {})
 } 

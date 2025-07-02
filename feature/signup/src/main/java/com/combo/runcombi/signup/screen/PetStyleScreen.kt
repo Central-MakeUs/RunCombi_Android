@@ -10,9 +10,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.combo.runcombi.signup.component.SignupButton
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun PetStyleScreen(onSuccess: () -> Unit, viewModel: SignupViewModel) {
+fun PetStyleScreen(onSuccess: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
         viewModel.clearPetStyle()
     }
@@ -28,5 +30,5 @@ fun PetStyleScreen(onSuccess: () -> Unit, viewModel: SignupViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewPetStyleScreen() {
-    PetStyleScreen(onSuccess = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+    PetStyleScreen(onSuccess = {})
 } 
