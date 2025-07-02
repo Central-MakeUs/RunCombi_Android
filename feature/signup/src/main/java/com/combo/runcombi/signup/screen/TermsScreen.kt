@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import com.combo.runcombi.signup.component.SignupButton
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TermsScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
@@ -18,4 +19,10 @@ fun TermsScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
             text = "다음",
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTermsScreen() {
+    TermsScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
 } 

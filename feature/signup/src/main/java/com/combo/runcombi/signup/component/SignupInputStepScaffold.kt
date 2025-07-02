@@ -2,6 +2,7 @@ package com.combo.runcombi.signup.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SignupInputStepScaffold(
@@ -17,5 +18,13 @@ fun SignupInputStepScaffold(
             currentStep = currentStep
         )
         content()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSignupInputStepScaffold() {
+    SignupInputStepScaffold(currentStep = 1, onBack = {}) {
+        // 샘플 content
     }
 } 

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SignupTopBar(
@@ -73,4 +74,10 @@ fun SignupTopBar(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSignupTopBar() {
+    SignupTopBar(title = "회원가입", onBack = {}, totalSteps = 5, currentStep = 2)
 } 

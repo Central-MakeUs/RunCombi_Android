@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SignupAgreementItem(
@@ -38,4 +39,10 @@ fun SignupAgreementItem(
             onCheckedChange = onCheckedChange
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSignupAgreementItem() {
+    SignupAgreementItem(text = "이용약관 동의", checked = true, onCheckedChange = {})
 } 

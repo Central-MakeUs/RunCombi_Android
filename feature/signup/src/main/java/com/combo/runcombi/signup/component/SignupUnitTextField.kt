@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SignupUnitTextField(
@@ -93,4 +94,16 @@ fun SignupUnitTextField(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSignupUnitTextField() {
+    SignupUnitTextField(
+        value = "",
+        onValueChange = {},
+        title = "나이",
+        placeholder = "나이를 입력하세요",
+        unit = "세"
+    )
 } 

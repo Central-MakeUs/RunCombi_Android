@@ -2,11 +2,10 @@ package com.combo.runcombi.signup.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.combo.runcombi.signup.SignupViewModel
 import com.combo.runcombi.signup.component.SignupButton
 
@@ -22,4 +21,10 @@ fun BodyScreen(onNext: () -> Unit, viewModel: SignupViewModel) {
             text = "다음",
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBodyScreen() {
+    BodyScreen(onNext = {}, viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
 } 
