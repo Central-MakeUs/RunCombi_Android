@@ -6,10 +6,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.navigation.model.RouteModel
-import com.combo.runcombi.main.component.MainNavHost
-import com.combo.runcombi.main.component.MainNavigator
-import com.combo.runcombi.main.component.rememberMainNavigator
-import com.combo.runcombi.main.ext.compareTo
+import com.combo.runcombi.main.navigation.MainNavHost
+import com.combo.runcombi.main.navigation.MainNavigator
+import com.combo.runcombi.main.navigation.rememberMainNavigator
+import com.combo.runcombi.main.navigation.compareTo
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce

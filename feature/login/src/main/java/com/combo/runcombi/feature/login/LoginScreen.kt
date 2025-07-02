@@ -1,6 +1,5 @@
 package com.combo.runcombi.feature.login
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -78,9 +75,7 @@ fun LoginScreen(
 ) {
     Box(
         modifier = modifier
-            .background(Grey01)
             .fillMaxSize()
-            .systemBarsPadding()
     ) {
         Text(
             text = stringResource(R.string.app_title),

@@ -8,8 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.combo.runcombi.core.designsystem.theme.RunCombiTheme
 import com.combo.runcombi.core.navigation.model.RouteModel
-import com.combo.runcombi.main.component.MainNavigator
-import com.combo.runcombi.main.component.rememberMainNavigator
+import com.combo.runcombi.main.navigation.MainNavigator
+import com.combo.runcombi.main.navigation.rememberMainNavigator
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

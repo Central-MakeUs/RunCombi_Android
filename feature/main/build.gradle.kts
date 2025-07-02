@@ -16,5 +16,5 @@ dependencies {
     androidTestImplementation(libs.bundles.android.test)
 
     implementation(project(":feature:login"))
-    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:signup"))
 }

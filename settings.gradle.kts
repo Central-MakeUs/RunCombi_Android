@@ -25,7 +25,7 @@ dependencyResolutionManagement {
 rootProject.name = "RunCombi_Android"
 include(":app")
 include(":feature:login")
-include(":feature:onboarding")
+include(":feature:signup")
 include(":core:data:user")
 include(":core:domain:user")
 include(":core:designsystem")
