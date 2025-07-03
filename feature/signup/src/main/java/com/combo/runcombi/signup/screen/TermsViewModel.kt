@@ -1,32 +1,32 @@
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.combo.runcombi.signup.model.TermsUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 class TermsViewModel : ViewModel() {
-    var termsChecked by mutableStateOf(false)
-        private set
-    var privacyChecked by mutableStateOf(false)
-        private set
-    var locationChecked by mutableStateOf(false)
-        private set
-
-    val allChecked: Boolean
-        get() = termsChecked && privacyChecked && locationChecked
+    private val _uiState = MutableStateFlow(TermsUiState())
+    val uiState: StateFlow<TermsUiState> = _uiState
 
     fun setAllChecked(value: Boolean) {
-        termsChecked = value
-        privacyChecked = value
-        locationChecked = value
+        _uiState.update {
+            it.copy(
+                termsChecked = value,
+                privacyChecked = value,
+                locationChecked = value
+            )
+        }
     }
 
     fun updateTermsChecked(value: Boolean) {
-        termsChecked = value
+        _uiState.update { it.copy(termsChecked = value) }
     }
+
     fun updatePrivacyChecked(value: Boolean) {
-        privacyChecked = value
+        _uiState.update { it.copy(privacyChecked = value) }
     }
+
     fun updateLocationChecked(value: Boolean) {
-        locationChecked = value
+        _uiState.update { it.copy(locationChecked = value) }
     }
 }

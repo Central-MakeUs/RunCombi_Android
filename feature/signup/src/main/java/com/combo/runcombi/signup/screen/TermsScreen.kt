@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,38 +25,51 @@ fun TermsScreen(
     onNext: () -> Unit,
     viewModel: TermsViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 39.dp, top = 84.dp)) {
         Text("서비스 이용을 위한 동의 안내", color = WhiteFF, style = heading1)
         Spacer(Modifier.height(57.dp))
+
         AgreementItem(
-            text = "전체 동의", checked = viewModel.allChecked,
-            onCheckedChange = { viewModel.setAllChecked(!viewModel.allChecked) },
+            text = "전체 동의",
+            checked = uiState.allChecked,
+            onCheckedChange = { viewModel.setAllChecked(!uiState.allChecked) },
         )
+
         HorizontalDivider(
             modifier = Modifier.padding(top = 27.dp, bottom = 32.dp),
             thickness = 0.8.dp,
             color = Color(0xFF353434)
         )
+
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 이용 약관 동의", checked = viewModel.termsChecked,
-            onCheckedChange = { viewModel.updateTermsChecked(!viewModel.termsChecked) },
+            text = "[필수] 이용 약관 동의",
+            checked = uiState.termsChecked,
+            onCheckedChange = { viewModel.updateTermsChecked(!uiState.termsChecked) },
         )
+
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 개인정보 처리방침", checked = viewModel.privacyChecked,
-            onCheckedChange = { viewModel.updatePrivacyChecked(!viewModel.privacyChecked) },
+            text = "[필수] 개인정보 처리방침",
+            checked = uiState.privacyChecked,
+            onCheckedChange = { viewModel.updatePrivacyChecked(!uiState.privacyChecked) },
         )
+
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 위치기반 서비스 이용 약관", checked = viewModel.locationChecked,
-            onCheckedChange = { viewModel.updateLocationChecked(!viewModel.locationChecked) },
+            text = "[필수] 위치기반 서비스 이용 약관",
+            checked = uiState.locationChecked,
+            onCheckedChange = { viewModel.updateLocationChecked(!uiState.locationChecked) },
         )
+
         Spacer(Modifier.weight(1f))
+
         RunCombiButton(
             onClick = onNext,
             text = "다음",
-            enabled = viewModel.allChecked
+            enabled = uiState.allChecked
         )
     }
 }
@@ -63,4 +78,4 @@ fun TermsScreen(
 @Composable
 fun PreviewTermsScreen() {
     TermsScreen(onNext = {})
-} 
+}
