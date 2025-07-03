@@ -5,16 +5,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SignupInputStepScaffold(
+fun InputStepScaffold(
     currentStep: Int,
+    title: String,
+    totalSteps: Int = 3,
     onBack: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     Column {
-        SignupTopBar(
-            title = "사용자 정보",
+        InputStepTopBar(
+            title = title,
             onBack = onBack,
-            totalSteps = 5,
+            totalSteps = totalSteps,
             currentStep = currentStep
         )
         content()
@@ -23,8 +25,8 @@ fun SignupInputStepScaffold(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewSignupInputStepScaffold() {
-    SignupInputStepScaffold(currentStep = 1, onBack = {}) {
-        // 샘플 content
+fun PreviewInputStepScaffold() {
+    InputStepScaffold(currentStep = 1, title = "사용자 정보", onBack = {}) {
+
     }
 } 

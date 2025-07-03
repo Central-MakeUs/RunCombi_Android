@@ -1,4 +1,4 @@
-package com.combo.runcombi.signup.component
+package com.combo.runcombi.core.designsystem.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,22 +8,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
 
 @Composable
-fun SignupButton(
+fun RunCombiButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     enabledColor: Color = Color(0xFFD7FE63),
-    disabledColor: Color = Color(0xFF3A3A3A),
-    textColor: Color = Color.Black,
-    disabledTextColor: Color = Color.Gray,
-    cornerRadius: Int = 8,
+    disabledColor: Color = Color(0xFF353434),
+    textColor: Color = Color(0xFF090909),
+    disabledTextColor: Color = Color(0xFF090909),
+    cornerRadius: Int = 6,
 ) {
     Button(
         onClick = onClick,
@@ -31,20 +31,22 @@ fun SignupButton(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadius.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (enabled) enabledColor else disabledColor,
-            contentColor = if (enabled) textColor else disabledTextColor
+            containerColor = enabledColor,
+            disabledContainerColor = disabledColor,
+            contentColor = textColor,
+            disabledContentColor = disabledTextColor
         )
     ) {
         Text(
             text = text,
             fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
+            style = title4
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewSignupButton() {
-    SignupButton(text = "확인", onClick = {})
+fun PreviewRunCombiButton() {
+    RunCombiButton(text = "확인", onClick = {})
 } 

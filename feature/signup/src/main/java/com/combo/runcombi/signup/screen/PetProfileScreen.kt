@@ -13,9 +13,9 @@ import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.signup.SignupViewModel
 
 @Composable
-fun ProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
+fun PetProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     LaunchedEffect(Unit) {
-        viewModel.clearProfile()
+        viewModel.clearPetInfo()
     }
     Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 39.dp)) {
         Spacer(Modifier.weight(1f))
@@ -28,6 +28,6 @@ fun ProfileScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewProfileScreen() {
-    ProfileScreen(onNext = {})
+fun PreviewPetProfileScreen() {
+    PetProfileScreen(onNext = {})
 } 

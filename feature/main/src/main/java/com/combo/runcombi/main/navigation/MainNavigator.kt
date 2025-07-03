@@ -12,6 +12,7 @@ import com.combo.runcombi.signup.navigation.navigateToSignupComplete
 import com.combo.runcombi.signup.navigation.navigateToSignupGender
 import com.combo.runcombi.signup.navigation.navigateToSignupInput
 import com.combo.runcombi.signup.navigation.navigateToSignupPetInfo
+import com.combo.runcombi.signup.navigation.navigateToSignupPetProfile
 import com.combo.runcombi.signup.navigation.navigateToSignupPetStyle
 
 class MainNavigator(
@@ -41,6 +42,10 @@ class MainNavigator(
 
     fun navigateToSignupBody() {
         navController.navigateToSignupBody()
+    }
+
+    fun navigateToSignupPetProfile() {
+        navController.navigateToSignupPetProfile()
     }
 
     fun navigateToSignupPetInfo() {

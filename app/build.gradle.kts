@@ -16,6 +16,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val googleApiKey = gradleLocalProperties(rootDir, providers).getProperty("GOOGLE_API_KEY") ?: ""
+        manifestPlaceholders["googleApiKey"] = googleApiKey
     }
 
     signingConfigs {

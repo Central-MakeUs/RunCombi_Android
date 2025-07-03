@@ -53,7 +53,8 @@ internal fun MainNavHost(
                 onTermsNext = { navigator.navigateToSignupInput() },
                 onProfileNext = { navigator.navigateToSignupGender() },
                 onGenderNext = { navigator.navigateToSignupBody() },
-                onBodyNext = { navigator.navigateToSignupPetInfo() },
+                onBodyNext = { navigator.navigateToSignupPetProfile() },
+                onPetProfileNext = { navigator.navigateToSignupPetInfo() },
                 onPetInfoNext = { navigator.navigateToSignupPetStyle() },
                 onPetStyleSuccess = { navigator.navigateToSignupComplete() },
                 onSignupComplete = {

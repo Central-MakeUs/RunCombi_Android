@@ -4,22 +4,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
+import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.SignupViewModel
-import com.combo.runcombi.signup.component.SignupButton
-import androidx.compose.ui.tooling.preview.Preview
-import dagger.hilt.android.lifecycle.HiltViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
     Box {
-        Column {
+        Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 39.dp)) {
             Spacer(Modifier.weight(1f))
-            SignupButton(
+            RunCombiButton(
                 onClick = onDone,
                 text = "시작",
             )

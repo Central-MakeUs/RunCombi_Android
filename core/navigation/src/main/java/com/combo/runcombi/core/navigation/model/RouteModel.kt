@@ -32,6 +32,9 @@ sealed interface RouteModel {
             data object Body : InputRoute
 
             @Serializable
+            data object PetProfile : InputRoute
+
+            @Serializable
             data object PetInfo : InputRoute
 
             @Serializable
