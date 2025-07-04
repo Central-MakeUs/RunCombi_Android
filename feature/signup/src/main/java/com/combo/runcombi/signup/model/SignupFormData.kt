@@ -12,6 +12,7 @@ data class SignupFormData(
     val profile: ProfileData = ProfileData(),
     val gender: GenderData = GenderData(),
     val body: BodyData = BodyData(),
+    val petProfile: PetProfileData = PetProfileData(),
     val petInfo: PetInfoData = PetInfoData(),
-    val petStyle: PetStyleData = PetStyleData()
+    val petStyle: PetStyleData = PetStyleData(),
 ) 

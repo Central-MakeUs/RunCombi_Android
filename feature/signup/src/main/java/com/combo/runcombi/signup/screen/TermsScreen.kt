@@ -12,12 +12,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
+import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.component.AgreementItem
 
 @Composable
@@ -27,8 +30,11 @@ fun TermsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 39.dp, top = 84.dp)) {
+    Column(modifier = Modifier
+        .screenDefaultPadding()
+        .padding(top = 89.dp)) {
         Text("서비스 이용을 위한 동의 안내", color = WhiteFF, style = heading1)
+
         Spacer(Modifier.height(57.dp))
 
         AgreementItem(
@@ -68,7 +74,7 @@ fun TermsScreen(
 
         RunCombiButton(
             onClick = onNext,
-            text = "다음",
+            text = stringResource(R.string.next),
             enabled = uiState.allChecked
         )
     }

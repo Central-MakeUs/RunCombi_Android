@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">onboarding</string>
+    <string name="next">다음</string>
+    <string name="name">이름</string>
+    <string name="name_hint">이름을 입력하세요</string>
+    <string name="name_guide_text">한글 6자/ 영문 10자 이하</string>
+    <string name="select_from_album">앨범에서 선택</string>
+    <string name="take_picture">카메라로 촬영</string>
+    <string name="female">여성</string>
+    <string name="male">남성</string>
 </resources>

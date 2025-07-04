@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.signup.model.BodyData
 import com.combo.runcombi.signup.model.GenderData
 import com.combo.runcombi.signup.model.PetInfoData
+import com.combo.runcombi.signup.model.PetProfileData
 import com.combo.runcombi.signup.model.PetStyleData
 import com.combo.runcombi.signup.model.ProfileData
 import com.combo.runcombi.signup.model.SignupFormData
@@ -39,6 +40,10 @@ class SignupViewModel() : ViewModel() {
         _signupFormData.value = _signupFormData.value.copy(body = data)
     }
 
+    fun setPetProfile(data: PetProfileData) {
+        _signupFormData.value = _signupFormData.value.copy(petProfile = data)
+    }
+
     fun setPetInfo(data: PetInfoData) {
         _signupFormData.value = _signupFormData.value.copy(petInfo = data)
     }
@@ -48,6 +53,7 @@ class SignupViewModel() : ViewModel() {
     }
 
     fun getSignupFormData(): SignupFormData = _signupFormData.value
+
 
     fun clearProfile() {
         _signupFormData.value = _signupFormData.value.copy(profile = ProfileData())
@@ -59,6 +65,10 @@ class SignupViewModel() : ViewModel() {
 
     fun clearBody() {
         _signupFormData.value = _signupFormData.value.copy(body = BodyData())
+    }
+
+    fun clearPetProfile() {
+        _signupFormData.value = _signupFormData.value.copy(petProfile = PetProfileData())
     }
 
     fun clearPetInfo() {
