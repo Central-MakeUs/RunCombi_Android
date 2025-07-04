@@ -7,7 +7,7 @@ val Black00 = Color(0xFF0D0D0D)
 val WhiteFF = Color(0xFFF4F4F4)
 
 // Primary
-val Primary01 = Color(0xFFD7FFE6)
+val Primary01 = Color(0xFFD7FE63)
 val Primary02 = Color(0xFFE8FFA3)
 val Primary03 = Color(0xFF6C774C)
 val Primary04 = Color(0xFF515E26)
