@@ -11,12 +11,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.toRoute
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.util.setStatusBar
+import com.combo.runcombi.core.navigation.model.MainTabDataModel
+import com.combo.runcombi.core.navigation.model.MainTabDataModelType
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.feature.login.navigation.loginNavGraph
+import com.combo.runcombi.main.component.MainTabContent
 import com.combo.runcombi.signup.navigation.signupNavGraph
+import kotlin.reflect.typeOf
 
 @Composable
 internal fun MainNavHost(
@@ -59,9 +65,19 @@ internal fun MainNavHost(
                 onPetStyleSuccess = { navigator.navigateToSignupComplete() },
                 onSignupComplete = {
                     // TODO: 회원가입 완료 후 처리
+                    navigator.navigationToMainTab()
                 },
                 onBack = { navigator.popBackStack() },
             )
+
+            composable<RouteModel.MainTab>(
+                typeMap = mapOf(typeOf<MainTabDataModel>() to MainTabDataModelType)
+            ) { backStackEntry ->
+                MainTabContent(
+                    navigator = navigator,
+                    mainTabDataModel = backStackEntry.toRoute<RouteModel.MainTab>().mainTabDataModel
+                )
+            }
         }
     }
 }

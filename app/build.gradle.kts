@@ -51,6 +51,9 @@ dependencies {
 
     implementation(project(":feature:main"))
     implementation(project(":feature:login"))
+    implementation(project(":feature:history"))
+    implementation(project(":feature:setting"))
+    implementation(project(":feature:walk"))
 
     implementation(project(":core:designsystem"))
 

@@ -5,6 +5,8 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.combo.runcombi.core.navigation.model.MainTabDataModel
+import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.feature.login.navigation.navigateToLogin
 import com.combo.runcombi.signup.navigation.navigateToSignup
 import com.combo.runcombi.signup.navigation.navigateToSignupBody
@@ -58,6 +60,19 @@ class MainNavigator(
 
     fun navigateToSignupComplete() {
         navController.navigateToSignupComplete()
+    }
+
+
+    fun navigationToMainTab(
+        mainTabDataModel: MainTabDataModel = MainTabDataModel.Walk
+    ) {
+        navController.navigate(
+            route = RouteModel.MainTab(mainTabDataModel)
+        ){
+            popUpTo(navController.graph.id) {
+                inclusive = true
+            }
+        }
     }
 }
 

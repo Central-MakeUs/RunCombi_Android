@@ -17,4 +17,7 @@ dependencies {
 
     implementation(project(":feature:login"))
     implementation(project(":feature:signup"))
+    implementation(project(":feature:history"))
+    implementation(project(":feature:walk"))
+    implementation(project(":feature:setting"))
 }

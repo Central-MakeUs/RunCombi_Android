@@ -41,6 +41,32 @@ sealed interface RouteModel {
             data object PetStyle : InputRoute
         }
     }
+
+    @Serializable
+    data class MainTab(
+        val mainTabDataModel: MainTabDataModel = MainTabDataModel.None,
+    ) : RouteModel
+
+    @Serializable
+    sealed interface MainTabRoute : RouteModel {
+        @Serializable
+        sealed interface WalkRouteModel : MainTabRoute {
+            @Serializable
+            data object Walk : WalkRouteModel
+        }
+
+        @Serializable
+        sealed interface HistoryRouteModel : MainTabRoute {
+            @Serializable
+            data object History : HistoryRouteModel
+        }
+
+        @Serializable
+        sealed interface SettingRouteModel : MainTabRoute {
+            @Serializable
+            data object Setting : SettingRouteModel
+        }
+    }
 }
 
 fun RouteModel.fullPathName(): String? {
