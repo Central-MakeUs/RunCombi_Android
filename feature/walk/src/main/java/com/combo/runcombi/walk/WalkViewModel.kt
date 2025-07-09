@@ -21,13 +21,8 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
     private val _eventFlow = MutableSharedFlow<WalkEvent>()
     val eventFlow: SharedFlow<WalkEvent> = _eventFlow.asSharedFlow()
 
-    fun requestLocationPermission() {
-        emitEvent(WalkEvent.RequestLocationPermission)
-    }
-
     fun updateLocation(latLng: LatLng) {
         _uiState.update { it.copy(myLocation = latLng, isLoading = true) }
-        emitEvent(WalkEvent.LocationUpdated(latLng))
     }
 
     fun updateAddress(address: String) {
