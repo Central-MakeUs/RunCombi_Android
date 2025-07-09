@@ -1,5 +1,6 @@
 [versions]
 # Kotlin
+accompanistPermissions = "0.37.0"
 kotlin = "2.0.0"
 jetbrainsKotlinJvm = "2.0.0"
 kotlinxSerializationJson = "1.7.0"
@@ -15,6 +16,7 @@ appcompat = "1.7.1"
 
 # Compose
 composeBom = "2024.09.00"
+mapsCompose = "4.4.1"
 navigation-compose = "2.8.5"
 composeMaterial = "1.7.0"
 
@@ -50,9 +52,11 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 mockk = "1.13.11"
 v2User = "2.21.4"
+playServicesLocation = "21.3.0"
 
 [libraries]
 # AndroidX
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -116,8 +120,12 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
-# Kakao
+# Kakao Login
 v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
+
+# Google Map
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 # Android
