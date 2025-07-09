@@ -55,7 +55,7 @@ fun LoginRoute(
         modifier = modifier,
         onKakaoLoginClick = {
             coroutineScope.launch {
-                viewModel.login(loginManager.loginWithKakao())
+                viewModel.login(loginManager.request())
             }
         }
     )
