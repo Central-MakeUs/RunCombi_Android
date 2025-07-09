@@ -19,6 +19,10 @@ android {
 
         val googleApiKey = gradleLocalProperties(rootDir, providers).getProperty("GOOGLE_API_KEY") ?: ""
         manifestPlaceholders["googleApiKey"] = googleApiKey
+
+        val kakaoApiKey = gradleLocalProperties(rootDir, providers).getProperty("KAKAO_API_KEY") ?: ""
+        manifestPlaceholders["kakaoApiKey"] = kakaoApiKey
+        buildConfigField("String", "KAKAO_API_KEY", "\"$kakaoApiKey\"")
     }
 
     signingConfigs {
@@ -48,6 +52,7 @@ android {
 dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
+    implementation(libs.v2.user)
 
     implementation(project(":feature:main"))
     implementation(project(":feature:login"))

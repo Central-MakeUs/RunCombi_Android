@@ -55,7 +55,7 @@ fun LoginRoute(
         modifier = modifier,
         onKakaoLoginClick = {
             coroutineScope.launch {
-                viewModel.login()
+                viewModel.login(loginManager.loginWithKakao())
             }
         }
     )
@@ -124,6 +124,8 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
-        onKakaoLoginClick = {}
+        onKakaoLoginClick = {
+
+        }
     )
 }
