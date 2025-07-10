@@ -54,8 +54,8 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = {
-                    navigator.navigateToSignup()
-                    // navigator.navigationToMainTab()
+                    // navigator.navigateToSignup()
+                    navigator.navigationToMainTab()
 
                 }
             )

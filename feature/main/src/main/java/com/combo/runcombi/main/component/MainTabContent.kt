@@ -49,10 +49,8 @@ fun MainTabContent(
     }
 
     Scaffold(
-        modifier = modifier.padding(bottom = navigationBottomPadding),
         bottomBar = {
             MainBottomNavigationBar(
-                modifier = Modifier.Companion.height(MAIN_BOTTOM_NAVIGATION_BAR_HEIGHT.dp),
                 currentDestination = backStackEntryState.value?.destination,
                 onTabClick = { mainTab ->
                     when (mainTab) {
@@ -80,3 +78,4 @@ fun MainTabContent(
         }
     )
 }
+

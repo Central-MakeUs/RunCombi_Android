@@ -108,7 +108,7 @@ fun WalkMainScreen(
         StartWalkButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 100.dp),
+                .padding(bottom = 120.dp),
             onClick = onStartWalk
         )
     }
