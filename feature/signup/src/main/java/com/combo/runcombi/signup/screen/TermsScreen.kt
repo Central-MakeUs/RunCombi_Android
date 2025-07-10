@@ -1,6 +1,6 @@
 package com.combo.runcombi.signup.screen
 
-import TermsViewModel
+import com.combo.runcombi.signup.viewmodel.TermsViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height

@@ -1,4 +1,4 @@
-package com.combo.runcombi.signup.screen
+package com.combo.runcombi.signup.viewmodel
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
 
 class ProfileViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())

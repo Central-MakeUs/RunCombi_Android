@@ -33,8 +33,9 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.SignupViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.BodyData
+import com.combo.runcombi.signup.viewmodel.BodyViewModel
 
 @Composable
 fun BodyScreen(

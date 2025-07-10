@@ -1,7 +1,8 @@
-package com.combo.runcombi.signup
+package com.combo.runcombi.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.signup.SignupEvent
 import com.combo.runcombi.signup.model.BodyData
 import com.combo.runcombi.signup.model.GenderData
 import com.combo.runcombi.signup.model.PetInfoData

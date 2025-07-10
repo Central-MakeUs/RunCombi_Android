@@ -1,10 +1,10 @@
-package com.combo.runcombi.walk
+package com.combo.runcombi.walk.screen
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.walk.model.WalkEvent
-import com.combo.runcombi.walk.model.WalkUiState
+import com.combo.runcombi.walk.model.WalkMainUiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class WalkViewModel(application: Application) : AndroidViewModel(application) {
-    private val _uiState = MutableStateFlow(WalkUiState())
-    val uiState: StateFlow<WalkUiState> = _uiState
+class WalkMainViewModel(application: Application) : AndroidViewModel(application) {
+    private val _uiState = MutableStateFlow(WalkMainUiState())
+    val uiState: StateFlow<WalkMainUiState> = _uiState
 
     private val _eventFlow = MutableSharedFlow<WalkEvent>()
     val eventFlow: SharedFlow<WalkEvent> = _eventFlow.asSharedFlow()
@@ -37,4 +37,4 @@ class WalkViewModel(application: Application) : AndroidViewModel(application) {
     private fun emitEvent(event: WalkEvent) {
         viewModelScope.launch { _eventFlow.emit(event) }
     }
-} 
+}

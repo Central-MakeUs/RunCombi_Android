@@ -1,27 +1,66 @@
 package com.combo.runcombi.walk.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navOptions
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
-import com.combo.runcombi.walk.WalkMainScreen
+import com.combo.runcombi.walk.screen.WalkMainScreen
+import com.combo.runcombi.walk.screen.WalkResultScreen
+import com.combo.runcombi.walk.screen.WalkTrackingScreen
+import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 
-fun NavController.navigateToWalk() {
-    this.navigate(MainTabDataModel.Walk) {
-        popUpTo(this@navigateToWalk.graph.id) {
-            inclusive = true
-        }
+fun NavController.navigateToWalk(
+    navOptions: NavOptions? = navOptions {
+        popUpTo(this@navigateToWalk.graph.id) { inclusive = true }
+    },
+) {
+    this.navigate(MainTabDataModel.Walk, navOptions)
+}
+
+fun NavController.navigateToWalkTracking() {
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTracking)
+}
+
+fun NavController.navigateToWalkResult() {
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkResult) {
+        popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkTracking) { inclusive = true }
     }
 }
 
-fun NavGraphBuilder.walkNavGraph() {
+fun NavGraphBuilder.walkNavGraph(
+    navController: NavController,
+    onStartWalk: () -> Unit,
+    onFinish: () -> Unit,
+) {
     navigation<MainTabDataModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.Walk,
     ) {
         composable<RouteModel.MainTabRoute.WalkRouteModel.Walk> {
-            WalkMainScreen()
+            WalkMainScreen(
+                onStartWalk = onStartWalk
+            )
+        }
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTracking> {
+            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(
+                navController.getBackStackEntry(MainTabDataModel.Walk)
+            )
+            WalkTrackingScreen(
+                walkRecordViewModel = walkRecordViewModel,
+                onFinish = onFinish
+            )
+        }
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkResult> {
+            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(
+                navController.getBackStackEntry(MainTabDataModel.Walk)
+            )
+            WalkResultScreen(
+                walkRecordViewModel = walkRecordViewModel
+            )
         }
     }
 }

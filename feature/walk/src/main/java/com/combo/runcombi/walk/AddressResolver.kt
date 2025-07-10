@@ -28,10 +28,7 @@ object AddressResolver {
             val geocoder = Geocoder(context, Locale.getDefault())
             return@withContext suspendCancellableCoroutine<String> { cont ->
                 geocoder.getFromLocation(
-                    latLng.latitude,
-                    latLng.longitude,
-                    1,
-                    object : Geocoder.GeocodeListener {
+                    latLng.latitude, latLng.longitude, 1, object : Geocoder.GeocodeListener {
                         override fun onGeocode(addresses: MutableList<Address>) {
                             cont.resume(formatAddress(addresses)) { cause, _, _ -> }
                         }
@@ -39,8 +36,7 @@ object AddressResolver {
                         override fun onError(errorMessage: String?) {
                             cont.resume("주소 정보 없음") { cause, _, _ -> }
                         }
-                    }
-                )
+                    })
             }
         }
 
@@ -60,7 +56,6 @@ object AddressResolver {
         return listOfNotNull(
             addresses[0].adminArea?.takeIf { it.isNotBlank() },
             addresses[0].locality?.takeIf { it.isNotBlank() },
-            addresses[0].subLocality?.takeIf { it.isNotBlank() }
-        ).joinToString(" ")
+            addresses[0].subLocality?.takeIf { it.isNotBlank() }).joinToString(" ")
     }
 } 

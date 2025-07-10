@@ -26,6 +26,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.signup.model.PetStyleType
+import com.combo.runcombi.signup.viewmodel.PetStyleViewModel
 
 @Composable
 fun PetStyleScreen(onSuccess: () -> Unit, viewModel: PetStyleViewModel = hiltViewModel()) {

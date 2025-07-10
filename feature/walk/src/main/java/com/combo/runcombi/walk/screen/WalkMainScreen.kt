@@ -1,4 +1,4 @@
-package com.combo.runcombi.walk
+package com.combo.runcombi.walk.screen
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -31,7 +31,8 @@ import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Primary02
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.feature.walk.R
-import com.combo.runcombi.walk.model.WalkEvent
+import com.combo.runcombi.walk.AddressResolver
+import com.combo.runcombi.walk.LocationProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -42,7 +43,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.flow.collectLatest
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -50,11 +50,12 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun WalkMainScreen(
     modifier: Modifier = Modifier,
-    walkViewModel: WalkViewModel = hiltViewModel(),
+    walkMainViewModel: WalkMainViewModel = hiltViewModel(),
+    onStartWalk: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
-    val uiState by walkViewModel.uiState.collectAsState()
+    val uiState by walkMainViewModel.uiState.collectAsState()
     val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
 
     LaunchedEffect(Unit) {
@@ -62,11 +63,10 @@ fun WalkMainScreen(
             locationPermissionState.launchPermissionRequest()
         }
     }
-
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
             val myLocation = LocationProvider.getCurrentLocation(context)
-            myLocation?.let { walkViewModel.updateLocation(it) }
+            myLocation?.let { walkMainViewModel.updateLocation(it) }
         }
     }
 
@@ -74,15 +74,7 @@ fun WalkMainScreen(
         uiState.myLocation?.let {
             cameraPositionState.move(newLatLngZoom(it, 16f))
             val address = AddressResolver.getAddress(context, it)
-            walkViewModel.updateAddress(address)
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        walkViewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is WalkEvent.Error -> Unit
-            }
+            walkMainViewModel.updateAddress(address)
         }
     }
 
@@ -116,7 +108,8 @@ fun WalkMainScreen(
         StartWalkButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 100.dp)
+                .padding(bottom = 100.dp),
+            onClick = onStartWalk
         )
     }
 }

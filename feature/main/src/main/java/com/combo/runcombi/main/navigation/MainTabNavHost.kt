@@ -23,7 +23,13 @@ fun MainTabNavHost(
     ) {
         historyNavGraph()
 
-        walkNavGraph()
+        walkNavGraph(
+            navController = mainTabNavigator.navController,
+            onStartWalk = {
+                mainTabNavigator.navigationToWalkTracking()
+            }, onFinish = {
+                mainTabNavigator.navigationToWalkResult()
+            })
 
         settingNavGraph()
     }

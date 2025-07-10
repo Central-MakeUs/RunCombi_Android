@@ -23,7 +23,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.SignupViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @Composable
 fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {

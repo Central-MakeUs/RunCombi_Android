@@ -1,4 +1,4 @@
-package com.combo.runcombi.signup.screen
+package com.combo.runcombi.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.combo.runcombi.signup.model.PetInfoUiState
@@ -68,4 +68,4 @@ class PetInfoViewModel : ViewModel() {
     fun clear() {
         _uiState.value = PetInfoUiState()
     }
-} 
+}

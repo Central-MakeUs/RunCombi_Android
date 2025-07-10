@@ -1,3 +1,5 @@
+package com.combo.runcombi.signup.viewmodel
+
 import androidx.lifecycle.ViewModel
 import com.combo.runcombi.signup.model.TermsUiState
 import kotlinx.coroutines.flow.MutableStateFlow

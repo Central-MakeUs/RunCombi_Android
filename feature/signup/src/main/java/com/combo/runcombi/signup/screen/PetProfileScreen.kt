@@ -54,10 +54,11 @@ import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.SignupViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.PermissionType
 import com.combo.runcombi.signup.model.PetProfileData
 import com.combo.runcombi.signup.model.ProfileEvent
+import com.combo.runcombi.signup.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

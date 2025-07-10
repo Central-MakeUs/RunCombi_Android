@@ -53,6 +53,12 @@ sealed interface RouteModel {
         sealed interface WalkRouteModel : MainTabRoute {
             @Serializable
             data object Walk : WalkRouteModel
+
+            @Serializable
+            data object WalkTracking : WalkRouteModel
+
+            @Serializable
+            data object WalkResult : WalkRouteModel
         }
 
         @Serializable
