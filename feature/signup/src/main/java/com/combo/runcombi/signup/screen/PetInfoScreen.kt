@@ -28,7 +28,9 @@ import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
@@ -40,15 +42,14 @@ import com.combo.runcombi.signup.viewmodel.PetInfoViewModel
 @Composable
 fun PetInfoScreen(
     onNext: () -> Unit,
-    viewModel: SignupViewModel = hiltViewModel(),
+    signupViewModel: SignupViewModel = hiltViewModel(),
     petInfoViewModel: PetInfoViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
-        viewModel.clearPetInfo()
-        petInfoViewModel.clear()
+        signupViewModel.clearPetInfo()
     }
 
     val uiState by petInfoViewModel.uiState.collectAsState()
@@ -61,12 +62,12 @@ fun PetInfoScreen(
             .screenDefaultPadding()) {
         Text(
             text = "반려견 정보를 알려주세요",
-            style = title2,
+            style = title1,
             color = WhiteFF,
             modifier = Modifier.padding(top = 38.dp, bottom = 9.dp)
         )
         Text(
-            text = "외부에 공개되지 않아요", style = body2, color = Grey06,
+            text = "외부에 공개되지 않아요", style = body1, color = Grey06,
         )
         Spacer(Modifier.height(78.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -93,7 +94,7 @@ fun PetInfoScreen(
             Spacer(modifier = Modifier.weight(1f))
             RunCombiTextField(
                 value = uiState.weight,
-                maxLength = 3,
+                maxLength = 4,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
@@ -112,7 +113,7 @@ fun PetInfoScreen(
                 petInfoViewModel.validateAndProceed {
                     keyboardController?.hide()
                     localFocusManager.clearFocus()
-                    viewModel.setPetInfo(
+                    signupViewModel.setPetInfo(
                         PetInfoData(
                             petAge = uiState.age.toIntOrNull(),
                             petWeight = uiState.weight.toIntOrNull()

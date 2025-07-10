@@ -1,13 +1,9 @@
 package com.combo.runcombi.signup.model
 
-// 산책 스타일 선택 상태를 관리하는 데이터 클래스
-
 data class PetStyleUiState(
-    val selectedStyle: PetStyleType? = null,
-    val isButtonEnabled: Boolean = false
+    val selectedStyle: PetStyleType = PetStyleType.ENERGETIC,
+    val isButtonEnabled: Boolean = true,
 )
-
-// 산책 스타일 종류
 
 enum class PetStyleType {
     ENERGETIC, // 에너지가 넘쳐요!

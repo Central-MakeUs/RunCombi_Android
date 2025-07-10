@@ -1,6 +1,5 @@
 package com.combo.runcombi.signup.screen
 
-import com.combo.runcombi.signup.viewmodel.TermsViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -22,6 +21,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.component.AgreementItem
+import com.combo.runcombi.signup.viewmodel.TermsViewModel
 
 @Composable
 fun TermsScreen(
@@ -30,10 +30,12 @@ fun TermsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier
-        .screenDefaultPadding()
-        .padding(top = 89.dp)) {
-        Text("서비스 이용을 위한 동의 안내", color = WhiteFF, style = heading1)
+    Column(
+        modifier = Modifier
+            .screenDefaultPadding()
+            .padding(top = 89.dp)
+    ) {
+        Text("서비스 이용을 위한\n동의 안내", color = WhiteFF, style = heading1)
 
         Spacer(Modifier.height(57.dp))
 

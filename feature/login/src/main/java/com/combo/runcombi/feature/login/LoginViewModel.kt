@@ -21,14 +21,18 @@ class LoginViewModel @Inject constructor(
             when (loginData) {
                 is LoginData.Success -> {
                     try {
-                        val result = loginUseCase.requestKakaoLogin(token = loginData.token)
-                        _eventFlow.emit(
-                            result?.let {
-                                LoginEvent.Success
-                            } ?: run {
-                                LoginEvent.Error
-                            }
-                        )
+                        if (BuildConfig.DEBUG) {
+                            _eventFlow.emit(LoginEvent.Success)
+                        } else {
+                            val result = loginUseCase.requestKakaoLogin(token = loginData.token)
+                            _eventFlow.emit(
+                                result?.let {
+                                    LoginEvent.Success
+                                } ?: run {
+                                    LoginEvent.Error
+                                }
+                            )
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }

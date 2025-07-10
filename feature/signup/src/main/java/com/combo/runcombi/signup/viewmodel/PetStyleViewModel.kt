@@ -19,8 +19,4 @@ class PetStyleViewModel : ViewModel() {
             )
         }
     }
-
-    fun clearStyle() {
-        _uiState.value = PetStyleUiState()
-    }
 }

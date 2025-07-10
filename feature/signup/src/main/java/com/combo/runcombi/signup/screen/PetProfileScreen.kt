@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -52,13 +54,14 @@ import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.PermissionType
 import com.combo.runcombi.signup.model.PetProfileData
 import com.combo.runcombi.signup.model.ProfileEvent
 import com.combo.runcombi.signup.viewmodel.ProfileViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,6 +122,7 @@ fun PetProfileScreen(
     }
 
     LaunchedEffect(true) {
+        Log.d("TEST", "확인 ${signupViewModel.getSignupFormData().profile.nickname}")
         signupViewModel.clearPetProfile()
     }
 
@@ -156,9 +160,12 @@ fun PetProfileScreen(
                     keyboardController?.hide()
                     localFocusManager.clearFocus()
 
-                    profileViewModel.onCameraButtonClick()
+                    // profileViewModel.onCameraButtonClick()
+                    profileViewModel.openAlbum()
                 },
-                modifier = Modifier.align(Alignment.BottomEnd)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 8.dp, y = 8.dp)
             ) {
                 StableImage(
                     drawableResId = R.drawable.camera_setting,
@@ -174,7 +181,7 @@ fun PetProfileScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = stringResource(R.string.name), style = body3, color = Grey08)
+            Text(text = stringResource(R.string.name), style = body1, color = Grey08)
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = stringResource(R.string.name_guide_text),
@@ -205,7 +212,7 @@ fun PetProfileScreen(
                 localFocusManager.clearFocus()
 
                 profileViewModel.validateAndProceed {
-                    signupViewModel.setPetProfile(PetProfileData())
+                    signupViewModel.setPetProfile(PetProfileData(name = uiState.name))
                     onNext()
                 }
             },
@@ -214,6 +221,7 @@ fun PetProfileScreen(
         )
     }
 
+    /// 바로 앨범 선택하는 것으로 기획 수정됨
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },

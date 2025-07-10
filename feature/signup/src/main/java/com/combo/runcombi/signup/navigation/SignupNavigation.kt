@@ -1,11 +1,13 @@
 package com.combo.runcombi.signup.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navOptions
+import androidx.navigation.toRoute
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.signup.component.InputStepScaffold
 import com.combo.runcombi.signup.screen.BodyScreen
@@ -16,6 +18,7 @@ import com.combo.runcombi.signup.screen.PetProfileScreen
 import com.combo.runcombi.signup.screen.PetStyleScreen
 import com.combo.runcombi.signup.screen.ProfileScreen
 import com.combo.runcombi.signup.screen.TermsScreen
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 fun NavController.navigateToSignup(
     navOptions: NavOptions? = navOptions {
@@ -50,21 +53,24 @@ fun NavController.navigateToSignupPetStyle() {
 }
 
 fun NavController.navigateToSignupComplete(
+    userName: String,
+    petName: String,
     navOptions: NavOptions? = navOptions {
         popUpTo(this@navigateToSignupComplete.graph.id) { inclusive = true }
     },
 ) {
-    this.navigate(RouteModel.SignupRoute.Complete, navOptions)
+    this.navigate(RouteModel.SignupRoute.Complete(userName, petName), navOptions)
 }
 
 fun NavGraphBuilder.signupNavGraph(
+    navController: NavController,
     onTermsNext: () -> Unit,
     onProfileNext: () -> Unit,
     onGenderNext: () -> Unit,
     onBodyNext: () -> Unit,
     onPetProfileNext: () -> Unit,
     onPetInfoNext: () -> Unit,
-    onPetStyleSuccess: () -> Unit,
+    onPetStyleSuccess: (String, String) -> Unit,
     onSignupComplete: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
@@ -77,6 +83,7 @@ fun NavGraphBuilder.signupNavGraph(
             )
         }
         inputNavGraph(
+            navController = navController,
             onProfileNext = onProfileNext,
             onGenderNext = onGenderNext,
             onBodyNext = onBodyNext,
@@ -86,8 +93,11 @@ fun NavGraphBuilder.signupNavGraph(
             onBack = onBack,
         )
 
-        composable<RouteModel.SignupRoute.Complete> {
+        composable<RouteModel.SignupRoute.Complete> { backStackEntry ->
+            val route = backStackEntry.toRoute<RouteModel.SignupRoute.Complete>()
             CompleteScreen(
+                userName = route.userName,
+                petName = route.petName,
                 onDone = onSignupComplete
             )
         }
@@ -95,56 +105,81 @@ fun NavGraphBuilder.signupNavGraph(
 }
 
 fun NavGraphBuilder.inputNavGraph(
+    navController: NavController,
     onProfileNext: () -> Unit,
     onGenderNext: () -> Unit,
     onBodyNext: () -> Unit,
     onPetProfileNext: () -> Unit,
     onPetInfoNext: () -> Unit,
-    onPetStyleSuccess: () -> Unit,
+    onPetStyleSuccess: (String, String) -> Unit,
     onBack: () -> Unit = {},
 ) {
     navigation<RouteModel.SignupRoute.Input>(
         startDestination = RouteModel.SignupRoute.InputRoute.Profile,
     ) {
         composable<RouteModel.SignupRoute.InputRoute.Profile> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 0, title = "사용자 정보", onBack = onBack) {
                 ProfileScreen(
-                    onNext = onProfileNext
+                    onNext = onProfileNext,
+                    signupViewModel = signupViewModel
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.Gender> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 1, title = "사용자 정보", onBack = onBack) {
                 GenderScreen(
-                    onNext = onGenderNext
+                    onNext = onGenderNext,
+                    signupViewModel = signupViewModel
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.Body> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 2, title = "사용자 정보", onBack = onBack) {
                 BodyScreen(
-                    onNext = onBodyNext
+                    onNext = onBodyNext,
+                    signupViewModel = signupViewModel
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.PetProfile> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 0, title = "반려견 정보", onBack = onBack) {
                 PetProfileScreen(
-                    onNext = onPetProfileNext
+                    onNext = onPetProfileNext,
+                    signupViewModel = signupViewModel
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.PetInfo> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 1, title = "반려견 정보", onBack = onBack) {
                 PetInfoScreen(
-                    onNext = onPetInfoNext
+                    onNext = onPetInfoNext,
+                    signupViewModel = signupViewModel
                 )
             }
         }
         composable<RouteModel.SignupRoute.InputRoute.PetStyle> {
+            val signupViewModel = hiltViewModel<SignupViewModel>(
+                navController.getBackStackEntry(RouteModel.Signup)
+            )
             InputStepScaffold(currentStep = 2, title = "반려견 정보", onBack = onBack) {
                 PetStyleScreen(
-                    onSuccess = onPetStyleSuccess
+                    onSuccess = onPetStyleSuccess,
+                    signupViewModel = signupViewModel
                 )
             }
         }

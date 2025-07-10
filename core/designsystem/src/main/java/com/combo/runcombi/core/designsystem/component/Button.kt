@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.combo.runcombi.core.designsystem.theme.Grey03
 import com.combo.runcombi.core.designsystem.theme.Grey04
+import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
 
@@ -23,7 +24,7 @@ fun RunCombiButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    enabledColor: Color = Color(0xFFD7FE63),
+    enabledColor: Color = Primary01,
     disabledColor: Color = Color(0xFF353434),
     textColor: Color = Color(0xFF090909),
     disabledTextColor: Color = Color(0xFF090909),
@@ -55,9 +56,9 @@ fun RunCombiSelectableButton(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    textAlign: TextAlign = TextAlign.Start,
     modifier: Modifier = Modifier,
-    selectedColor: Color = Color(0xFFD7FE63),
+    textAlign: TextAlign = TextAlign.Start,
+    selectedColor: Color = Primary01,
     unselectedColor: Color = Grey04,
     selectedTextColor: Color = Grey03,
     unselectedTextColor: Color = Color(0xFF9E9E9E),

@@ -58,8 +58,8 @@ class MainNavigator(
         navController.navigateToSignupPetStyle()
     }
 
-    fun navigateToSignupComplete() {
-        navController.navigateToSignupComplete()
+    fun navigateToSignupComplete(userName: String, petName: String) {
+        navController.navigateToSignupComplete(userName, petName)
     }
 
 

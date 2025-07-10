@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,49 +16,59 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
+import com.combo.runcombi.core.designsystem.theme.Grey03
 import com.combo.runcombi.core.designsystem.theme.Grey04
 import com.combo.runcombi.core.designsystem.theme.Grey06
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
+import com.combo.runcombi.core.designsystem.theme.Primary01
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading2
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.Gender
 import com.combo.runcombi.signup.model.GenderData
+import com.combo.runcombi.signup.viewmodel.GenderViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @Composable
-fun GenderScreen(onNext: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
+fun GenderScreen(
+    onNext: () -> Unit,
+    genderViewModel: GenderViewModel = hiltViewModel(),
+    signupViewModel: SignupViewModel = hiltViewModel()
+) {
     LaunchedEffect(Unit) {
-        viewModel.clearGender()
+        signupViewModel.clearGender()
     }
+    val selectedGender by genderViewModel.selectedGender.collectAsState()
     Column(modifier = Modifier.screenDefaultPadding()) {
         Text(
             text = "성별이 어떻게 되시나요?",
-            style = title2,
+            style = heading2,
             color = WhiteFF,
             modifier = Modifier.padding(top = 38.dp, bottom = 9.dp)
         )
         Text(
-            text = "외부에 공개되지 않아요", style = body2, color = Grey06,
+            text = "외부에 공개되지 않아요", style = body1, color = Grey06,
         )
         Spacer(Modifier.weight(1f))
         RunCombiButton(
             onClick = {
-                viewModel.setGender(data = GenderData(gender = Gender.MALE.name))
+                genderViewModel.selectGender(Gender.MALE)
+                signupViewModel.setGender(GenderData(gender = Gender.MALE.name))
                 onNext()
             },
-            textColor = WhiteFF,
-            enabledColor = Grey04,
+            textColor = if (selectedGender == Gender.MALE) Grey03 else WhiteFF,
+            enabledColor = if (selectedGender == Gender.MALE) Primary01 else Grey04,
             text = stringResource(R.string.male),
         )
         Spacer(Modifier.height(14.dp))
         RunCombiButton(
             onClick = {
-                viewModel.setGender(data = GenderData(gender = Gender.FEMALE.name))
+                genderViewModel.selectGender(Gender.FEMALE)
+                signupViewModel.setGender(GenderData(gender = Gender.FEMALE.name))
                 onNext()
             },
-            textColor = WhiteFF,
-            enabledColor = Grey04,
+            textColor = if (selectedGender == Gender.FEMALE) Grey03 else WhiteFF,
+            enabledColor = if (selectedGender == Gender.FEMALE) Primary01 else Grey04,
             text = stringResource(R.string.female),
         )
     }

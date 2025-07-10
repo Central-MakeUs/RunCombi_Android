@@ -1,5 +1,6 @@
 package com.combo.runcombi.signup.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -21,22 +22,30 @@ import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.signup.model.PetStyleData
 import com.combo.runcombi.signup.model.PetStyleType
 import com.combo.runcombi.signup.viewmodel.PetStyleViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @Composable
-fun PetStyleScreen(onSuccess: () -> Unit, viewModel: PetStyleViewModel = hiltViewModel()) {
+fun PetStyleScreen(
+    onSuccess: (String, String) -> Unit,
+    signupViewModel: SignupViewModel = hiltViewModel(),
+    petStyleViewModel: PetStyleViewModel = hiltViewModel(),
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by petStyleViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.clearStyle()
+        signupViewModel.clearPetStyle()
     }
     Column(
         modifier = Modifier
@@ -47,34 +56,37 @@ fun PetStyleScreen(onSuccess: () -> Unit, viewModel: PetStyleViewModel = hiltVie
             .screenDefaultPadding()) {
         Text(
             text = "산책스타일을 알려주세요",
-            style = title2,
+            style = title1,
             color = WhiteFF,
             modifier = Modifier.padding(top = 38.dp, bottom = 9.dp)
         )
         Text(
-            text = "더 정확한 반려견 소모 칼로리 계산을 위해 필요해요", style = body2, color = Grey06,
+            text = "더 정확한 반려견 소모 칼로리 계산을 위해 필요해요", style = body1, color = Grey06,
         )
         Spacer(Modifier.height(49.dp))
         Text(
-            text = "산책스타일", style = body3, color = Grey08,
+            text = "산책스타일", style = body2, color = Grey08,
         )
         Spacer(Modifier.height(5.dp))
         RunCombiSelectableButton(
             text = "에너지가 넘쳐요!",
+            modifier = Modifier.height(40.dp),
             isSelected = uiState.selectedStyle == PetStyleType.ENERGETIC,
-            onClick = { viewModel.selectStyle(PetStyleType.ENERGETIC) },
+            onClick = { petStyleViewModel.selectStyle(PetStyleType.ENERGETIC) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "여유롭게 걸어요",
+            modifier = Modifier.height(40.dp),
             isSelected = uiState.selectedStyle == PetStyleType.RELAXED,
-            onClick = { viewModel.selectStyle(PetStyleType.RELAXED) },
+            onClick = { petStyleViewModel.selectStyle(PetStyleType.RELAXED) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "천천히 걸으며 자주 쉬어요",
+            modifier = Modifier.height(40.dp),
             isSelected = uiState.selectedStyle == PetStyleType.SLOW,
-            onClick = { viewModel.selectStyle(PetStyleType.SLOW) },
+            onClick = { petStyleViewModel.selectStyle(PetStyleType.SLOW) },
         )
 
         Spacer(Modifier.weight(1f))
@@ -82,7 +94,13 @@ fun PetStyleScreen(onSuccess: () -> Unit, viewModel: PetStyleViewModel = hiltVie
             onClick = {
                 keyboardController?.hide()
                 localFocusManager.clearFocus()
-                onSuccess()
+                signupViewModel.setPetStyle(PetStyleData(walkStyle = uiState.selectedStyle.name))
+                signupViewModel.getSignupFormData().run {
+                    onSuccess(
+                        profile.nickname,
+                        petProfile.name
+                    )
+                }
             },
             text = "완료",
             enabled = uiState.isButtonEnabled
@@ -93,5 +111,7 @@ fun PetStyleScreen(onSuccess: () -> Unit, viewModel: PetStyleViewModel = hiltVie
 @Preview(showBackground = true)
 @Composable
 fun PreviewPetStyleScreen() {
-    PetStyleScreen(onSuccess = {})
+    PetStyleScreen(onSuccess = { _, _ ->
+
+    })
 } 

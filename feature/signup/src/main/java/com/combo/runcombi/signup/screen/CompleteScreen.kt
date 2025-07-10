@@ -26,7 +26,11 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @Composable
-fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewModel()) {
+fun CompleteScreen(
+    userName: String,
+    petName: String,
+    onDone: () -> Unit,
+) {
     Box {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -34,7 +38,7 @@ fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewMode
         ) {
             Spacer(Modifier.height(95.dp))
             Text(
-                text = "${viewModel.getSignupFormData().profile.nickname} 님, 가입을 축하합니다!",
+                text = "$userName 님, 가입을 축하합니다!",
                 textAlign = TextAlign.Center,
                 style = heading1,
                 color = WhiteFF,
@@ -49,7 +53,7 @@ fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewMode
             )
             Spacer(Modifier.height(157.dp))
             Text(
-                text = "이제 ${viewModel.getSignupFormData().petProfile.name}와 함께 건강한 일상을 채워나가 볼까요?",
+                text = "이제 ${petName}와 함께 건강한 일상을 채워나가 볼까요?",
                 textAlign = TextAlign.Center,
                 style = body1,
                 color = WhiteFF,
@@ -70,5 +74,5 @@ fun CompleteScreen(onDone: () -> Unit, viewModel: SignupViewModel = hiltViewMode
 @Preview(showBackground = true)
 @Composable
 fun PreviewCompleteScreen() {
-    CompleteScreen(onDone = {})
+    CompleteScreen(userName = "", petName = "", onDone = {})
 } 

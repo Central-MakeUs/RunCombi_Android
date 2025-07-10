@@ -28,7 +28,9 @@ import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
@@ -36,19 +38,30 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.BodyData
 import com.combo.runcombi.signup.viewmodel.BodyViewModel
+import com.combo.runcombi.signup.model.Gender
 
 @Composable
 fun BodyScreen(
     onNext: () -> Unit,
-    viewModel: SignupViewModel = hiltViewModel(),
+    signupViewModel: SignupViewModel = hiltViewModel(),
     bodyViewModel: BodyViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
-        viewModel.clearBody()
-        bodyViewModel.clear()
+        signupViewModel.clearBody()
+    }
+
+    val genderString = signupViewModel.signupFormData.collectAsState().value.gender.gender
+    val gender = when (genderString) {
+        Gender.MALE.name -> Gender.MALE
+        Gender.FEMALE.name -> Gender.FEMALE
+        else -> Gender.MALE
+    }
+
+    LaunchedEffect(gender) {
+        bodyViewModel.setDefaultValues(gender)
     }
 
     val uiState by bodyViewModel.uiState.collectAsState()
@@ -61,12 +74,12 @@ fun BodyScreen(
             .screenDefaultPadding()) {
         Text(
             text = "신체 정보를 알려주세요",
-            style = title2,
+            style = heading2,
             color = WhiteFF,
             modifier = Modifier.padding(top = 38.dp, bottom = 9.dp)
         )
         Text(
-            text = "외부에 공개되지 않아요", style = body2, color = Grey06,
+            text = "외부에 공개되지 않아요", style = body1, color = Grey06,
         )
         Spacer(Modifier.height(78.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -78,9 +91,10 @@ fun BodyScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
-                onValueChange = { bodyViewModel.onHeightChange(it) },
+                onValueChange = { bodyViewModel.onHeightChange(it, gender) },
                 modifier = Modifier
-                    .width(134.dp),
+                    .width(134.dp)
+                    .height(40.dp),
                 isError = uiState.isError && uiState.errorMessage.contains("키"),
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
@@ -98,9 +112,10 @@ fun BodyScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
-                onValueChange = { bodyViewModel.onWeightChange(it) },
+                onValueChange = { bodyViewModel.onWeightChange(it, gender) },
                 modifier = Modifier
-                    .width(134.dp),
+                    .width(134.dp)
+                    .height(40.dp),
                 isError = uiState.isError && uiState.errorMessage.contains("몸무게"),
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
@@ -111,10 +126,10 @@ fun BodyScreen(
         Spacer(Modifier.weight(1f))
         RunCombiButton(
             onClick = {
-                bodyViewModel.validateAndProceed {
+                bodyViewModel.validateAndProceed(gender) {
                     keyboardController?.hide()
                     localFocusManager.clearFocus()
-                    viewModel.setBody(
+                    signupViewModel.setBody(
                         BodyData(
                             height = uiState.height.toIntOrNull(),
                             weight = uiState.weight.toIntOrNull()

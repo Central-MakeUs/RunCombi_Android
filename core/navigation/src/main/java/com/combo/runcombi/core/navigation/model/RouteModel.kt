@@ -15,7 +15,7 @@ sealed interface RouteModel {
         data object Terms : SignupRoute
 
         @Serializable
-        data object Complete : SignupRoute
+        data class Complete(val userName: String, val petName: String) : SignupRoute
 
         @Serializable
         data object Input : SignupRoute

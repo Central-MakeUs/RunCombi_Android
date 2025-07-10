@@ -25,6 +25,13 @@ object RunCombiTypography {
         fontWeight = FontWeight.SemiBold
     )
 
+    // Heading 2
+    val heading2 = DefaultTextStyle.copy(
+        fontSize = 24.sp,
+        lineHeight = 36.sp,
+        fontWeight = FontWeight.SemiBold
+    )
+
     // Title 1
     val title1 = DefaultTextStyle.copy(
         fontSize = 22.sp,
@@ -73,4 +80,5 @@ object RunCombiTypography {
         lineHeight = 22.sp,
         fontWeight = FontWeight.SemiBold
     )
+
 }

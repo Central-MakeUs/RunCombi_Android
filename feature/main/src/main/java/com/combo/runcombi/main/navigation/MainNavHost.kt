@@ -1,5 +1,6 @@
 package com.combo.runcombi.main.navigation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,6 +20,8 @@ import com.combo.runcombi.core.designsystem.util.setStatusBar
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.MainTabDataModelType
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.feature.login.BuildConfig
+import com.combo.runcombi.feature.login.LoginEvent
 import com.combo.runcombi.feature.login.navigation.loginNavGraph
 import com.combo.runcombi.main.component.MainTabContent
 import com.combo.runcombi.signup.navigation.signupNavGraph
@@ -51,19 +54,23 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = {
-                    //navigator.navigateToSignup()
-                    navigator.navigationToMainTab()
+                    navigator.navigateToSignup()
+                    // navigator.navigationToMainTab()
+
                 }
             )
 
             signupNavGraph(
+                navController = navigator.navController,
                 onTermsNext = { navigator.navigateToSignupInput() },
                 onProfileNext = { navigator.navigateToSignupGender() },
                 onGenderNext = { navigator.navigateToSignupBody() },
                 onBodyNext = { navigator.navigateToSignupPetProfile() },
                 onPetProfileNext = { navigator.navigateToSignupPetInfo() },
                 onPetInfoNext = { navigator.navigateToSignupPetStyle() },
-                onPetStyleSuccess = { navigator.navigateToSignupComplete() },
+                onPetStyleSuccess = { userName, petName ->
+                    navigator.navigateToSignupComplete(userName, petName)
+                },
                 onSignupComplete = {
                     // TODO: 회원가입 완료 후 처리
                     navigator.navigationToMainTab()
