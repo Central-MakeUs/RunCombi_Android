@@ -24,4 +24,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:ui"))
+    implementation(project(":core:domain:auth"))
+    implementation(project(":core:domain:common"))
+    implementation(project(":core:domain:user"))
 }

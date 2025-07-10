@@ -63,5 +63,6 @@ dependencies {
     implementation(project(":core:designsystem"))
 
     implementation(project(":core:data:common"))
+    implementation(project(":core:data:auth"))
     implementation(project(":core:data:user"))
 }
