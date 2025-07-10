@@ -28,6 +28,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.combo.runcombi.walk.LocationProvider
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import kotlinx.coroutines.delay
+import com.google.android.gms.maps.model.LatLng
 
 
 @Composable
@@ -43,26 +44,22 @@ fun WalkTrackingScreen(
     var lastUpdateTime by remember { mutableStateOf(System.currentTimeMillis()) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_PAUSE) {
-                isPaused = true
+    DisposableEffect(isWalking, isPaused) {
+        if (isWalking && !isPaused) {
+            LocationProvider.startLocationUpdates(context) { location ->
+                val now = System.currentTimeMillis()
+                val timeDeltaSec = ((now - lastUpdateTime) / 1000).coerceAtLeast(1)
+                walkRecordViewModel.addPathPoint(location, timeDeltaSec)
+                lastUpdateTime = now
             }
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+        onDispose {
+            LocationProvider.stopLocationUpdates()
+        }
     }
 
     LaunchedEffect(isWalking, isPaused) {
         while (isWalking && !isPaused) {
-            val location = LocationProvider.getCurrentLocation(context)
-            if (location != null) {
-                val now = System.currentTimeMillis()
-                val timeDeltaSec = ((now - lastUpdateTime) / 1000).coerceAtLeast(1)
-                walkRecordViewModel.addPathPoint(location, timeDeltaSec)
-                lastLocation = location
-                lastUpdateTime = now
-            }
             walkRecordViewModel.updateTime(uiModel.time + 1)
             delay(1000)
         }

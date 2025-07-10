@@ -2,13 +2,35 @@ package com.combo.runcombi.walk
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import android.os.Looper
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationTokenSource
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 object LocationProvider {
+    private var locationCallback: LocationCallback? = null
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+
+    @SuppressLint("MissingPermission")
+    fun startLocationUpdates(context: Context, onLocation: (LatLng) -> Unit) {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let {
+                    onLocation(LatLng(it.latitude, it.longitude))
+                }
+            }
+        }
+        fusedLocationClient?.requestLocationUpdates(request, locationCallback!!, Looper.getMainLooper())
+    }
+
+    fun stopLocationUpdates() {
+        locationCallback?.let { fusedLocationClient?.removeLocationUpdates(it) }
+        locationCallback = null
+    }
+
     @SuppressLint("MissingPermission")
     suspend fun getCurrentLocation(context: Context): LatLng? {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -18,12 +40,12 @@ object LocationProvider {
                 CancellationTokenSource().token
             ).addOnSuccessListener { location ->
                 if (location != null) {
-                    cont.resume(LatLng(location.latitude, location.longitude)) { cause, _, _ -> }
+                    cont.resume(LatLng(location.latitude, location.longitude)) { _, _, _ -> }
                 } else {
-                    cont.resume(null) { cause, _, _ -> }
+                    cont.resume(null) { _, _, _ -> }
                 }
             }.addOnFailureListener {
-                cont.resume(null) { cause, _, _ -> }
+                cont.resume(null) { _, _, _ -> }
             }
         }
     }

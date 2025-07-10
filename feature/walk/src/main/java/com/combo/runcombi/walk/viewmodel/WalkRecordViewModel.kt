@@ -18,26 +18,26 @@ class WalkRecordViewModel : ViewModel() {
     fun addPathPoint(point: LatLng, timeDeltaSec: Long = 1) {
         _uiModel.update { model ->
             val newPath = model.pathPoints + point
-            val distanceToAdd = if (model.pathPoints.isNotEmpty()) {
-                calculateDistance(model.pathPoints.last(), point)
-            } else 0.0
-            val threshold = 3.0 // 최소 이동 거리(m) - GPS 오차 감안
-            val newDistance = if (distanceToAdd >= threshold) {
-                model.distance + distanceToAdd
+            if (model.pathPoints.isEmpty()) {
+                // 첫 위치: 거리 누적 없이 pathPoints만 추가
+                model.copy(pathPoints = newPath)
             } else {
-                model.distance
+                val distanceToAdd = calculateDistance(model.pathPoints.last(), point)
+                val threshold = 3.0 // 최소 이동 거리(m) - GPS 오차 감안
+                val newDistance = if (distanceToAdd >= threshold) {
+                    model.distance + distanceToAdd
+                } else {
+                    model.distance
+                }
+                // 평균 속도 계산 (누적 거리/누적 시간)
+                val avgSpeed = if (model.time + timeDeltaSec > 0) newDistance / (model.time + timeDeltaSec) else 0.0
+                model.copy(
+                    pathPoints = newPath,
+                    distance = newDistance,
+                    speed = avgSpeed,
+                    calorie = newDistance * 0.05
+                )
             }
-            // 순간 속도 계산 (거리/시간)
-            val instantSpeed = if (timeDeltaSec > 0) distanceToAdd / timeDeltaSec else 0.0
-            // 평균 속도 계산 (누적 거리/누적 시간)
-            val avgSpeed = if (model.time + timeDeltaSec > 0) newDistance / (model.time + timeDeltaSec) else 0.0
-            model.copy(
-                pathPoints = newPath,
-                distance = newDistance,
-                speed = avgSpeed,
-                // 칼로리도 즉시 갱신
-                calorie = newDistance * 0.05
-            )
         }
     }
 
