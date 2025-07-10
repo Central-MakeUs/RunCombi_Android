@@ -27,10 +27,12 @@ fun NavController.navigateToWalkCountDown() {
     this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown)
 }
 
-
 fun NavController.navigateToWalkTracking() {
-    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTracking)
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTracking) {
+        popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown) { inclusive = true }
+    }
 }
+
 
 fun NavController.navigateToWalkResult() {
     this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkResult) {
@@ -59,19 +61,20 @@ fun NavGraphBuilder.walkNavGraph(
             )
         }
 
-        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTracking> {
-            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(
-                navController.getBackStackEntry(MainTabDataModel.Walk)
-            )
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTracking> { backStackEntry ->
+            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(backStackEntry)
             WalkTrackingScreen(
                 walkRecordViewModel = walkRecordViewModel,
                 onFinish = onFinish
             )
         }
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkResult> {
-            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(
-                navController.getBackStackEntry(MainTabDataModel.Walk)
-            )
+            val walkRecordViewModel: WalkRecordViewModel =
+                if (navController.previousBackStackEntry != null) {
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                } else {
+                    hiltViewModel()
+                }
             WalkResultScreen(
                 walkRecordViewModel = walkRecordViewModel
             )

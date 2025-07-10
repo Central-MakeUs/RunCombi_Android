@@ -1,5 +1,6 @@
 package com.combo.runcombi.walk.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,7 @@ import com.google.android.gms.maps.model.LatLng
 @Composable
 fun WalkTrackingScreen(
     onFinish: () -> Unit,
-    walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
+    walkRecordViewModel: WalkRecordViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
     val context = LocalContext.current
     val uiModel by walkRecordViewModel.uiModel.collectAsState()
@@ -66,23 +68,25 @@ fun WalkTrackingScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF171717)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("운동 시간: ${uiModel.time}s")
-        Text("운동 거리: ${uiModel.distance} m")
-        Text("평균 속도: ${uiModel.speed} m/s")
+        Text("운동 시간: ${uiModel.time}s", color = Color.White)
+        Text("운동 거리: ${uiModel.distance} m", color = Color.White)
+        Text("평균 속도: ${uiModel.speed} m/s", color = Color.White)
         // 칼로리 표시 추가
-        Text("칼로리 소모: ${uiModel.calorie} kcal")
+        Text("칼로리 소모: ${uiModel.calorie} kcal", color = Color.White)
         Spacer(Modifier.height(32.dp))
         Row(
             horizontalArrangement = Arrangement.Center
         ) {
             if (!isPaused) {
-                Button(onClick = { isPaused = true }) { Text("일시정지") }
+                Button(onClick = { isPaused = true }) { Text("일시정지", color = Color.White) }
             } else {
-                Button(onClick = { isPaused = false }) { Text("재시작") }
+                Button(onClick = { isPaused = false }) { Text("재시작", color = Color.White) }
             }
             Spacer(Modifier.width(16.dp))
             Button(onClick = {
