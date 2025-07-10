@@ -39,6 +39,8 @@ fun WalkTrackingScreen(
     val uiModel by walkRecordViewModel.uiModel.collectAsState()
     var isWalking by remember { mutableStateOf(true) }
     var isPaused by remember { mutableStateOf(false) }
+    var lastLocation by remember { mutableStateOf<com.google.android.gms.maps.model.LatLng?>(null) }
+    var lastUpdateTime by remember { mutableStateOf(System.currentTimeMillis()) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -55,10 +57,11 @@ fun WalkTrackingScreen(
         while (isWalking && !isPaused) {
             val location = LocationProvider.getCurrentLocation(context)
             if (location != null) {
-                walkRecordViewModel.addPathPoint(location)
-                val speed = if (uiModel.time > 0) uiModel.distance / uiModel.time else 0.0
-                walkRecordViewModel.updateSpeed(speed)
-                walkRecordViewModel.updateCalorie(uiModel.distance * 0.05)
+                val now = System.currentTimeMillis()
+                val timeDeltaSec = ((now - lastUpdateTime) / 1000).coerceAtLeast(1)
+                walkRecordViewModel.addPathPoint(location, timeDeltaSec)
+                lastLocation = location
+                lastUpdateTime = now
             }
             walkRecordViewModel.updateTime(uiModel.time + 1)
             delay(1000)
@@ -73,6 +76,8 @@ fun WalkTrackingScreen(
         Text("운동 시간: ${uiModel.time}s")
         Text("운동 거리: ${uiModel.distance} m")
         Text("평균 속도: ${uiModel.speed} m/s")
+        // 칼로리 표시 추가
+        Text("칼로리 소모: ${uiModel.calorie} kcal")
         Spacer(Modifier.height(32.dp))
         Row(
             horizontalArrangement = Arrangement.Center

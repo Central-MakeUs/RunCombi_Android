@@ -27,8 +27,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey02
+import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Primary02
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.AddressResolver
@@ -100,9 +103,10 @@ fun WalkMainScreen(
         )
 
         LocationAddressLabel(
-            address = uiState.address, modifier = Modifier
+            address = uiState.address,
+            modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 32.dp)
+                .padding(top = 15.dp)
         )
 
         StartWalkButton(
@@ -124,9 +128,9 @@ private fun LocationAddressLabel(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Icon(Icons.Default.Place, contentDescription = null, tint = Color.White)
-        Spacer(Modifier.width(4.dp))
-        Text(address, color = Color.White)
+        StableImage(drawableResId = R.drawable.ic_gps, modifier = Modifier.size(24.dp))
+        Spacer(Modifier.width(10.dp))
+        Text(address, color = Grey06, style = body3)
     }
 }
 

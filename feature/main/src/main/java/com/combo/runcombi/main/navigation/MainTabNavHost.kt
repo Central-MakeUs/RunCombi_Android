@@ -26,8 +26,12 @@ fun MainTabNavHost(
         walkNavGraph(
             navController = mainTabNavigator.navController,
             onStartWalk = {
+                mainTabNavigator.navigationToWalkCountdown()
+            },
+            onCountdownFinished = {
                 mainTabNavigator.navigationToWalkTracking()
-            }, onFinish = {
+            },
+            onFinish = {
                 mainTabNavigator.navigationToWalkResult()
             })
 

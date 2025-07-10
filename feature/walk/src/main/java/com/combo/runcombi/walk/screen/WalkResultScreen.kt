@@ -31,7 +31,7 @@ fun WalkResultScreen(
         Text("운동 시간: ${uiModel.time}초")
         Text("운동 거리: ${uiModel.distance} m")
         Text("평균 속도: ${uiModel.speed} m/s")
-        Text("칼로리 소모: ${uiModel.calorie} kcal")
+        Text("칼로리 소모: ${String.format("%.1f", uiModel.calorie)} kcal")
         Spacer(Modifier.height(24.dp))
         Box(
             modifier = Modifier

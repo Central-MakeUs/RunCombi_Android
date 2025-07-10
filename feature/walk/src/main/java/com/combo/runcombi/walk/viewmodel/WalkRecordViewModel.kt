@@ -15,37 +15,34 @@ class WalkRecordViewModel : ViewModel() {
     private val _uiModel = MutableStateFlow(WalkUiModel())
     val uiModel: StateFlow<WalkUiModel> = _uiModel
 
-    fun addPathPoint(point: LatLng) {
+    fun addPathPoint(point: LatLng, timeDeltaSec: Long = 1) {
         _uiModel.update { model ->
             val newPath = model.pathPoints + point
             val distanceToAdd = if (model.pathPoints.isNotEmpty()) {
                 calculateDistance(model.pathPoints.last(), point)
             } else 0.0
-            val threshold = 12.0 // 최소 이동 거리(m)
-            val maxSpeed = 3.0   // 1초에 3m 이상 이동은 무시(비정상)
-            val speed = if (model.time > 0) distanceToAdd else 0.0
-            val newDistance = if (distanceToAdd >= threshold && speed <= maxSpeed) {
+            val threshold = 3.0 // 최소 이동 거리(m) - GPS 오차 감안
+            val newDistance = if (distanceToAdd >= threshold) {
                 model.distance + distanceToAdd
             } else {
                 model.distance
             }
+            // 순간 속도 계산 (거리/시간)
+            val instantSpeed = if (timeDeltaSec > 0) distanceToAdd / timeDeltaSec else 0.0
+            // 평균 속도 계산 (누적 거리/누적 시간)
+            val avgSpeed = if (model.time + timeDeltaSec > 0) newDistance / (model.time + timeDeltaSec) else 0.0
             model.copy(
                 pathPoints = newPath,
-                distance = newDistance
+                distance = newDistance,
+                speed = avgSpeed,
+                // 칼로리도 즉시 갱신
+                calorie = newDistance * 0.05
             )
         }
     }
 
     fun updateTime(time: Long) {
         _uiModel.update { it.copy(time = time) }
-    }
-
-    fun updateSpeed(speed: Double) {
-        _uiModel.update { it.copy(speed = speed) }
-    }
-
-    fun updateCalorie(calorie: Double) {
-        _uiModel.update { it.copy(calorie = calorie) }
     }
 
     fun clear() {

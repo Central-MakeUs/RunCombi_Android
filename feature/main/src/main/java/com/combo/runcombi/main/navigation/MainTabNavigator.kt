@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.walk.navigation.navigateToWalk
+import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
 import com.combo.runcombi.walk.navigation.navigateToWalkResult
 import com.combo.runcombi.walk.navigation.navigateToWalkTracking
 
@@ -24,6 +25,10 @@ class MainTabNavigator(
 
     fun navigationToWalk() {
         navController.navigateToWalk()
+    }
+
+    fun navigationToWalkCountdown() {
+        navController.navigateToWalkCountDown()
     }
 
     fun navigationToWalkTracking() {

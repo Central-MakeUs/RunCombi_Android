@@ -9,6 +9,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navOptions
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.walk.screen.WalkCountdownScreen
 import com.combo.runcombi.walk.screen.WalkMainScreen
 import com.combo.runcombi.walk.screen.WalkResultScreen
 import com.combo.runcombi.walk.screen.WalkTrackingScreen
@@ -21,6 +22,11 @@ fun NavController.navigateToWalk(
 ) {
     this.navigate(MainTabDataModel.Walk, navOptions)
 }
+
+fun NavController.navigateToWalkCountDown() {
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown)
+}
+
 
 fun NavController.navigateToWalkTracking() {
     this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTracking)
@@ -35,6 +41,7 @@ fun NavController.navigateToWalkResult() {
 fun NavGraphBuilder.walkNavGraph(
     navController: NavController,
     onStartWalk: () -> Unit,
+    onCountdownFinished: () -> Unit,
     onFinish: () -> Unit,
 ) {
     navigation<MainTabDataModel.Walk>(
@@ -45,6 +52,13 @@ fun NavGraphBuilder.walkNavGraph(
                 onStartWalk = onStartWalk
             )
         }
+
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown> {
+            WalkCountdownScreen(
+                onCountdownFinished = onCountdownFinished
+            )
+        }
+
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTracking> {
             val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(
                 navController.getBackStackEntry(MainTabDataModel.Walk)
