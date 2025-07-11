@@ -37,4 +37,10 @@ class WalkMainViewModel(application: Application) : AndroidViewModel(application
     private fun emitEvent(event: WalkEvent) {
         viewModelScope.launch { _eventFlow.emit(event) }
     }
+
+    fun onStartWalkClicked(hasLocationPermission: Boolean) {
+        if (!hasLocationPermission) {
+            emitEvent(WalkEvent.RequestLocationPermission)
+        }
+    }
 }
