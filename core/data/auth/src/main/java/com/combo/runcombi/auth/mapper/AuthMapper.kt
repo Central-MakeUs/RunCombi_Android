@@ -5,10 +5,13 @@ import com.combo.runcombi.network.model.response.LoginResponse
 
 
 fun LoginResponse.toModel(): KakaoLogin {
-    return KakaoLogin(
-        accessToken = loginResult.accessToken,
-        refreshToken = loginResult.refreshToken,
-        memberId = loginResult.memberId,
-        isFinishedRegister = loginResult.finishRegister == "Y"
-    )
+    return with(result) {
+        KakaoLogin(
+            accessToken = accessToken.orEmpty(),
+            refreshToken = refreshToken.orEmpty(),
+            memberId = memberId.orEmpty(),
+            isFinishedRegister = finishRegister == "Y"
+        )
+    }
 }
+
