@@ -36,7 +36,7 @@ enum class MainTab(
         selectedIconRes = R.drawable.ic_history_selected
     ),
     WALK(
-        routeModel = MainTabRoute.WalkRouteModel.Walk,
+        routeModel = MainTabRoute.WalkRouteModel.WalkMain,
         defaultIconRes = R.drawable.ic_walk,
         selectedIconRes = R.drawable.ic_walk_selected
     ),

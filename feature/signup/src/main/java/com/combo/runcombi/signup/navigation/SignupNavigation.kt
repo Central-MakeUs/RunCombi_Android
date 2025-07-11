@@ -1,5 +1,6 @@
 package com.combo.runcombi.signup.navigation
 
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -118,9 +119,12 @@ fun NavGraphBuilder.inputNavGraph(
         startDestination = RouteModel.SignupRoute.InputRoute.Profile,
     ) {
         composable<RouteModel.SignupRoute.InputRoute.Profile> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
+
             InputStepScaffold(currentStep = 0, title = "사용자 정보", onBack = onBack) {
                 ProfileScreen(
                     onNext = onProfileNext,
@@ -128,10 +132,14 @@ fun NavGraphBuilder.inputNavGraph(
                 )
             }
         }
+
         composable<RouteModel.SignupRoute.InputRoute.Gender> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
+
             InputStepScaffold(currentStep = 1, title = "사용자 정보", onBack = onBack) {
                 GenderScreen(
                     onNext = onGenderNext,
@@ -139,10 +147,14 @@ fun NavGraphBuilder.inputNavGraph(
                 )
             }
         }
+
         composable<RouteModel.SignupRoute.InputRoute.Body> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
+
             InputStepScaffold(currentStep = 2, title = "사용자 정보", onBack = onBack) {
                 BodyScreen(
                     onNext = onBodyNext,
@@ -150,10 +162,14 @@ fun NavGraphBuilder.inputNavGraph(
                 )
             }
         }
+
         composable<RouteModel.SignupRoute.InputRoute.PetProfile> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
+
             InputStepScaffold(currentStep = 0, title = "반려견 정보", onBack = onBack) {
                 PetProfileScreen(
                     onNext = onPetProfileNext,
@@ -161,10 +177,14 @@ fun NavGraphBuilder.inputNavGraph(
                 )
             }
         }
+
         composable<RouteModel.SignupRoute.InputRoute.PetInfo> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
+
             InputStepScaffold(currentStep = 1, title = "반려견 정보", onBack = onBack) {
                 PetInfoScreen(
                     onNext = onPetInfoNext,
@@ -172,10 +192,13 @@ fun NavGraphBuilder.inputNavGraph(
                 )
             }
         }
+
         composable<RouteModel.SignupRoute.InputRoute.PetStyle> {
-            val signupViewModel = hiltViewModel<SignupViewModel>(
-                navController.getBackStackEntry(RouteModel.Signup)
-            )
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.SignupRoute.Input>()
+            }
+            val signupViewModel = hiltViewModel<SignupViewModel>(parentEntry)
+
             InputStepScaffold(currentStep = 2, title = "반려견 정보", onBack = onBack) {
                 PetStyleScreen(
                     onSuccess = onPetStyleSuccess,

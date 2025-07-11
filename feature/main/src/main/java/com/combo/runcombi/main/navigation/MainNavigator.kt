@@ -64,11 +64,11 @@ class MainNavigator(
 
 
     fun navigationToMainTab(
-        mainTabDataModel: MainTabDataModel = MainTabDataModel.Walk
+        mainTabDataModel: MainTabDataModel = MainTabDataModel.Walk,
     ) {
         navController.navigate(
             route = RouteModel.MainTab(mainTabDataModel)
-        ){
+        ) {
             popUpTo(navController.graph.id) {
                 inclusive = true
             }

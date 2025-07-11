@@ -47,21 +47,28 @@ sealed interface RouteModel {
         val mainTabDataModel: MainTabDataModel = MainTabDataModel.None,
     ) : RouteModel
 
-    @Serializable
     sealed interface MainTabRoute : RouteModel {
         @Serializable
         sealed interface WalkRouteModel : MainTabRoute {
+
             @Serializable
-            data object Walk : WalkRouteModel
+            data object WalkMain : WalkRouteModel
 
             @Serializable
             data object WalkCountdown : WalkRouteModel
 
-            @Serializable
-            data object WalkTracking : WalkRouteModel
 
             @Serializable
-            data object WalkResult : WalkRouteModel
+            data object Walk : WalkRouteModel
+
+            @Serializable
+            sealed interface WalkRoute : WalkRouteModel {
+                @Serializable
+                data object WalkTracking : WalkRoute
+
+                @Serializable
+                data object WalkResult : WalkRoute
+            }
         }
 
         @Serializable
