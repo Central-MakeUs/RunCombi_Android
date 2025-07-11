@@ -40,6 +40,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.AddressResolver
 import com.combo.runcombi.walk.LocationProvider
+import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

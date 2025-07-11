@@ -1,4 +1,4 @@
-package com.combo.runcombi.walk.screen
+package com.combo.runcombi.walk.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

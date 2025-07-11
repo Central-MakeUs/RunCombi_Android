@@ -18,55 +18,58 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
+import java.util.Locale
 
 @Composable
 fun WalkResultScreen(
     walkRecordViewModel: WalkRecordViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
 ) {
-    val uiModel = walkRecordViewModel.uiModel.collectAsState().value
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Grey01)
-        .padding(24.dp)) {
-        Text("운동 시간: ${uiModel.time}초", color = Color.White)
-        Text("운동 거리: ${uiModel.distance} m", color = Color.White)
-        Text("평균 속도: ${uiModel.speed} m/s", color = Color.White)
-        Text("칼로리 소모: ${String.format("%.1f", uiModel.calorie)} kcal", color = Color.White)
+    val uiState = walkRecordViewModel.uiState.collectAsState().value
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Grey01)
+            .padding(24.dp)
+    ) {
+        Text("운동 시간: ${uiState.time}초", color = Color.White)
+        Text("운동 거리: ${uiState.distance} m", color = Color.White)
+        Text("평균 속도: ${uiState.speed} m/s", color = Color.White)
+        Text(
+            "칼로리 소모: ${String.format(Locale.getDefault(), "%.1f", uiState.calorie)} kcal",
+            color = Color.White
+        )
         Spacer(Modifier.height(24.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(300.dp)
         ) {
-            if (uiModel.pathPoints.size > 1) {
-                val points = uiModel.pathPoints
-                if (points.size > 1) {
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        val xs = points.map { it.longitude }
-                        val ys = points.map { it.latitude }
-                        val minX = xs.minOrNull() ?: 0.0
-                        val maxX = xs.maxOrNull() ?: 1.0
-                        val minY = ys.minOrNull() ?: 0.0
-                        val maxY = ys.maxOrNull() ?: 1.0
-                        val scaleX = size.width / (maxX - minX).coerceAtLeast(0.0001)
-                        val scaleY = size.height / (maxY - minY).coerceAtLeast(0.0001)
-                        val path = Path().apply {
-                            points.forEachIndexed { i, point ->
-                                val x = ((point.longitude - minX) * scaleX).toFloat()
-                                val y = size.height - ((point.latitude - minY) * scaleY).toFloat()
-                                if (i == 0) moveTo(x, y) else lineTo(x, y)
-                            }
+            if (uiState.pathPoints.size > 1) {
+                val points = uiState.pathPoints
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val xs = points.map { it.longitude }
+                    val ys = points.map { it.latitude }
+                    val minX = xs.minOrNull() ?: 0.0
+                    val maxX = xs.maxOrNull() ?: 1.0
+                    val minY = ys.minOrNull() ?: 0.0
+                    val maxY = ys.maxOrNull() ?: 1.0
+                    val scaleX = size.width / (maxX - minX).coerceAtLeast(0.0001)
+                    val scaleY = size.height / (maxY - minY).coerceAtLeast(0.0001)
+                    val path = Path().apply {
+                        points.forEachIndexed { i, point ->
+                            val x = ((point.longitude - minX) * scaleX).toFloat()
+                            val y = size.height - ((point.latitude - minY) * scaleY).toFloat()
+                            if (i == 0) moveTo(x, y) else lineTo(x, y)
                         }
-                        drawPath(
-                            path,
-                            color = Primary01,
-                            style = Stroke(width = 12f)
-                        )
                     }
+                    drawPath(
+                        path,
+                        color = Primary01,
+                        style = Stroke(width = 12f)
+                    )
                 }
             }
         }
