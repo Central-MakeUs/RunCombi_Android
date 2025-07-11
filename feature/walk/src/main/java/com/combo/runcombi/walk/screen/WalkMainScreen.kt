@@ -70,6 +70,16 @@ fun WalkMainScreen(
         if (locationPermissionState.status.isGranted) {
             val myLocation = LocationProvider.getCurrentLocation(context)
             myLocation?.let { walkMainViewModel.updateLocation(it) }
+        } else {
+            cameraPositionState.move(
+                newLatLngZoom(
+                    com.google.android.gms.maps.model.LatLng(
+                        36.5,
+                        127.8
+                    ), 7f
+                )
+            )
+            walkMainViewModel.updateAddress("위치 접근 미허용")
         }
     }
 
@@ -89,7 +99,7 @@ fun WalkMainScreen(
                 isMyLocationEnabled = locationPermissionState.status.isGranted,
                 mapType = MapType.NORMAL,
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                    LocalContext.current, R.raw.gogle_map_dark_theme_style
+                    LocalContext.current, R.raw.google_map_dark_theme_style
                 )
             ),
             uiSettings = MapUiSettings(
@@ -103,7 +113,7 @@ fun WalkMainScreen(
         )
 
         LocationAddressLabel(
-            address = uiState.address,
+            address = if (locationPermissionState.status.isGranted) uiState.address else "위치 접근 미허용",
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 15.dp)

@@ -23,15 +23,7 @@ class WalkRecordViewModel : ViewModel() {
                 model.copy(pathPoints = newPath)
             } else {
                 val distanceToAdd = calculateDistance(model.pathPoints.last(), point)
-                val threshold = 5.0 // 최소 이동 거리(m) - GPS 오차 감안
-                val instantSpeed = if (timeDeltaSec > 0) distanceToAdd / timeDeltaSec else 0.0
-                // 너무 느리거나(0.5m/s 미만), 너무 빠른(5m/s 초과) 이동은 무시
-                val isValidMove = distanceToAdd >= threshold && instantSpeed in 0.5..5.0
-                val newDistance = if (isValidMove) {
-                    model.distance + distanceToAdd
-                } else {
-                    model.distance
-                }
+                val newDistance = model.distance + distanceToAdd
                 val avgSpeed = if (model.time + timeDeltaSec > 0) newDistance / (model.time + timeDeltaSec) else 0.0
                 model.copy(
                     pathPoints = newPath,

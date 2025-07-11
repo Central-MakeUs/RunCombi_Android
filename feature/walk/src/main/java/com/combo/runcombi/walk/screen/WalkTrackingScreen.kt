@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.walk.LocationProvider
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import kotlinx.coroutines.delay
@@ -70,14 +71,13 @@ fun WalkTrackingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF171717)),
+            .background(Grey01),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text("운동 시간: ${uiModel.time}s", color = Color.White)
         Text("운동 거리: ${uiModel.distance} m", color = Color.White)
         Text("평균 속도: ${uiModel.speed} m/s", color = Color.White)
-        // 칼로리 표시 추가
         Text("칼로리 소모: ${uiModel.calorie} kcal", color = Color.White)
         Spacer(Modifier.height(32.dp))
         Row(
