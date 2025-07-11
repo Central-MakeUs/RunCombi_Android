@@ -11,14 +11,17 @@ import com.combo.runcombi.signup.model.PetStyleData
 import com.combo.runcombi.signup.model.ProfileData
 import com.combo.runcombi.signup.model.SignupFormData
 import com.combo.runcombi.signup.model.TermsData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignupViewModel() : ViewModel() {
+@HiltViewModel
+class SignupViewModel @Inject constructor() : ViewModel() {
     private val _signupFormData = MutableStateFlow(SignupFormData())
     val signupFormData: StateFlow<SignupFormData> = _signupFormData.asStateFlow()
 

@@ -15,7 +15,7 @@ fun NavController.navigateToLogin() {
 }
 
 fun NavGraphBuilder.loginNavGraph(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (Boolean) -> Unit,
 ) {
     composable<RouteModel.Login> {
         LoginRoute(

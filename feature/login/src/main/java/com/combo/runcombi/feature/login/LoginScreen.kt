@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoute(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     loginManager: LoginManager = rememberLoginManager(),
@@ -47,7 +47,7 @@ fun LoginRoute(
         viewModel.eventFlow.collectLatest {
             when (it) {
                 LoginEvent.Error -> Unit
-                is LoginEvent.Success -> onLoginSuccess()
+                is LoginEvent.Success -> onLoginSuccess(it.isFinishedRegister)
             }
         }
     }
