@@ -12,29 +12,44 @@ class UpdateWalkRecordUseCase @Inject constructor() {
 
     private val speedList = mutableListOf<Double>()
 
-    suspend fun execute(
+    fun execute(
         prevPoint: LocationPoint?,
         newPoint: LocationPoint,
     ): DomainResult<WalkUpdateResult> {
-        return if (!MovementValidator.isValidMovement(prevPoint, newPoint)) {
-            DomainResult.Error()
-        } else {
-            val distance = DistanceCalculator.calculateDistance(prevPoint!!, newPoint)
-            val timeDeltaSec = (newPoint.timestamp - prevPoint.timestamp).coerceAtLeast(1L) / 1000.0
-            val speed = distance / timeDeltaSec
-
-            speedList += speed
-
-            val result = WalkUpdateResult(
-                distance = distance,
-                averageSpeed = speedList.average(),
-                calorie = CalorieCalculator.calculateCalories(distance)
+        if (prevPoint == null) {
+            return DomainResult.Success(
+                WalkUpdateResult(
+                    distance = 0.0,
+                    averageSpeed = 0.0,
+                    calorie = 0.0
+                )
             )
-            DomainResult.Success(result)
         }
+
+        if (!MovementValidator.isValidMovement(prevPoint, newPoint)) {
+            return DomainResult.Error()
+        }
+
+        val distance = DistanceCalculator.calculateDistance(prevPoint, newPoint)
+        val timeDeltaMs = (newPoint.timestamp - prevPoint.timestamp).coerceAtLeast(1000L)
+        val speed = distance / (timeDeltaMs / 1000.0)
+
+        if (speedList.size >= 100) {
+            speedList.removeAt(0)
+        }
+        speedList += speed
+
+        val result = WalkUpdateResult(
+            distance = distance,
+            averageSpeed = speedList.average(),
+            calorie = CalorieCalculator.calculateCalories(distance)
+        )
+        return DomainResult.Success(result)
     }
+
 
     fun reset() {
         speedList.clear()
     }
 }
+

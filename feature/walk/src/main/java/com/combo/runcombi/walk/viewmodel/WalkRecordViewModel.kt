@@ -34,27 +34,25 @@ class WalkRecordViewModel @Inject constructor(
     ) {
         val newPoint = LocationPoint(lat, lng, timestamp, accuracy)
 
-        viewModelScope.launch {
-            when (val result = updateWalkRecordUseCase.execute(lastPoint, newPoint)) {
-                is DomainResult.Success -> {
-                    val data = result.data
-                    _uiState.update { state ->
-                        state.copy(
-                            pathPoints = state.pathPoints + LatLng(lat, lng),
-                            distance = state.distance + data.distance,
-                            speed = data.averageSpeed,
-                            calorie = data.calorie
-                        )
-                    }
-                    lastPoint = newPoint
+        when (val result = updateWalkRecordUseCase.execute(lastPoint, newPoint)) {
+            is DomainResult.Success -> {
+                val data = result.data
+                _uiState.update { state ->
+                    state.copy(
+                        pathPoints = state.pathPoints + LatLng(lat, lng),
+                        distance = state.distance + data.distance,
+                        speed = data.averageSpeed,
+                        calorie = data.calorie
+                    )
                 }
+                lastPoint = newPoint
+            }
 
-                is DomainResult.Error, is DomainResult.Exception -> {
-                    _uiState.update { state ->
-                        state.copy(pathPoints = state.pathPoints + LatLng(lat, lng))
-                    }
-                    lastPoint = newPoint
+            is DomainResult.Error, is DomainResult.Exception -> {
+                _uiState.update { state ->
+                    state.copy(pathPoints = state.pathPoints + LatLng(lat, lng))
                 }
+                lastPoint = newPoint
             }
         }
     }
