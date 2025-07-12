@@ -44,6 +44,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import android.os.Build
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("MissingPermission")
@@ -54,13 +56,19 @@ fun WalkReadyScreen(
     viewModel: WalkReadyViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val permissions = buildList {
+        add(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    val permissionsState = rememberMultiplePermissionsState(permissions)
     var showPermissionDialog by remember { mutableStateOf(false) }
     val event by viewModel.event.collectAsState()
 
     LaunchedEffect(Unit) {
-        if (!locationPermissionState.status.isGranted) {
-            locationPermissionState.launchPermissionRequest()
+        if (permissionsState.permissions.any { !it.status.isGranted }) {
+            permissionsState.launchMultiplePermissionRequest()
         }
     }
 
@@ -70,7 +78,6 @@ fun WalkReadyScreen(
                 showPermissionDialog = true
                 viewModel.consumeEvent()
             }
-
             else -> Unit
         }
     }
@@ -81,12 +88,8 @@ fun WalkReadyScreen(
         )
         Spacer(modifier = Modifier.height(50.dp))
         WalkReadyContent(showPermissionDialog = showPermissionDialog, onCompleteReady = {
-            if (!locationPermissionState.status.isGranted) {
-                if (locationPermissionState.status.shouldShowRationale) {
-                    locationPermissionState.launchPermissionRequest()
-                } else {
-                    viewModel.requestLocationPermission()
-                }
+            if (permissionsState.permissions.any { !it.status.isGranted }) {
+                permissionsState.launchMultiplePermissionRequest()
             } else {
                 onCompleteReady()
             }
