@@ -82,6 +82,19 @@ fun WalkReadyScreen(
         }
     }
 
+    val locationPermission = permissionsState.permissions.find { it.permission == Manifest.permission.ACCESS_FINE_LOCATION }
+    val notificationPermission = permissionsState.permissions.find { it.permission == Manifest.permission.POST_NOTIFICATIONS }
+
+    val locationDeniedPermanently = locationPermission != null &&
+        !locationPermission.status.isGranted &&
+        !locationPermission.status.shouldShowRationale
+
+    val notificationDeniedPermanently = notificationPermission != null &&
+        !notificationPermission.status.isGranted &&
+        !notificationPermission.status.shouldShowRationale
+
+    val anyDeniedPermanently = locationDeniedPermanently || notificationDeniedPermanently
+
     Column(modifier = Modifier.background(color = Grey01)) {
         RunCombiAppTopBar(
             isVisibleBackBtn = true, onBack = onBack
@@ -89,7 +102,11 @@ fun WalkReadyScreen(
         Spacer(modifier = Modifier.height(50.dp))
         WalkReadyContent(showPermissionDialog = showPermissionDialog, onCompleteReady = {
             if (permissionsState.permissions.any { !it.status.isGranted }) {
-                permissionsState.launchMultiplePermissionRequest()
+                if (anyDeniedPermanently) {
+                    showPermissionDialog = true
+                } else {
+                    permissionsState.launchMultiplePermissionRequest()
+                }
             } else {
                 onCompleteReady()
             }
@@ -99,7 +116,8 @@ fun WalkReadyScreen(
                 data = ("package:" + context.packageName).toUri()
             }
             context.startActivity(intent)
-        }, onDismissDialog = { showPermissionDialog = false })
+        }, onDismissDialog = { showPermissionDialog = false },
+        anyDeniedPermanently = anyDeniedPermanently)
     }
 }
 
@@ -109,12 +127,19 @@ private fun WalkReadyContent(
     onCompleteReady: () -> Unit,
     onGoToSetting: () -> Unit,
     onDismissDialog: () -> Unit,
+    anyDeniedPermanently: Boolean = false,
 ) {
     if (showPermissionDialog) {
         AlertDialog(
             onDismissRequest = onDismissDialog,
-            title = { Text("위치 권한 필요") },
-            text = { Text("운동을 시작하려면 위치 권한이 필요합니다.") },
+            title = { Text("권한 필요") },
+            text = {
+                if (anyDeniedPermanently) {
+                    Text("위치, 알림 권한 두 권한을 모두 허용해 주세요.")
+                } else {
+                    Text("운동을 시작하려면 위치 권한과 알림 권한이 모두 필요합니다.\n\n설정에서 두 권한을 모두 허용해 주세요.")
+                }
+            },
             confirmButton = {
                 Text(
                     "설정으로 이동", modifier = Modifier.clickable { onGoToSetting() })
@@ -160,5 +185,6 @@ private fun WalkReadyContentPreview() {
         showPermissionDialog = false,
         onCompleteReady = {},
         onGoToSetting = {},
-        onDismissDialog = {})
+        onDismissDialog = {},
+        anyDeniedPermanently = false)
 } 
