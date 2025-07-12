@@ -9,8 +9,10 @@ import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
 import com.combo.runcombi.walk.navigation.navigateToWalkMain
+import com.combo.runcombi.walk.navigation.navigateToWalkReady
 import com.combo.runcombi.walk.navigation.navigateToWalkResult
 import com.combo.runcombi.walk.navigation.navigateToWalkTracking
+import com.combo.runcombi.walk.navigation.navigateToWalkTypeSelect
 
 class MainTabNavigator(
     val navController: NavHostController,
@@ -26,6 +28,14 @@ class MainTabNavigator(
 
     fun navigationToWalkMain(navOptions: NavOptions) {
         navController.navigateToWalkMain(navOptions)
+    }
+
+    fun navigationToWalkTypeSelect() {
+        navController.navigateToWalkTypeSelect()
+    }
+
+    fun navigationToWalkReady() {
+        navController.navigateToWalkReady()
     }
 
     fun navigationToWalkCountdown() {

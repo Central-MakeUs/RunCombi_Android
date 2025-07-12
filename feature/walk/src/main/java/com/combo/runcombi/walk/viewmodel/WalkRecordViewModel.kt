@@ -1,6 +1,7 @@
 package com.combo.runcombi.walk.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.walk.model.LocationPoint
 import com.combo.runcombi.walk.model.WalkUiState
@@ -11,6 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import com.combo.runcombi.walk.model.WalkTrackingEvent
+import com.combo.runcombi.walk.model.BottomSheetType
 import javax.inject.Inject
 
 
@@ -21,6 +28,9 @@ class WalkRecordViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(WalkUiState())
     val uiState: StateFlow<WalkUiState> = _uiState.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<WalkTrackingEvent>()
+    val eventFlow: SharedFlow<WalkTrackingEvent> = _eventFlow.asSharedFlow()
 
     private var lastPoint: LocationPoint? = null
     private var speedList: List<Double> = emptyList()
@@ -72,5 +82,11 @@ class WalkRecordViewModel @Inject constructor(
         _uiState.value = WalkUiState()
         lastPoint = null
         speedList = emptyList()
+    }
+
+    fun emitShowBottomSheet(type: BottomSheetType) {
+        viewModelScope.launch {
+            _eventFlow.emit(WalkTrackingEvent.ShowBottomSheet(type))
+        }
     }
 }

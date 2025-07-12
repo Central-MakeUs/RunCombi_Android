@@ -3,18 +3,19 @@ package com.combo.runcombi.walk.screen
 import android.annotation.SuppressLint
 import android.os.Looper
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,12 +28,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
+import com.combo.runcombi.core.designsystem.theme.Grey02
+import com.combo.runcombi.core.designsystem.theme.Grey05
+import com.combo.runcombi.core.designsystem.theme.Grey06
+import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.Primary02
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
+import com.combo.runcombi.feature.walk.R
+import com.combo.runcombi.walk.component.WalkBottomSheet
+import com.combo.runcombi.walk.model.BottomSheetType
+import com.combo.runcombi.walk.model.WalkTrackingEvent
+import com.combo.runcombi.walk.model.WalkUiState
+import com.combo.runcombi.walk.model.getBottomSheetContent
 import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import com.google.android.gms.location.LocationCallback
@@ -41,19 +53,19 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.delay
-import com.combo.runcombi.walk.component.FinishWalkBottomSheet
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.tooling.preview.Preview
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WalkTrackingScreen(
     onFinish: () -> Unit,
+    onBack: () -> Unit,
     walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val uiState by walkRecordViewModel.uiState.collectAsState()
     val isPaused = uiState.isPaused
-
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val locationCallback = remember {
@@ -71,7 +83,15 @@ fun WalkTrackingScreen(
         }
     }
 
-    val showSheet = remember { mutableStateOf(false) }
+    val showSheet = remember { mutableStateOf(BottomSheetType.NONE) }
+
+    LaunchedEffect(Unit) {
+        walkRecordViewModel.eventFlow.collectLatest { event ->
+            if (event is WalkTrackingEvent.ShowBottomSheet) {
+                showSheet.value = event.type
+            }
+        }
+    }
 
     DisposableEffect(isPaused) {
         if (!isPaused) {
@@ -97,6 +117,42 @@ fun WalkTrackingScreen(
         }
     }
 
+    WalkTrackingContent(
+        uiState = uiState,
+        onPauseToggle = walkRecordViewModel::togglePause,
+        onCancelClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.CANCEL) },
+        onFinishClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.FINISH) }
+    )
+
+    val content = getBottomSheetContent(showSheet.value)
+    content?.let {
+        WalkBottomSheet(
+            show = true,
+            onDismiss = { showSheet.value = BottomSheetType.NONE },
+            onAccept = {
+                when (showSheet.value) {
+                    BottomSheetType.FINISH -> onFinish()
+                    BottomSheetType.CANCEL -> onBack()
+                    else -> Unit
+                }
+                showSheet.value = BottomSheetType.NONE
+            },
+            onCancel = { showSheet.value = BottomSheetType.NONE },
+            title = content.title,
+            subtitle = content.subtitle,
+            acceptButtonText = content.acceptButtonText,
+            cancelButtonText = content.cancelButtonText
+        )
+    }
+}
+
+@Composable
+fun WalkTrackingContent(
+    uiState: WalkUiState,
+    onPauseToggle: () -> Unit,
+    onCancelClick: () -> Unit,
+    onFinishClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -104,56 +160,34 @@ fun WalkTrackingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(Modifier.height(32.dp))
-        Text("함께 운동한 시간", color = Color.White)
-        Spacer(Modifier.height(16.dp))
-        TimeDisplayLarge(uiState.time)
-        Spacer(Modifier.height(16.dp))
-        DistanceDisplayLarge(uiState.distance)
-        Spacer(Modifier.height(8.dp))
-        CalorieDisplayLarge(uiState.calorie)
-        Spacer(Modifier.height(64.dp))
-        PauseButton(onClick = {
-            if (!isPaused) {
-                showSheet.value = true
-                walkRecordViewModel.togglePause()
-            }
-        })
-    }
-
-    FinishWalkBottomSheet(
-        show = showSheet.value,
-        onDismiss = {
-            showSheet.value = false
-            walkRecordViewModel.togglePause()
-        },
-        onFinish = {
-            showSheet.value = false
-            onFinish()
-        },
-        onResume = {
-            showSheet.value = false
-            walkRecordViewModel.togglePause()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            Text(
+                "취소",
+                style = RunCombiTypography.title3,
+                color = Grey05,
+                modifier = Modifier.clickable { onCancelClick() })
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                "완료",
+                style = RunCombiTypography.title3,
+                color = Primary02,
+                modifier = Modifier.clickable { onFinishClick() })
         }
-    )
-}
-
-@Composable
-fun TimeDisplay(time: Int) {
-    val formattedTime = FormatUtils.formatTime(time)
-    Text("운동 시간: $formattedTime", color = Color.White)
-}
-
-@Composable
-fun DistanceDisplay(distance: Double) {
-    val formattedDistance = FormatUtils.formatDistance(distance)
-    Text("운동 거리: $formattedDistance km", color = Color.White)
-}
-
-@Composable
-fun CalorieDisplay(calorie: Double) {
-    val formattedCalorie = FormatUtils.formatCalorie(calorie)
-    Text("칼로리 소모: $formattedCalorie kcal", color = Color.White)
+        Spacer(Modifier.height(22.dp))
+        Text("함께 운동한 시간", color = Grey08, style = RunCombiTypography.giantsTitle3)
+        Spacer(Modifier.height(10.45.dp))
+        TimeDisplayLarge(uiState.time)
+        Spacer(Modifier.height(26.55.dp))
+        DistanceDisplayLarge(uiState.distance)
+        Spacer(Modifier.weight(1f))
+        PauseButton(onClick = onPauseToggle, isPaused = uiState.isPaused)
+        Spacer(Modifier.height(80.dp))
+    }
 }
 
 @Composable
@@ -162,20 +196,27 @@ fun TimeDisplayLarge(time: Int) {
     Text(
         text = formattedTime,
         color = Color.White,
-        fontSize = 64.sp,
-        modifier = Modifier
+        style = RunCombiTypography.giantsHeading1
     )
 }
 
 @Composable
 fun DistanceDisplayLarge(distance: Double) {
     val formattedDistance = FormatUtils.formatDistance(distance)
-    Text(
-        text = "$formattedDistance Km",
-        color = Color(0xFFBDBDBD),
-        fontSize = 28.sp,
-        modifier = Modifier
-    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = formattedDistance,
+            color = Grey06,
+            style = RunCombiTypography.giantsTitle2,
+            modifier = Modifier.alignByBaseline()
+        )
+        Text(
+            text = " Km",
+            color = Grey06,
+            style = RunCombiTypography.giantsTitle6,
+            modifier = Modifier.alignByBaseline()
+        )
+    }
 }
 
 @Composable
@@ -184,28 +225,40 @@ fun CalorieDisplayLarge(calorie: Double) {
     Text(
         text = "$formattedCalorie Kcal",
         color = Color.White,
-        fontSize = 28.sp,
-        modifier = Modifier
+        fontSize = 28.sp
     )
 }
 
 @Composable
-fun PauseButton(onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
+fun PauseButton(onClick: () -> Unit, isPaused: Boolean) {
+    Box(
         modifier = Modifier
-            .height(80.dp)
-            .width(80.dp)
+            .clickable { onClick() }
+            .background(color = Grey02, shape = RoundedCornerShape(4.dp))
+            .size(100.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text("II", fontSize = 32.sp)
+        StableImage(
+            drawableResId = if (isPaused) R.drawable.ic_pause else R.drawable.ic_pause,
+            modifier = Modifier
+                .width(17.8.dp)
+                .height(24.dp)
+        )
     }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF171717)
 @Composable
-fun PreviewWalkTrackingScreen() {
-    WalkTrackingScreen(
-        onFinish = {},
-        walkRecordViewModel = viewModel()
+fun WalkTrackingContentPreview() {
+    WalkTrackingContent(
+        uiState = WalkUiState(
+            time = 1234,
+            distance = 2.5,
+            calorie = 120.0,
+            isPaused = false
+        ),
+        onPauseToggle = {},
+        onCancelClick = {},
+        onFinishClick = {}
     )
 }

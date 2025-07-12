@@ -3,8 +3,10 @@ package com.combo.runcombi.walk.screen
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,12 +17,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.combo.runcombi.core.designsystem.theme.Grey01
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsHeading2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle2
+import com.combo.runcombi.core.designsystem.theme.giantsFamily
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun WalkCountdownScreen(
@@ -40,6 +49,11 @@ fun WalkCountdownScreen(
         onCountdownFinished()
     }
 
+    CountdownContent(count = count, scale = scale.value)
+}
+
+@Composable
+fun CountdownContent(count: Int, scale: Float) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,18 +62,17 @@ fun WalkCountdownScreen(
     ) {
         Text(
             text = "$count",
-            fontSize = 72.sp,
-            fontWeight = FontWeight.Bold,
+            style = giantsHeading2,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.Center)
-                .graphicsLayer(scaleX = scale.value, scaleY = scale.value)
+                .graphicsLayer(scaleX = scale, scaleY = scale)
         )
     }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF171717)
 @Composable
-fun PreviewWalkCountdownScreen() {
-    WalkCountdownScreen(onCountdownFinished = {})
-} 
+fun PreviewCountdownContent() {
+    CountdownContent(count = 2, scale = 1.2f)
+}

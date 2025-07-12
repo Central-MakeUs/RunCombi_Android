@@ -22,7 +22,10 @@ import com.combo.runcombi.core.designsystem.theme.WhiteFF
 @Composable
 fun RunCombiAppTopBar(
     title: String = "",
-    onBack: () -> Unit,
+    onBack: () -> Unit = {},
+    onClose: () -> Unit = {},
+    isVisibleBackBtn: Boolean = true,
+    isVisibleCloseBtn: Boolean = false,
 ) {
     Row(
         modifier = Modifier
@@ -30,13 +33,17 @@ fun RunCombiAppTopBar(
             .padding(horizontal = 20.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBack) {
-            StableImage(
-                drawableResId = R.drawable.ic_back,
-                modifier = Modifier
-                    .size(24.dp)
-            )
+        if (isVisibleBackBtn) {
+            IconButton(onClick = onBack) {
+                StableImage(
+                    drawableResId = R.drawable.ic_back,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.width(24.dp))
         }
+
         Text(
             text = title,
             color = WhiteFF,
@@ -46,9 +53,20 @@ fun RunCombiAppTopBar(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.width(24.dp))
+
+        if (isVisibleCloseBtn) {
+            IconButton(onClick = onClose) {
+                StableImage(
+                    drawableResId = R.drawable.ic_close,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        } else {
+            Spacer(modifier = Modifier.width(24.dp))
+        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

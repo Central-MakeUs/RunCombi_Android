@@ -31,10 +31,12 @@ fun CompleteScreen(
     petName: String,
     onDone: () -> Unit,
 ) {
-    Box {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.screenDefaultPadding()
+            modifier = Modifier
+                .fillMaxSize()
+                .screenDefaultPadding()
         ) {
             Spacer(Modifier.height(95.dp))
             Text(

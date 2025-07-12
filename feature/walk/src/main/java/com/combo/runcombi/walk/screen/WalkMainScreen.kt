@@ -43,8 +43,8 @@ import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle4
 import com.combo.runcombi.domain.user.model.User
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.pet.model.Pet
@@ -53,6 +53,7 @@ import com.combo.runcombi.walk.LocationProvider
 import com.combo.runcombi.walk.component.LocationPermissionDialog
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
+import com.combo.runcombi.walk.model.WalkMainUiState
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -61,6 +62,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -119,7 +121,7 @@ fun WalkMainScreen(
                     showPermissionDialog = true
                 }
 
-                else -> {}
+                else -> Unit
             }
         }
     }
@@ -135,12 +137,43 @@ fun WalkMainScreen(
             context.startActivity(intent)
         })
 
+    WalkMainContent(
+        modifier = modifier,
+        cameraPositionState = cameraPositionState,
+        uiState = uiState,
+        isLocationPermissionGranted = locationPermissionState.status.isGranted,
+        onPetClick = { walkMainViewModel.togglePetSelect(it) },
+        onStartWalk = {
+            if (!locationPermissionState.status.isGranted) {
+                if (locationPermissionState.status.shouldShowRationale) {
+                    locationPermissionState.launchPermissionRequest()
+                } else {
+                    walkMainViewModel.onStartWalkClicked(false)
+                }
+            } else if (uiState.petUiList.none { it.isSelected }) {
+                Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
+            } else {
+                onStartWalk()
+            }
+        }
+    )
+}
+
+@Composable
+fun WalkMainContent(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState,
+    uiState: WalkMainUiState,
+    isLocationPermissionGranted: Boolean = false,
+    onPetClick: (Pet) -> Unit = {},
+    onStartWalk: () -> Unit = {},
+) {
     Box(modifier = modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
-                isMyLocationEnabled = locationPermissionState.status.isGranted,
+                isMyLocationEnabled = isLocationPermissionGranted,
                 mapType = MapType.NORMAL,
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
                     LocalContext.current, R.raw.google_map_dark_theme_style
@@ -167,31 +200,22 @@ fun WalkMainScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LocationAddressLabel(
-                address = if (locationPermissionState.status.isGranted) uiState.address else "위치 접근 미허용",
+                address = if (isLocationPermissionGranted) uiState.address else "위치 접근 미허용",
             )
             Spacer(modifier = Modifier.height(46.dp))
             CombiList(
                 user = uiState.user,
                 petUiList = uiState.petUiList,
-                onPetClick = { walkMainViewModel.togglePetSelect(it) })
+                onPetClick = onPetClick
+            )
         }
 
         StartWalkButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 130.dp), onClick = {
-                if (!locationPermissionState.status.isGranted) {
-                    if (locationPermissionState.status.shouldShowRationale) {
-                        locationPermissionState.launchPermissionRequest()
-                    } else {
-                        walkMainViewModel.onStartWalkClicked(false)
-                    }
-                } else if (uiState.petUiList.none { it.isSelected }) {
-                    Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
-                } else {
-                    onStartWalk()
-                }
-            })
+                .padding(bottom = 130.dp),
+            onClick = onStartWalk
+        )
     }
 }
 
@@ -224,7 +248,7 @@ private fun StartWalkButton(
             .clickable(onClick = onClick), contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "운동", style = title2, color = Grey02
+            text = "운동", style = giantsTitle2, color = Grey02
         )
     }
 }
@@ -317,7 +341,7 @@ private fun CombiList(
     Column(
         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("함께 운동할 콤비", style = title4, color = Grey08)
+        Text("함께 운동할 콤비", style = giantsTitle4, color = Grey08)
         Spacer(modifier = Modifier.height(25.dp))
         Row(
             horizontalArrangement = Arrangement.Center
@@ -350,6 +374,13 @@ private fun CombiList(
 
 @Preview(showBackground = true)
 @Composable
-fun WalkMainScreenPreview() {
-    WalkMainScreen()
+fun WalkMainContentPreview() {
+    val cameraPositionState = rememberCameraPositionState()
+    WalkMainContent(
+        cameraPositionState = cameraPositionState,
+        uiState = WalkMainUiState(),
+        isLocationPermissionGranted = true,
+        onPetClick = {},
+        onStartWalk = {}
+    )
 }

@@ -26,6 +26,12 @@ fun MainTabNavHost(
         walkNavGraph(
             navController = mainTabNavigator.navController,
             onStartWalk = {
+                mainTabNavigator.navigationToWalkTypeSelect()
+            },
+            onTypeSelected = {
+                mainTabNavigator.navigationToWalkReady()
+            },
+            onCompleteReady = {
                 mainTabNavigator.navigationToWalkCountdown()
             },
             onCountdownFinished = {
@@ -33,7 +39,11 @@ fun MainTabNavHost(
             },
             onFinish = {
                 mainTabNavigator.navigationToWalkResult()
-            })
+            },
+            onBack = {
+                mainTabNavigator.navController.popBackStack()
+            },
+        )
 
         settingNavGraph()
     }

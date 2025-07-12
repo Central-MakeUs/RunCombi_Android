@@ -11,8 +11,10 @@ import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.walk.screen.WalkCountdownScreen
 import com.combo.runcombi.walk.screen.WalkMainScreen
+import com.combo.runcombi.walk.screen.WalkReadyScreen
 import com.combo.runcombi.walk.screen.WalkResultScreen
 import com.combo.runcombi.walk.screen.WalkTrackingScreen
+import com.combo.runcombi.walk.screen.WalkTypeSelectScreen
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 
 fun NavController.navigateToWalkMain(
@@ -20,6 +22,15 @@ fun NavController.navigateToWalkMain(
 ) {
     this.navigate(MainTabDataModel.Walk, navOptions)
 }
+
+fun NavController.navigateToWalkTypeSelect() {
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct)
+}
+
+fun NavController.navigateToWalkReady() {
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkReady)
+}
+
 
 fun NavController.navigateToWalkCountDown() {
     this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown)
@@ -40,9 +51,12 @@ fun NavController.navigateToWalkResult() {
 
 fun NavGraphBuilder.walkNavGraph(
     navController: NavController,
+    onTypeSelected: () -> Unit,
+    onCompleteReady: () -> Unit,
     onStartWalk: () -> Unit,
     onCountdownFinished: () -> Unit,
     onFinish: () -> Unit,
+    onBack: () -> Unit,
 ) {
     navigation<MainTabDataModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkMain,
@@ -53,19 +67,35 @@ fun NavGraphBuilder.walkNavGraph(
             )
         }
 
+
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct> {
+            WalkTypeSelectScreen(
+                onBack = onBack,
+                onTypeSelected = onTypeSelected
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkReady> {
+            WalkReadyScreen(
+                onBack = onBack,
+                onCompleteReady = onCompleteReady,
+            )
+        }
+
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkCountdown> {
             WalkCountdownScreen(
                 onCountdownFinished = onCountdownFinished
             )
         }
 
-        walkTrackingNavGraph(navController, onFinish)
+        walkTrackingNavGraph(navController, onFinish, onBack)
     }
 }
 
 fun NavGraphBuilder.walkTrackingNavGraph(
     navController: NavController,
     onFinish: () -> Unit,
+    onBack: () -> Unit,
 ) {
     navigation<RouteModel.MainTabRoute.WalkRouteModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkTracking,
@@ -77,7 +107,8 @@ fun NavGraphBuilder.walkTrackingNavGraph(
             val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(parentEntry)
             WalkTrackingScreen(
                 walkRecordViewModel = walkRecordViewModel,
-                onFinish = onFinish
+                onFinish = onFinish,
+                onBack = onBack
             )
         }
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkResult> { backStackEntry ->
@@ -86,7 +117,8 @@ fun NavGraphBuilder.walkTrackingNavGraph(
             }
             val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(parentEntry)
             WalkResultScreen(
-                walkRecordViewModel = walkRecordViewModel
+                walkRecordViewModel = walkRecordViewModel,
+                onBack = onBack,
             )
         }
     }

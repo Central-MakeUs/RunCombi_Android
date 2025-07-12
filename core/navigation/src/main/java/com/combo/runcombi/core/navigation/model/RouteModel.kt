@@ -57,6 +57,12 @@ sealed interface RouteModel {
             @Serializable
             data object WalkCountdown : WalkRouteModel
 
+            @Serializable
+            data object WalkTypeSelct : WalkRouteModel
+
+            @Serializable
+            data object WalkReady : WalkRouteModel
+
 
             @Serializable
             data object Walk : WalkRouteModel

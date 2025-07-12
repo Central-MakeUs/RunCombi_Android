@@ -18,67 +18,112 @@ object RunCombiTypography {
         )
     )
 
-    // Heading 1
+    private val GiantsTextStyle = TextStyle(
+        fontFamily = giantsFamily,
+        platformStyle = PlatformTextStyle(
+            includeFontPadding = false
+        ),
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        )
+    )
+
     val heading1 = DefaultTextStyle.copy(
         fontSize = 28.sp,
         lineHeight = 40.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Heading 2
     val heading2 = DefaultTextStyle.copy(
         fontSize = 24.sp,
         lineHeight = 36.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Title 1
     val title1 = DefaultTextStyle.copy(
         fontSize = 22.sp,
         lineHeight = 34.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Title 2
     val title2 = DefaultTextStyle.copy(
         fontSize = 20.sp,
         lineHeight = 32.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Title 3
     val title3 = DefaultTextStyle.copy(
         fontSize = 18.sp,
         lineHeight = 30.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Title 4
     val title4 = DefaultTextStyle.copy(
         fontSize = 18.sp,
         lineHeight = 30.sp,
         fontWeight = FontWeight.SemiBold
     )
 
-    // Body 1
     val body1 = DefaultTextStyle.copy(
         fontSize = 16.sp,
         lineHeight = 26.sp,
         fontWeight = FontWeight.Medium
     )
 
-    // Body 2
     val body2 = DefaultTextStyle.copy(
         fontSize = 14.sp,
         lineHeight = 24.sp,
         fontWeight = FontWeight.Medium
     )
 
-    // Body 3
     val body3 = DefaultTextStyle.copy(
         fontSize = 12.sp,
         lineHeight = 22.sp,
         fontWeight = FontWeight.SemiBold
+    )
+
+    val giantsHeading1 = GiantsTextStyle.copy(
+        fontSize = 70.sp,
+        lineHeight = 78.sp,
+        fontWeight = FontWeight.Normal
+    )
+
+    val giantsHeading2 = GiantsTextStyle.copy(
+        fontSize = 96.sp,
+        lineHeight = 110.sp,
+        fontWeight = FontWeight.Bold
+    )
+
+    val giantsTitle1 = GiantsTextStyle.copy(
+        fontSize = 32.sp,
+        lineHeight = 30.sp,
+        fontWeight = FontWeight.Normal
+    )
+    val giantsTitle2 = GiantsTextStyle.copy(
+        fontSize = 24.sp,
+        lineHeight = 28.sp,
+        fontWeight = FontWeight.Normal
+    )
+    val giantsTitle3 = GiantsTextStyle.copy(
+        fontSize = 22.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.Normal
+    )
+    val giantsTitle4 = GiantsTextStyle.copy(
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        fontWeight = FontWeight.Normal
+    )
+    val giantsTitle5 = GiantsTextStyle.copy(
+        fontSize = 16.sp,
+        lineHeight = 26.sp,
+        fontWeight = FontWeight.Normal
+    )
+    val giantsTitle6 = GiantsTextStyle.copy(
+        fontSize = 12.sp,
+        lineHeight = 14.sp,
+        fontWeight = FontWeight.Normal
     )
 
 }
