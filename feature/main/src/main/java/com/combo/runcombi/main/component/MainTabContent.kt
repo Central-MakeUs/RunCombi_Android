@@ -1,5 +1,6 @@
 package com.combo.runcombi.main.component
 
+import android.util.Log
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,16 +47,25 @@ fun MainTabContent(
 
     Scaffold(
         bottomBar = {
-            MainBottomNavigationBar(
-                currentDestination = backStackEntryState.value?.destination,
-                onTabClick = { mainTab ->
-                    when (mainTab) {
-                        MainTab.WALK -> mainTabNavigator.navigationToWalkMain(topLevelNavOptions)
-                        MainTab.HISTORY -> mainTabNavigator.navigationToHistory(topLevelNavOptions)
-                        MainTab.SETTING -> mainTabNavigator.navigationToSetting(topLevelNavOptions)
+            val isTopLevelTab =
+                MainTab.entries.any { it.isSelected(backStackEntryState.value?.destination) }
+            if (isTopLevelTab) {
+                MainBottomNavigationBar(
+                    currentDestination = backStackEntryState.value?.destination,
+                    onTabClick = { mainTab ->
+                        when (mainTab) {
+                            MainTab.WALK -> mainTabNavigator.navigationToWalkMain(topLevelNavOptions)
+                            MainTab.HISTORY -> mainTabNavigator.navigationToHistory(
+                                topLevelNavOptions
+                            )
+
+                            MainTab.SETTING -> mainTabNavigator.navigationToSetting(
+                                topLevelNavOptions
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         },
         content = { paddingValues ->
             MainTabNavHost(

@@ -52,12 +52,12 @@ enum class MainTab(
     }
 
     private fun containsWithRoute(route: String): Boolean {
-        val path = when (this) {
-            WALK -> MainTabRoute.WalkRouteModel::class.qualifiedName
-            HISTORY -> MainTabRoute.HistoryRouteModel::class.qualifiedName
-            SETTING -> MainTabRoute.SettingRouteModel::class.qualifiedName
+        val target = when (this) {
+            WALK -> MainTabRoute.WalkRouteModel.WalkMain::class.qualifiedName
+            HISTORY -> MainTabRoute.HistoryRouteModel.History::class.qualifiedName
+            SETTING -> MainTabRoute.SettingRouteModel.Setting::class.qualifiedName
         } ?: return false
-        return route.contains(path)
+        return route == target
     }
 }
 
