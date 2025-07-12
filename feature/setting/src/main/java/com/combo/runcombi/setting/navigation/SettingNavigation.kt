@@ -9,7 +9,15 @@ import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.setting.SettingScreen
 
-fun NavController.navigateToSetting(navOptions: NavOptions) {
+fun NavController.navigateToSetting(
+    navOptions: NavOptions? = androidx.navigation.navOptions {
+        popUpTo(this@navigateToSetting.graph.id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    },
+) {
     this.navigate(MainTabDataModel.Setting, navOptions)
 }
 

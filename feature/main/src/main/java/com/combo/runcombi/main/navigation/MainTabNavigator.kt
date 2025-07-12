@@ -2,9 +2,11 @@ package com.combo.runcombi.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
@@ -17,17 +19,16 @@ import com.combo.runcombi.walk.navigation.navigateToWalkTypeSelect
 class MainTabNavigator(
     val navController: NavHostController,
 ) {
-
-    fun navigationToHistory(navOptions: NavOptions) {
-        navController.navigateToHistory(navOptions)
+    fun navigationToHistory() {
+        navController.navigateToHistory()
     }
 
-    fun navigationToSetting(navOptions: NavOptions) {
-        navController.navigateToSetting(navOptions)
+    fun navigationToSetting() {
+        navController.navigateToSetting()
     }
 
-    fun navigationToWalkMain(navOptions: NavOptions) {
-        navController.navigateToWalkMain(navOptions)
+    fun navigationToWalkMain() {
+        navController.navigateToWalkMain()
     }
 
     fun navigationToWalkTypeSelect() {

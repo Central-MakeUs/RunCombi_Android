@@ -9,7 +9,15 @@ import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.HistoryScreen
 
-fun NavController.navigateToHistory(navOptions: NavOptions) {
+fun NavController.navigateToHistory(
+    navOptions: NavOptions? = androidx.navigation.navOptions {
+        popUpTo(this@navigateToHistory.graph.id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    },
+) {
     this.navigate(MainTabDataModel.History, navOptions)
 }
 

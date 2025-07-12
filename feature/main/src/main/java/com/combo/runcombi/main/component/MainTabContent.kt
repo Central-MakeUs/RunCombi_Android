@@ -19,15 +19,6 @@ fun MainTabContent(
     navigator: MainNavigator,
     mainTabNavigator: MainTabNavigator = rememberMainTabNavigator(),
 ) {
-    val topLevelNavOptions = navOptions {
-        popUpTo(navigator.navController.graph.findStartDestination().id) {
-            inclusive = true
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
-
     val backStackEntryState =
         mainTabNavigator.navController.currentBackStackEntryFlow.collectAsState(initial = null)
 
@@ -40,14 +31,10 @@ fun MainTabContent(
                     currentDestination = backStackEntryState.value?.destination,
                     onTabClick = { mainTab ->
                         when (mainTab) {
-                            MainTab.WALK -> mainTabNavigator.navigationToWalkMain(topLevelNavOptions)
-                            MainTab.HISTORY -> mainTabNavigator.navigationToHistory(
-                                topLevelNavOptions
-                            )
+                            MainTab.WALK -> mainTabNavigator.navigationToWalkMain()
+                            MainTab.HISTORY -> mainTabNavigator.navigationToHistory()
 
-                            MainTab.SETTING -> mainTabNavigator.navigationToSetting(
-                                topLevelNavOptions
-                            )
+                            MainTab.SETTING -> mainTabNavigator.navigationToSetting()
                         }
                     }
                 )

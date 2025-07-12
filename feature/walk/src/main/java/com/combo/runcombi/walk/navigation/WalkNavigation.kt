@@ -18,7 +18,13 @@ import com.combo.runcombi.walk.screen.WalkTypeSelectScreen
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 
 fun NavController.navigateToWalkMain(
-    navOptions: NavOptions,
+    navOptions: NavOptions? = androidx.navigation.navOptions {
+        popUpTo(this@navigateToWalkMain.graph.id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    },
 ) {
     this.navigate(MainTabDataModel.Walk, navOptions)
 }
