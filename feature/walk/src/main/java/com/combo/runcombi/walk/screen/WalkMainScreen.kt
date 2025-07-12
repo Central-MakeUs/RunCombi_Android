@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +38,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.AddressResolver
 import com.combo.runcombi.walk.LocationProvider
+import com.combo.runcombi.walk.component.LocationPermissionDialog
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -111,31 +110,17 @@ fun WalkMainScreen(
         }
     }
 
-    if (showPermissionDialog) {
-        AlertDialog(
-            onDismissRequest = { showPermissionDialog = false },
-            title = { Text("정확한 위치 권한 필요") },
-            text = {
-                Text("운동 기능을 사용하려면 정확한 위치 권한이 필요합니다.\n설정에서 권한을 허용해 주세요.")
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showPermissionDialog = false
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = ("package:" + context.packageName).toUri()
-                    }
-                    context.startActivity(intent)
-                }) {
-                    Text("설정으로 이동")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showPermissionDialog = false }) {
-                    Text("취소")
-                }
+    LocationPermissionDialog(
+        show = showPermissionDialog,
+        onDismiss = { showPermissionDialog = false },
+        onConfirm = {
+            showPermissionDialog = false
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = ("package:" + context.packageName).toUri()
             }
-        )
-    }
+            context.startActivity(intent)
+        }
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         GoogleMap(

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import kotlinx.coroutines.delay
@@ -40,7 +41,9 @@ fun WalkCountdownScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(Grey01),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Grey01),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -53,4 +56,10 @@ fun WalkCountdownScreen(
                 .graphicsLayer(scaleX = scale.value, scaleY = scale.value)
         )
     }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF171717)
+@Composable
+fun PreviewWalkCountdownScreen() {
+    WalkCountdownScreen(onCountdownFinished = {})
 } 

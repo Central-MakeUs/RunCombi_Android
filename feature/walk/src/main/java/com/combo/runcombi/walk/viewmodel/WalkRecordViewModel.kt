@@ -1,7 +1,6 @@
 package com.combo.runcombi.walk.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.walk.model.LocationPoint
 import com.combo.runcombi.walk.model.WalkUiState
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -41,7 +39,6 @@ class WalkRecordViewModel @Inject constructor(
                     state.copy(
                         pathPoints = state.pathPoints + LatLng(lat, lng),
                         distance = state.distance + data.distance,
-                        speed = data.averageSpeed,
                         calorie = data.calorie
                     )
                 }
@@ -57,7 +54,7 @@ class WalkRecordViewModel @Inject constructor(
         }
     }
 
-    fun updateTime(time: Long) {
+    fun updateTime(time: Int) {
         _uiState.update { it.copy(time = time) }
     }
 
