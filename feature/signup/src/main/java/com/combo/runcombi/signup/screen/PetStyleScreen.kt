@@ -1,6 +1,5 @@
 package com.combo.runcombi.signup.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,12 +23,10 @@ import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.pet.model.WalkStyle
 import com.combo.runcombi.signup.model.PetStyleData
-import com.combo.runcombi.signup.model.PetStyleType
 import com.combo.runcombi.signup.viewmodel.PetStyleViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
@@ -71,22 +68,22 @@ fun PetStyleScreen(
         RunCombiSelectableButton(
             text = "에너지가 넘쳐요!",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == PetStyleType.ENERGETIC,
-            onClick = { petStyleViewModel.selectStyle(PetStyleType.ENERGETIC) },
+            isSelected = uiState.selectedStyle == WalkStyle.ENERGETIC,
+            onClick = { petStyleViewModel.selectStyle(WalkStyle.ENERGETIC) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "여유롭게 걸어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == PetStyleType.RELAXED,
-            onClick = { petStyleViewModel.selectStyle(PetStyleType.RELAXED) },
+            isSelected = uiState.selectedStyle == WalkStyle.RELAXED,
+            onClick = { petStyleViewModel.selectStyle(WalkStyle.RELAXED) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "천천히 걸으며 자주 쉬어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == PetStyleType.SLOW,
-            onClick = { petStyleViewModel.selectStyle(PetStyleType.SLOW) },
+            isSelected = uiState.selectedStyle == WalkStyle.SLOW,
+            onClick = { petStyleViewModel.selectStyle(WalkStyle.SLOW) },
         )
 
         Spacer(Modifier.weight(1f))

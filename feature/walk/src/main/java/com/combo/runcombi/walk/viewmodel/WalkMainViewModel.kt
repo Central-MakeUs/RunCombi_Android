@@ -1,11 +1,13 @@
 package com.combo.runcombi.walk.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
+import com.combo.runcombi.pet.usecase.GetPetListUseCase
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
 import com.google.android.gms.maps.model.LatLng
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,8 +15,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class WalkMainViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class WalkMainViewModel @Inject constructor(
+    getUserInfoUseCase: GetUserInfoUseCase,
+    getPetListUseCase: GetPetListUseCase,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState
 

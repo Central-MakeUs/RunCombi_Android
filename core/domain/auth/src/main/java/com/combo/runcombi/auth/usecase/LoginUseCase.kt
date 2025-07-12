@@ -9,7 +9,7 @@ import javax.inject.Inject
 class LoginUseCase @Inject constructor(
     private val authRepository: AuthRepository,
 ) {
-    suspend fun requestKakaoLogin(token: String): KakaoLogin? {
+    suspend fun invoke(token: String): KakaoLogin? {
         return when (val response = authRepository.requestKakaoLogin(token)) {
             is DomainResult.Success -> {
                 response.data.also {

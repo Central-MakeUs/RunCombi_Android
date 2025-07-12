@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,8 +23,8 @@ import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading2
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.model.Gender
 import com.combo.runcombi.signup.model.GenderData
 import com.combo.runcombi.signup.viewmodel.GenderViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
@@ -33,7 +33,7 @@ import com.combo.runcombi.signup.viewmodel.SignupViewModel
 fun GenderScreen(
     onNext: () -> Unit,
     genderViewModel: GenderViewModel = hiltViewModel(),
-    signupViewModel: SignupViewModel = hiltViewModel()
+    signupViewModel: SignupViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
         signupViewModel.clearGender()

@@ -23,6 +23,7 @@ class WalkRecordViewModel @Inject constructor(
     val uiState: StateFlow<WalkUiState> = _uiState.asStateFlow()
 
     private var lastPoint: LocationPoint? = null
+    private var speedList: List<Double> = emptyList()
 
     fun addPathPointFromService(
         lat: Double,
@@ -32,9 +33,14 @@ class WalkRecordViewModel @Inject constructor(
     ) {
         val newPoint = LocationPoint(lat, lng, timestamp, accuracy)
 
-        when (val result = updateWalkRecordUseCase.execute(lastPoint, newPoint)) {
+        when (val result = updateWalkRecordUseCase(lastPoint, newPoint, speedList)) {
             is DomainResult.Success -> {
                 val data = result.data
+                val distance = data.distance
+                val timeDeltaMs = (newPoint.timestamp - (lastPoint?.timestamp ?: newPoint.timestamp)).coerceAtLeast(1000L)
+                val speed = if (lastPoint != null) distance / (timeDeltaMs / 1000.0) else 0.0
+                speedList = (speedList + speed).takeLast(100)
+
                 _uiState.update { state ->
                     state.copy(
                         pathPoints = state.pathPoints + LatLng(lat, lng),
@@ -65,6 +71,6 @@ class WalkRecordViewModel @Inject constructor(
     fun clear() {
         _uiState.value = WalkUiState()
         lastPoint = null
-        updateWalkRecordUseCase.reset()
+        speedList = emptyList()
     }
 }

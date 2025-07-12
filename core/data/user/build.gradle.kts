@@ -32,6 +32,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("mock") {
+            dimension = "mode"
+        }
+        create("prod") {
+            dimension = "mode"
+        }
+    }
 }
 
 dependencies {

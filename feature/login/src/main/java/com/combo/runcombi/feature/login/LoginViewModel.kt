@@ -21,7 +21,7 @@ class LoginViewModel @Inject constructor(
             when (loginData) {
                 is LoginData.Success -> {
                     try {
-                        val result = loginUseCase.requestKakaoLogin(token = loginData.token)
+                        val result = loginUseCase.invoke(token = loginData.token)
                         _eventFlow.emit(
                             result?.let {
                                 LoginEvent.Success(it.isFinishedRegister)

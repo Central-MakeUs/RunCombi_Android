@@ -9,12 +9,10 @@ import com.combo.runcombi.walk.util.MovementValidator
 import javax.inject.Inject
 
 class UpdateWalkRecordUseCase @Inject constructor() {
-
-    private val speedList = mutableListOf<Double>()
-
-    fun execute(
+    operator fun invoke(
         prevPoint: LocationPoint?,
         newPoint: LocationPoint,
+        speedList: List<Double>
     ): DomainResult<WalkUpdateResult> {
         if (prevPoint == null) {
             return DomainResult.Success(
@@ -34,22 +32,14 @@ class UpdateWalkRecordUseCase @Inject constructor() {
         val timeDeltaMs = (newPoint.timestamp - prevPoint.timestamp).coerceAtLeast(1000L)
         val speed = distance / (timeDeltaMs / 1000.0)
 
-        if (speedList.size >= 100) {
-            speedList.removeAt(0)
-        }
-        speedList += speed
+        val updatedSpeedList = (speedList + speed).takeLast(100)
 
         val result = WalkUpdateResult(
             distance = distance,
-            averageSpeed = speedList.average(),
+            averageSpeed = updatedSpeedList.average(),
             calorie = CalorieCalculator.calculateCalories(distance)
         )
         return DomainResult.Success(result)
-    }
-
-
-    fun reset() {
-        speedList.clear()
     }
 }
 
