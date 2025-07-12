@@ -87,10 +87,9 @@ internal fun MainNavHost(
 
             composable<RouteModel.MainTab>(
                 typeMap = mapOf(typeOf<MainTabDataModel>() to MainTabDataModelType)
-            ) { backStackEntry ->
+            ) {
                 MainTabContent(
                     navigator = navigator,
-                    mainTabDataModel = backStackEntry.toRoute<RouteModel.MainTab>().mainTabDataModel
                 )
             }
         }

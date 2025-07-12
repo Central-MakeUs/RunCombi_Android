@@ -17,7 +17,6 @@ import com.combo.runcombi.main.navigation.rememberMainTabNavigator
 @Composable
 fun MainTabContent(
     navigator: MainNavigator,
-    mainTabDataModel: MainTabDataModel,
     mainTabNavigator: MainTabNavigator = rememberMainTabNavigator(),
 ) {
     val topLevelNavOptions = navOptions {
@@ -31,19 +30,6 @@ fun MainTabContent(
 
     val backStackEntryState =
         mainTabNavigator.navController.currentBackStackEntryFlow.collectAsState(initial = null)
-
-    val navigateToTab: (MainTabDataModel) -> Unit = { tab ->
-        when (tab) {
-            is MainTabDataModel.Walk -> mainTabNavigator.navigationToWalkMain(topLevelNavOptions)
-            MainTabDataModel.History -> mainTabNavigator.navigationToHistory(topLevelNavOptions)
-            MainTabDataModel.Setting -> mainTabNavigator.navigationToSetting(topLevelNavOptions)
-            MainTabDataModel.None -> Unit
-        }
-    }
-
-    LaunchedEffect(mainTabDataModel) {
-        navigateToTab(mainTabDataModel)
-    }
 
     Scaffold(
         bottomBar = {
