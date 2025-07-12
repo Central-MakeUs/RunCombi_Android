@@ -2,7 +2,7 @@ package com.combo.runcombi.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.combo.runcombi.signup.model.BodyUiState
-import com.combo.runcombi.signup.model.Gender
+import com.combo.runcombi.domain.user.model.Gender
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

@@ -29,16 +29,14 @@ import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading2
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.BodyData
 import com.combo.runcombi.signup.viewmodel.BodyViewModel
-import com.combo.runcombi.signup.model.Gender
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
+import com.combo.runcombi.domain.user.model.Gender
 
 @Composable
 fun BodyScreen(
