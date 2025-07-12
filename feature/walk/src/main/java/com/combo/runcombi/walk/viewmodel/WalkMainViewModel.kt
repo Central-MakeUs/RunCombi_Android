@@ -3,7 +3,9 @@ package com.combo.runcombi.walk.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
+import com.combo.runcombi.pet.model.Pet
 import com.combo.runcombi.pet.usecase.GetPetListUseCase
+import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
 import com.google.android.gms.maps.model.LatLng
@@ -19,14 +21,68 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WalkMainViewModel @Inject constructor(
-    getUserInfoUseCase: GetUserInfoUseCase,
-    getPetListUseCase: GetPetListUseCase,
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val getPetListUseCase: GetPetListUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState
 
     private val _eventFlow = MutableSharedFlow<WalkEvent>()
     val eventFlow: SharedFlow<WalkEvent> = _eventFlow.asSharedFlow()
+
+    init {
+        fetchUserAndPets()
+    }
+
+    private fun fetchUserAndPets() {
+        viewModelScope.launch {
+            val user = getUserInfoUseCase.invoke()
+            val petList = getPetListUseCase.invoke()
+            _uiState.update {
+                it.copy(
+                    user = user,
+                    petUiList = petList.mapIndexed { idx, pet -> PetUiModel(pet, false, idx) })
+            }
+        }
+    }
+
+    fun togglePetSelect(pet: Pet) {
+        _uiState.update { state ->
+            val petUiList = state.petUiList
+            val tapped = petUiList.find { it.pet == pet } ?: return@update state
+            val selectedList =
+                petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+
+            if (tapped.isSelected) {
+                val newList = petUiList.map {
+                    if (it.pet == pet) it.copy(isSelected = false, selectedOrder = null)
+                    else it
+                }
+                val remainSelected =
+                    newList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+                val reordered = if (remainSelected.isNotEmpty()) {
+                    newList.map {
+                        if (it.isSelected) {
+                            val idx = remainSelected.indexOfFirst { sel -> sel.pet == it.pet }
+                            it.copy(selectedOrder = idx)
+                        } else it
+                    }
+                } else {
+                    newList.map { it.copy(selectedOrder = null) }
+                }
+                return@update state.copy(petUiList = reordered)
+            }
+
+            if (selectedList.size == 2) return@update state
+
+            val nextOrder = selectedList.size
+            val newList = petUiList.map {
+                if (it.pet == pet) it.copy(isSelected = true, selectedOrder = nextOrder)
+                else it
+            }
+            return@update state.copy(petUiList = newList)
+        }
+    }
 
     fun updateLocation(latLng: LatLng) {
         _uiState.update { it.copy(myLocation = latLng, isLoading = true) }

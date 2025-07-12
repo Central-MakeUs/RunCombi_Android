@@ -4,16 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,7 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -32,19 +39,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey06
-import com.combo.runcombi.core.designsystem.theme.Primary02
+import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.Primary01
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
+import com.combo.runcombi.domain.user.model.User
 import com.combo.runcombi.feature.walk.R
+import com.combo.runcombi.pet.model.Pet
 import com.combo.runcombi.walk.AddressResolver
 import com.combo.runcombi.walk.LocationProvider
 import com.combo.runcombi.walk.component.LocationPermissionDialog
+import com.combo.runcombi.walk.model.PetUiModel
+import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -80,9 +95,8 @@ fun WalkMainScreen(
         } else {
             cameraPositionState.move(
                 newLatLngZoom(
-                    com.google.android.gms.maps.model.LatLng(
-                        36.5,
-                        127.8
+                    LatLng(
+                        36.5, 127.8
                     ), 7f
                 )
             )
@@ -101,7 +115,7 @@ fun WalkMainScreen(
     LaunchedEffect(Unit) {
         walkMainViewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is com.combo.runcombi.walk.model.WalkEvent.RequestLocationPermission -> {
+                is WalkEvent.RequestLocationPermission -> {
                     showPermissionDialog = true
                 }
 
@@ -119,8 +133,7 @@ fun WalkMainScreen(
                 data = ("package:" + context.packageName).toUri()
             }
             context.startActivity(intent)
-        }
-    )
+        })
 
     Box(modifier = modifier.fillMaxSize()) {
         GoogleMap(
@@ -143,30 +156,42 @@ fun WalkMainScreen(
             )
         )
 
-        LocationAddressLabel(
-            address = if (locationPermissionState.status.isGranted) uiState.address else "위치 접근 미허용",
+        Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 15.dp)
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.6f))
         )
 
+        Column(
+            modifier = Modifier.padding(top = 15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            LocationAddressLabel(
+                address = if (locationPermissionState.status.isGranted) uiState.address else "위치 접근 미허용",
+            )
+            Spacer(modifier = Modifier.height(46.dp))
+            CombiList(
+                user = uiState.user,
+                petUiList = uiState.petUiList,
+                onPetClick = { walkMainViewModel.togglePetSelect(it) })
+        }
 
         StartWalkButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 120.dp),
-            onClick = {
+                .padding(bottom = 130.dp), onClick = {
                 if (!locationPermissionState.status.isGranted) {
                     if (locationPermissionState.status.shouldShowRationale) {
                         locationPermissionState.launchPermissionRequest()
                     } else {
                         walkMainViewModel.onStartWalkClicked(false)
                     }
+                } else if (uiState.petUiList.none { it.isSelected }) {
+                    Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
                 } else {
                     onStartWalk()
                 }
-            }
-        )
+            })
     }
 }
 
@@ -195,13 +220,124 @@ private fun StartWalkButton(
     Box(
         modifier = modifier
             .size(100.dp)
-            .background(Primary02)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+            .background(Primary01, shape = RoundedCornerShape(4.dp))
+            .clickable(onClick = onClick), contentAlignment = Alignment.Center
     ) {
         Text(
             text = "운동", style = title2, color = Grey02
         )
+    }
+}
+
+@Composable
+private fun UserProfile(user: User) {
+    Box(
+        modifier = Modifier
+            .height(77.dp)
+            .width(84.dp), contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = R.drawable.ic_user_box,
+            modifier = Modifier
+                .height(77.dp)
+                .width(84.dp),
+        )
+
+        StableImage(
+            drawableResId = R.drawable.person_profile,
+            modifier = Modifier
+                .size(50.dp)
+                .padding(end = 10.dp)
+        )
+    }
+}
+
+@Composable
+private fun PetProfile(
+    pet: Pet,
+    isSelected: Boolean,
+    isCenter: Boolean = false,
+    onClick: (() -> Unit)? = null,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .height(77.dp)
+                .width(85.dp)
+                .clickable(enabled = onClick != null) { onClick?.invoke() },
+            contentAlignment = Alignment.Center
+        ) {
+            StableImage(
+                drawableResId = when {
+                    isCenter && isSelected -> R.drawable.ic_pet_box_center_selected
+                    isCenter && !isSelected -> R.drawable.ic_pet_box_center
+                    isSelected -> R.drawable.ic_pet_box_selected
+                    else -> R.drawable.ic_pet_box
+                },
+                modifier = Modifier
+                    .height(77.dp)
+                    .width(85.dp),
+            )
+            StableImage(
+                drawableResId = R.drawable.ic_pet_defalut,
+                modifier = Modifier
+                    .height(31.dp)
+                    .width(52.dp)
+                    .padding(start = if (isCenter) 0.dp else 10.dp),
+            )
+
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            pet.name,
+            style = body1,
+            color = Grey06,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = if (isCenter) 0.dp else 10.dp),
+        )
+    }
+}
+
+@Composable
+private fun CombiList(
+    user: User?,
+    petUiList: List<PetUiModel>,
+    onPetClick: (Pet) -> Unit,
+) {
+    val selected = petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+    val unselected = petUiList.filter { !it.isSelected }.sortedBy { it.originIndex }
+    val allPets = selected + unselected
+
+    Column(
+        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("함께 운동할 콤비", style = title4, color = Grey08)
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ) {
+            user?.let {
+                UserProfile(user = it)
+            }
+            allPets.forEachIndexed { index, petUi ->
+                PetProfile(
+                    pet = petUi.pet,
+                    isSelected = petUi.isSelected,
+                    isCenter = index == 0,
+                    onClick = { onPetClick(petUi.pet) }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        if (selected.isNotEmpty()) {
+            val selectedCombis = selected.map { it.pet.name }.joinToString()
+            Text(
+                "${selectedCombis}와 함께!",
+                style = body1,
+                color = Primary01,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
