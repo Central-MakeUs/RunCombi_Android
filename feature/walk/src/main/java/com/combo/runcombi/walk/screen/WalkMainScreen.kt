@@ -260,30 +260,36 @@ private fun PetProfile(
     onClick: (() -> Unit)? = null,
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val boxImage = when {
+            isCenter && isSelected -> R.drawable.ic_pet_box_center_selected
+            isCenter && !isSelected -> R.drawable.ic_pet_box_center
+            isSelected -> R.drawable.ic_pet_box_selected
+            else -> R.drawable.ic_pet_box
+        }
+
+        val boxHeight = if (isCenter) 77.dp else 77.dp
+        val boxWidth = if (isCenter) 99.dp else 85.dp
+        val startPadding = if (isCenter) 0.dp else 10.dp
+
         Box(
             modifier = Modifier
-                .height(77.dp)
-                .width(85.dp)
+                .height(boxHeight)
+                .width(boxWidth)
                 .clickable(enabled = onClick != null) { onClick?.invoke() },
             contentAlignment = Alignment.Center
         ) {
             StableImage(
-                drawableResId = when {
-                    isCenter && isSelected -> R.drawable.ic_pet_box_center_selected
-                    isCenter && !isSelected -> R.drawable.ic_pet_box_center
-                    isSelected -> R.drawable.ic_pet_box_selected
-                    else -> R.drawable.ic_pet_box
-                },
+                drawableResId = boxImage,
                 modifier = Modifier
-                    .height(77.dp)
-                    .width(85.dp),
+                    .height(boxHeight)
+                    .width(boxWidth),
             )
             StableImage(
                 drawableResId = R.drawable.ic_pet_defalut,
                 modifier = Modifier
                     .height(31.dp)
                     .width(52.dp)
-                    .padding(start = if (isCenter) 0.dp else 10.dp),
+                    .padding(start = startPadding),
             )
 
         }
@@ -293,7 +299,7 @@ private fun PetProfile(
             style = body1,
             color = Grey06,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(start = if (isCenter) 0.dp else 10.dp),
+            modifier = Modifier.padding(start = startPadding),
         )
     }
 }
