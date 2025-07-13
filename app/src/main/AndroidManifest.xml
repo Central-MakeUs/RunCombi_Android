@@ -46,7 +46,7 @@
         </service>
 
         <service
-            android:name="com.combo.runcombi.walk.service.WalkTrackingService"
+            android:name="com.combo.runcombi.walk.WalkTrackingService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location|dataSync" />

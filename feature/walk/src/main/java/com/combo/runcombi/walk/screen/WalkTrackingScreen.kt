@@ -56,12 +56,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.tooling.preview.Preview
 import android.content.Intent
-import com.combo.runcombi.walk.service.WalkTrackingService
-import android.content.BroadcastReceiver
+import com.combo.runcombi.walk.WalkTrackingService
 import android.content.Context
 import android.content.IntentFilter
 import android.os.Build
 import androidx.core.content.ContextCompat
+import com.combo.runcombi.walk.WalkLocationBroadcastReceiver
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -94,20 +94,11 @@ fun WalkTrackingScreen(
     }
 
     DisposableEffect(Unit) {
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == WalkTrackingService.ACTION_BROADCAST_LOCATION) {
-                    val lat = intent.getDoubleExtra(WalkTrackingService.EXTRA_LATITUDE, 0.0)
-                    val lng = intent.getDoubleExtra(WalkTrackingService.EXTRA_LONGITUDE, 0.0)
-                    val acc = intent.getFloatExtra(WalkTrackingService.EXTRA_ACCURACY, 0f)
-                    val time = intent.getLongExtra(WalkTrackingService.EXTRA_TIME, 0L)
-                    if (!isPaused) {
-                        walkRecordViewModel.addPathPointFromService(lat, lng, acc, time)
-                    }
-                }
-            }
-        }
-        val filter = IntentFilter(WalkTrackingService.ACTION_BROADCAST_LOCATION)
+        val receiver = WalkLocationBroadcastReceiver(
+            isPausedProvider = { isPaused },
+            onLocationReceived = walkRecordViewModel::addPathPointFromService
+        )
+        val filter = IntentFilter(WalkLocationBroadcastReceiver.ACTION_BROADCAST_LOCATION)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
@@ -120,6 +111,7 @@ fun WalkTrackingScreen(
         }
         onDispose {
             context.unregisterReceiver(receiver)
+            context.stopService(serviceIntent)
         }
     }
 

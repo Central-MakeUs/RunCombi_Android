@@ -48,12 +48,12 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.domain.user.model.User
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.pet.model.Pet
-import com.combo.runcombi.walk.AddressResolver
-import com.combo.runcombi.walk.LocationProvider
 import com.combo.runcombi.walk.component.LocationPermissionDialog
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
+import com.combo.runcombi.walk.util.GeoAddressUtil
+import com.combo.runcombi.walk.util.LocationUtil
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -92,7 +92,7 @@ fun WalkMainScreen(
     }
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
-            val myLocation = LocationProvider.getCurrentLocation(context)
+            val myLocation = LocationUtil.getCurrentLocation(context)
             myLocation?.let { walkMainViewModel.updateLocation(it) }
         } else {
             cameraPositionState.move(
@@ -109,7 +109,7 @@ fun WalkMainScreen(
     LaunchedEffect(uiState.myLocation) {
         uiState.myLocation?.let {
             cameraPositionState.move(newLatLngZoom(it, 16f))
-            val address = AddressResolver.getAddress(context, it)
+            val address = GeoAddressUtil.getAddress(context, it)
             walkMainViewModel.updateAddress(address)
         }
     }

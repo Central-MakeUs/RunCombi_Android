@@ -1,4 +1,4 @@
-package com.combo.runcombi.walk
+package com.combo.runcombi.walk.util
 
 import android.content.Context
 import android.location.Address
@@ -12,7 +12,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-object AddressResolver {
+object GeoAddressUtil {
     suspend fun getAddress(context: Context, latLng: LatLng?): String {
         if (latLng == null) return "위치 정보 없음"
         return if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
@@ -30,11 +30,11 @@ object AddressResolver {
                 geocoder.getFromLocation(
                     latLng.latitude, latLng.longitude, 1, object : Geocoder.GeocodeListener {
                         override fun onGeocode(addresses: MutableList<Address>) {
-                            cont.resume(formatAddress(addresses)) { cause, _, _ -> }
+                            cont.resume(formatAddress(addresses)) { _, _, _ -> }
                         }
 
                         override fun onError(errorMessage: String?) {
-                            cont.resume("주소 정보 없음") { cause, _, _ -> }
+                            cont.resume("주소 정보 없음") { _, _, _ -> }
                         }
                     })
             }
