@@ -284,10 +284,10 @@ fun PauseButton(onClick: () -> Unit, isPaused: Boolean) {
         contentAlignment = Alignment.Center
     ) {
         StableImage(
-            drawableResId = if (isPaused) R.drawable.ic_pause else R.drawable.ic_resume,
+            drawableResId = if (isPaused) R.drawable.ic_resume else R.drawable.ic_pause,
             modifier = Modifier
-                .width(17.8.dp)
-                .height(24.dp)
+                .width(if (isPaused) 32.dp else 17.8.dp)
+                .height(if (isPaused) 32.dp else 24.dp)
         )
     }
 }
