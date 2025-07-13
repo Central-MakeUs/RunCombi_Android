@@ -125,26 +125,31 @@ fun PathPreview(pathPoints: List<LatLng>) {
                 val scaleX = size.width / (maxX - minX).coerceAtLeast(0.0001)
                 val scaleY = size.height / (maxY - minY).coerceAtLeast(0.0001)
 
+                val centerX = (xs.maxOrNull()!! + xs.minOrNull()!!) / 2.0
+                val centerY = (ys.maxOrNull()!! + ys.minOrNull()!!) / 2.0
+                val canvasCenter = Offset(size.width / 2f, size.height / 2f)
+
+                fun toCanvasOffset(point: LatLng): Offset {
+                    val x = ((point.longitude - minX) * scaleX).toFloat()
+                    val y = size.height - ((point.latitude - minY) * scaleY).toFloat()
+                    val pathCenterX = ((centerX - minX) * scaleX).toFloat()
+                    val pathCenterY = size.height - ((centerY - minY) * scaleY).toFloat()
+                    val offsetX = canvasCenter.x - pathCenterX
+                    val offsetY = canvasCenter.y - pathCenterY
+                    return Offset(x + offsetX, y + offsetY)
+                }
+
                 val path = Path().apply {
                     pathPoints.forEachIndexed { index, point ->
-                        val x = ((point.longitude - minX) * scaleX).toFloat()
-                        val y = size.height - ((point.latitude - minY) * scaleY).toFloat()
-                        if (index == 0) moveTo(x, y) else lineTo(x, y)
+                        val offset = toCanvasOffset(point)
+                        if (index == 0) moveTo(offset.x, offset.y) else lineTo(offset.x, offset.y)
                     }
                 }
 
-                drawPath(path, color = Primary01, style = Stroke(width = 3f))
+                drawPath(path, color = Primary01, style = Stroke(width = 10f))
 
-                val start = pathPoints.first()
-                val end = pathPoints.last()
-                val startOffset = Offset(
-                    ((start.longitude - minX) * scaleX).toFloat(),
-                    size.height - ((start.latitude - minY) * scaleY).toFloat()
-                )
-                val endOffset = Offset(
-                    ((end.longitude - minX) * scaleX).toFloat(),
-                    size.height - ((end.latitude - minY) * scaleY).toFloat()
-                )
+                val startOffset = toCanvasOffset(pathPoints.first())
+                val endOffset = toCanvasOffset(pathPoints.last())
 
                 drawCircle(Color(0xFFFFFDFD), radius = 14f, center = startOffset)
                 drawCircle(Color(0xFFFFFDFD), radius = 14f, center = endOffset)
