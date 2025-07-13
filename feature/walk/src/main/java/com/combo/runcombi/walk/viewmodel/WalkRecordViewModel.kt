@@ -3,21 +3,21 @@ package com.combo.runcombi.walk.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.walk.model.BottomSheetType
 import com.combo.runcombi.walk.model.LocationPoint
+import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.usecase.UpdateWalkRecordUseCase
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import com.combo.runcombi.walk.model.WalkTrackingEvent
-import com.combo.runcombi.walk.model.BottomSheetType
 import javax.inject.Inject
 
 
@@ -47,7 +47,8 @@ class WalkRecordViewModel @Inject constructor(
             is DomainResult.Success -> {
                 val data = result.data
                 val distance = data.distance
-                val timeDeltaMs = (newPoint.timestamp - (lastPoint?.timestamp ?: newPoint.timestamp)).coerceAtLeast(1000L)
+                val timeDeltaMs = (newPoint.timestamp - (lastPoint?.timestamp
+                    ?: newPoint.timestamp)).coerceAtLeast(1000L)
                 val speed = if (lastPoint != null) distance / (timeDeltaMs / 1000.0) else 0.0
                 speedList = (speedList + speed).takeLast(100)
 

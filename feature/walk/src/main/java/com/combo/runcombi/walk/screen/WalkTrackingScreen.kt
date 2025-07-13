@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,14 +55,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import androidx.compose.ui.tooling.preview.Preview
-import android.content.Intent
-import com.combo.runcombi.walk.WalkTrackingService
-import android.content.Context
-import android.content.IntentFilter
-import android.os.Build
-import androidx.core.content.ContextCompat
-import com.combo.runcombi.walk.WalkLocationBroadcastReceiver
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -75,45 +68,7 @@ fun WalkTrackingScreen(
     val isPaused = uiState.isPaused
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-    val serviceIntent = remember { Intent(context, WalkTrackingService::class.java) }
-    val serviceStarted = remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        if (!serviceStarted.value) {
-            context.startForegroundService(serviceIntent)
-            serviceStarted.value = true
-        }
-    }
-
     val showSheet = remember { mutableStateOf(BottomSheetType.NONE) }
-    LaunchedEffect(showSheet.value) {
-        if (showSheet.value == BottomSheetType.FINISH || showSheet.value == BottomSheetType.CANCEL) {
-            context.stopService(serviceIntent)
-            serviceStarted.value = false
-        }
-    }
-
-    DisposableEffect(Unit) {
-        val receiver = WalkLocationBroadcastReceiver(
-            isPausedProvider = { isPaused },
-            onLocationReceived = walkRecordViewModel::addPathPointFromService
-        )
-        val filter = IntentFilter(WalkLocationBroadcastReceiver.ACTION_BROADCAST_LOCATION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            ContextCompat.registerReceiver(
-                context,
-                receiver,
-                filter,
-                ContextCompat.RECEIVER_EXPORTED
-            )
-        }
-        onDispose {
-            context.unregisterReceiver(receiver)
-            context.stopService(serviceIntent)
-        }
-    }
 
     val locationCallback = remember {
         object : LocationCallback() {
