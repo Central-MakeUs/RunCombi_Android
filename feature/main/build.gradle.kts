@@ -15,6 +15,8 @@ dependencies {
     testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.android.test)
 
+    implementation(libs.androidx.core.splashscreen)
+
     implementation(project(":feature:login"))
     implementation(project(":feature:signup"))
     implementation(project(":feature:history"))
