@@ -45,9 +45,11 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle4
+import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.domain.user.model.User
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.pet.model.Pet
+import com.combo.runcombi.pet.model.WalkStyle
 import com.combo.runcombi.walk.component.LocationPermissionDialog
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
@@ -311,9 +313,10 @@ private fun PetProfile(
             StableImage(
                 drawableResId = R.drawable.ic_pet_defalut,
                 modifier = Modifier
+                    .padding(start = startPadding)
                     .height(31.dp)
                     .width(52.dp)
-                    .padding(start = startPadding),
+
             )
 
         }
@@ -353,7 +356,7 @@ private fun CombiList(
                 PetProfile(
                     pet = petUi.pet,
                     isSelected = petUi.isSelected,
-                    isCenter = index == 0,
+                    isCenter = allPets.size > 1 && index == 0, // 펫이 2마리 이상일 때만 첫 번째 펫에 center 적용
                     onClick = { onPetClick(petUi.pet) }
                 )
             }
@@ -378,7 +381,39 @@ fun WalkMainContentPreview() {
     val cameraPositionState = rememberCameraPositionState()
     WalkMainContent(
         cameraPositionState = cameraPositionState,
-        uiState = WalkMainUiState(),
+        uiState = WalkMainUiState(
+            user = User(
+                nickname = "name",
+                gender = Gender.MALE,
+                height = 100,
+                weight = 100,
+                profileImageUrl = null
+            ),
+            petUiList = listOf(
+                PetUiModel(
+                    pet = Pet(
+                        name = "초코",
+                        weight = 10.0,
+                        age = 10,
+                        profileImageUrl = null,
+                        walkStyle = WalkStyle.SLOW
+                    ),
+                    isSelected = true,
+                    originIndex = 0,
+                ),
+                PetUiModel(
+                    pet = Pet(
+                        name = "초코",
+                        weight = 10.0,
+                        age = 10,
+                        profileImageUrl = null,
+                        walkStyle = WalkStyle.SLOW
+                    ),
+                    isSelected = false,
+                    originIndex = 1,
+                )
+            )
+        ),
         isLocationPermissionGranted = true,
         onPetClick = {},
         onStartWalk = {}
