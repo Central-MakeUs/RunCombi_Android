@@ -53,7 +53,7 @@ fun GenderScreen(
         RunCombiButton(
             onClick = {
                 genderViewModel.selectGender(Gender.MALE)
-                signupViewModel.setGender(GenderData(gender = Gender.MALE.name))
+                signupViewModel.setGender(GenderData(gender = Gender.MALE))
                 onNext()
             },
             textColor = if (selectedGender == Gender.MALE) Grey03 else WhiteFF,
@@ -64,7 +64,7 @@ fun GenderScreen(
         RunCombiButton(
             onClick = {
                 genderViewModel.selectGender(Gender.FEMALE)
-                signupViewModel.setGender(GenderData(gender = Gender.FEMALE.name))
+                signupViewModel.setGender(GenderData(gender = Gender.FEMALE))
                 onNext()
             },
             textColor = if (selectedGender == Gender.FEMALE) Grey03 else WhiteFF,

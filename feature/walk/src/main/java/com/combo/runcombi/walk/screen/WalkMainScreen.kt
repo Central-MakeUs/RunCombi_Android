@@ -46,10 +46,10 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle4
 import com.combo.runcombi.domain.user.model.Gender
-import com.combo.runcombi.domain.user.model.User
+import com.combo.runcombi.domain.user.model.Member
+import com.combo.runcombi.domain.user.model.Pet
+import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.feature.walk.R
-import com.combo.runcombi.pet.model.Pet
-import com.combo.runcombi.pet.model.WalkStyle
 import com.combo.runcombi.walk.component.LocationPermissionDialog
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
@@ -206,7 +206,7 @@ fun WalkMainContent(
             )
             Spacer(modifier = Modifier.height(46.dp))
             CombiList(
-                user = uiState.user,
+                member = uiState.member,
                 petUiList = uiState.petUiList,
                 onPetClick = onPetClick
             )
@@ -256,7 +256,7 @@ private fun StartWalkButton(
 }
 
 @Composable
-private fun UserProfile(user: User) {
+private fun MemberProfile(member: Member) {
     Box(
         modifier = Modifier
             .height(77.dp)
@@ -333,7 +333,7 @@ private fun PetProfile(
 
 @Composable
 private fun CombiList(
-    user: User?,
+    member: Member?,
     petUiList: List<PetUiModel>,
     onPetClick: (Pet) -> Unit,
 ) {
@@ -349,8 +349,8 @@ private fun CombiList(
         Row(
             horizontalArrangement = Arrangement.Center
         ) {
-            user?.let {
-                UserProfile(user = it)
+            member?.let {
+                MemberProfile(member = it)
             }
             allPets.forEachIndexed { index, petUi ->
                 PetProfile(
@@ -382,7 +382,7 @@ fun WalkMainContentPreview() {
     WalkMainContent(
         cameraPositionState = cameraPositionState,
         uiState = WalkMainUiState(
-            user = User(
+            member = Member(
                 nickname = "name",
                 gender = Gender.MALE,
                 height = 100,
@@ -396,7 +396,7 @@ fun WalkMainContentPreview() {
                         weight = 10.0,
                         age = 10,
                         profileImageUrl = null,
-                        walkStyle = WalkStyle.SLOW
+                        runStyle = RunStyle.SLOW
                     ),
                     isSelected = true,
                     originIndex = 0,
@@ -407,7 +407,7 @@ fun WalkMainContentPreview() {
                         weight = 10.0,
                         age = 10,
                         profileImageUrl = null,
-                        walkStyle = WalkStyle.SLOW
+                        runStyle = RunStyle.SLOW
                     ),
                     isSelected = false,
                     originIndex = 1,

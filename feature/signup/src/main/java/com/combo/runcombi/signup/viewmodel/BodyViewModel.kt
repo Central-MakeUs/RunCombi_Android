@@ -1,8 +1,8 @@
 package com.combo.runcombi.signup.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.combo.runcombi.signup.model.BodyUiState
 import com.combo.runcombi.domain.user.model.Gender
+import com.combo.runcombi.signup.model.BodyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -30,7 +30,6 @@ class BodyViewModel : ViewModel() {
     }
 
     fun onHeightChange(newHeight: String, gender: Gender) {
-        // 숫자만 허용, 소수점 불가
         val filtered = newHeight.filter { it.isDigit() }
         _uiState.update {
             it.copy(
@@ -43,7 +42,6 @@ class BodyViewModel : ViewModel() {
     }
 
     fun onWeightChange(newWeight: String, gender: Gender) {
-        // 숫자만 허용, 소수점 불가
         val filtered = newWeight.filter { it.isDigit() }
         _uiState.update {
             it.copy(
@@ -81,9 +79,10 @@ class BodyViewModel : ViewModel() {
         }
         val heightInt = height.toIntOrNull()
         val weightInt = weight.toIntOrNull()
-        // 성별별 범위 적용
+
         val heightRange = 91..242
         val weightRange = 10..227
+
         if (heightInt == null || heightInt !in heightRange) {
             return true to "키는 91~242cm 사이로 입력해주세요."
         }

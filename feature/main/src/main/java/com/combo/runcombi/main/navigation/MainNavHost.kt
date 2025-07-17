@@ -54,14 +54,10 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = { isFinishedRegister ->
-                    if (BuildConfig.DEBUG) {
+                    if (isFinishedRegister) {
                         navigator.navigationToMainTab()
                     } else {
-                        if (isFinishedRegister) {
-                            navigator.navigationToMainTab()
-                        } else {
-                            navigator.navigateToSignup()
-                        }
+                        navigator.navigateToSignup()
                     }
 
                 }

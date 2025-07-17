@@ -4,7 +4,7 @@ import com.combo.runcombi.auth.model.KakaoLogin
 import com.combo.runcombi.network.model.response.LoginResponse
 
 
-fun LoginResponse.toModel(): KakaoLogin {
+fun LoginResponse.toDomainModel(): KakaoLogin {
     return with(result) {
         KakaoLogin(
             accessToken = accessToken.orEmpty(),

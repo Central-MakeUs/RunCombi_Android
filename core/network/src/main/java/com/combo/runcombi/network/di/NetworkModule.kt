@@ -49,7 +49,7 @@ internal object NetworkModule {
     @Singleton
     fun provideTokenInterceptorHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        tokenInterceptor: TokenInterceptor
+        tokenInterceptor: TokenInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(tokenInterceptor)
@@ -62,7 +62,7 @@ internal object NetworkModule {
     @Singleton
     fun provideTokenReissueInterceptorHttpClient(
         httpLoggingInterceptor: HttpLoggingInterceptor,
-        tokenReissueInterceptor: TokenReissueInterceptor
+        tokenReissueInterceptor: TokenReissueInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(tokenReissueInterceptor)
@@ -90,8 +90,8 @@ internal object NetworkModule {
     @Singleton
     fun provideTokenRetrofit(
         @TokenInterceptorHttpClient okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
-    ) : Retrofit {
+        converterFactory: Converter.Factory,
+    ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(BuildConfig.BASE_URL)
@@ -104,8 +104,8 @@ internal object NetworkModule {
     @Singleton
     fun provideTokenReissueRetrofit(
         @TokenReissueInterceptorHttpClient okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
-    ) : Retrofit {
+        converterFactory: Converter.Factory,
+    ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(BuildConfig.BASE_URL)

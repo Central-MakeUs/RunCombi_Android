@@ -32,11 +32,11 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.model.BodyData
 import com.combo.runcombi.signup.viewmodel.BodyViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
-import com.combo.runcombi.domain.user.model.Gender
 
 @Composable
 fun BodyScreen(
@@ -51,12 +51,7 @@ fun BodyScreen(
         signupViewModel.clearBody()
     }
 
-    val genderString = signupViewModel.signupFormData.collectAsState().value.gender.gender
-    val gender = when (genderString) {
-        Gender.MALE.name -> Gender.MALE
-        Gender.FEMALE.name -> Gender.FEMALE
-        else -> Gender.MALE
-    }
+    val gender = signupViewModel.signupData.collectAsState().value.gender.gender
 
     LaunchedEffect(gender) {
         bodyViewModel.setDefaultValues(gender)

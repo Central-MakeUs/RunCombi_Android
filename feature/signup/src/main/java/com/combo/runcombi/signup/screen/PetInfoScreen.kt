@@ -29,15 +29,13 @@ import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.signup.model.PetInfoData
 import com.combo.runcombi.signup.viewmodel.PetInfoViewModel
+import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
 @Composable
 fun PetInfoScreen(

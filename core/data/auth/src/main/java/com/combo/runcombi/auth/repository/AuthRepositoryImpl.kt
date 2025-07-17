@@ -1,7 +1,7 @@
 package com.combo.runcombi.auth.repository
 
 
-import com.combo.runcombi.auth.mapper.toModel
+import com.combo.runcombi.auth.mapper.toDomainModel
 import com.combo.runcombi.common.convert
 import com.combo.runcombi.common.handleResult
 import com.combo.runcombi.datastore.datasource.AuthDataSource
@@ -21,7 +21,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
         loginService.requestKakaoLogin(request)
     }.convert {
-        it.toModel()
+        it.toDomainModel()
     }
 
     override fun getAccessToken(): Flow<String?> = authDataSource.getAccessToken()

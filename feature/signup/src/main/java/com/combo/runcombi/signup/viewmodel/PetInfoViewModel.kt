@@ -19,7 +19,6 @@ class PetInfoViewModel : ViewModel() {
     val uiState: StateFlow<PetInfoUiState> = _uiState
 
     fun onAgeChange(newAge: String) {
-        // 숫자만 허용, 소수점 불가
         val filtered = newAge.filter { it.isDigit() }
         _uiState.update {
             it.copy(

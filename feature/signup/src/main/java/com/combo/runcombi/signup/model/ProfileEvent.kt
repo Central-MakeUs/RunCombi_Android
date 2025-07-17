@@ -7,7 +7,6 @@ sealed interface ProfileEvent {
     object RequestCameraPermission : ProfileEvent
     object OpenAlbum : ProfileEvent
     object OpenCamera : ProfileEvent
-    data class ImageSelected(val bitmap: Bitmap) : ProfileEvent
     data class PermissionDenied(val type: PermissionType) : ProfileEvent
     object Error : ProfileEvent
 }

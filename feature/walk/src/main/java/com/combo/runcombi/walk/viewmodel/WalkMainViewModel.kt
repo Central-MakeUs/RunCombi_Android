@@ -2,9 +2,9 @@ package com.combo.runcombi.walk.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
-import com.combo.runcombi.pet.model.Pet
-import com.combo.runcombi.pet.usecase.GetPetListUseCase
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class WalkMainViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
-    private val getPetListUseCase: GetPetListUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState
@@ -36,12 +36,33 @@ class WalkMainViewModel @Inject constructor(
 
     private fun fetchUserAndPets() {
         viewModelScope.launch {
-            val user = getUserInfoUseCase.invoke()
-            val petList = getPetListUseCase.invoke()
-            _uiState.update {
-                it.copy(
-                    user = user,
-                    petUiList = petList.mapIndexed { idx, pet -> PetUiModel(pet, false, idx) })
+            getUserInfoUseCase().collectLatest { result ->
+                when (result) {
+                    is DomainResult.Success -> {
+                        val userInfo = result.data
+
+                        val member = userInfo.member
+                        val petList = userInfo.petList
+
+                        _uiState.update {
+                            it.copy(
+                                member = member,
+                                petUiList = petList.mapIndexed { idx, pet ->
+                                    PetUiModel(
+                                        pet,
+                                        false,
+                                        idx
+                                    )
+                                })
+                        }
+                    }
+
+                    is DomainResult.Error -> {
+
+                    }
+
+                    is DomainResult.Exception -> {}
+                }
             }
         }
     }

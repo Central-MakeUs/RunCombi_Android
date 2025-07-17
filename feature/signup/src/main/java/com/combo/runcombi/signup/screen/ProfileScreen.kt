@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +59,8 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.model.PermissionType
 import com.combo.runcombi.signup.model.ProfileData
 import com.combo.runcombi.signup.model.ProfileEvent
+import com.combo.runcombi.signup.util.BitmapUtil
+import com.combo.runcombi.signup.util.BitmapUtil.resizeBitmap
 import com.combo.runcombi.signup.viewmodel.ProfileViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
@@ -86,14 +87,18 @@ fun ProfileScreen(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            profileViewModel.onImageSelected(bitmap)
+            val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+            profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
-        bitmap?.let { profileViewModel.onImageSelected(it) }
+        bitmap?.let {
+            val resizedBitmap = resizeBitmap(it, 300, 300)
+            profileViewModel.setProfileBitmap(resizedBitmap)
+        }
     }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -207,7 +212,14 @@ fun ProfileScreen(
                 localFocusManager.clearFocus()
 
                 profileViewModel.validateAndProceed {
-                    signupViewModel.setProfile(ProfileData(nickname = uiState.name))
+                    val file =
+                        profileBitmap?.let { BitmapUtil.bitmapToFile(context, it, "profile.jpg") }
+                    signupViewModel.setProfile(
+                        ProfileData(
+                            nickname = uiState.name,
+                            profileFile = file
+                        )
+                    )
                     onNext()
                 }
             },

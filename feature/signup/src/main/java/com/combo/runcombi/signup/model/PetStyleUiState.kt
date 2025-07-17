@@ -1,8 +1,10 @@
 package com.combo.runcombi.signup.model
 
-import com.combo.runcombi.pet.model.WalkStyle
+import com.combo.runcombi.domain.user.model.RunStyle
+
 
 data class PetStyleUiState(
-    val selectedStyle: WalkStyle = WalkStyle.ENERGETIC,
+    val selectedStyle: RunStyle = RunStyle.ENERGETIC,
     val isButtonEnabled: Boolean = true,
+    val isLoading: Boolean = false
 )

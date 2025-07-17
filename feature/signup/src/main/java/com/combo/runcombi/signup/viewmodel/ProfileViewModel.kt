@@ -86,9 +86,8 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun onImageSelected(bitmap: Bitmap) {
+    fun setProfileBitmap(bitmap: Bitmap) {
         _profileBitmap.value = bitmap
-        emitEvent(ProfileEvent.ImageSelected(bitmap))
     }
 
     fun onCameraButtonClick() = emitEvent(ProfileEvent.ShowImagePickerBottomSheet)

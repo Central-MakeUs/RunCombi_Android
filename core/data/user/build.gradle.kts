@@ -50,6 +50,7 @@ dependencies {
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
+    implementation(libs.kotlin.serialization.json)
 
     implementation(project(":core:data:common"))
     implementation(project(":core:domain:common"))

@@ -1,15 +1,23 @@
 package com.combo.runcombi.signup.screen
 
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,12 +29,14 @@ import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
+import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
-import com.combo.runcombi.pet.model.WalkStyle
+import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.signup.model.PetStyleData
+import com.combo.runcombi.signup.model.SignupEvent
 import com.combo.runcombi.signup.viewmodel.PetStyleViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
@@ -36,10 +46,47 @@ fun PetStyleScreen(
     signupViewModel: SignupViewModel = hiltViewModel(),
     petStyleViewModel: PetStyleViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
     val uiState by petStyleViewModel.uiState.collectAsState()
+    val eventFlow = petStyleViewModel.eventFlow
+
+    LaunchedEffect(Unit) {
+        eventFlow.collect { event ->
+            when (event) {
+                is SignupEvent.Success -> {
+                    petStyleViewModel.checkUserStatus()
+                }
+
+                is SignupEvent.Error -> {
+                    Toast.makeText(context, event.errorMessage, Toast.LENGTH_SHORT).show()
+                }
+
+                is SignupEvent.NavigateNext -> {
+                    signupViewModel.getSignupData().run {
+                        onSuccess(
+                            profile.nickname,
+                            petProfile.name
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x80000000)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Primary01)
+        }
+    }
 
     LaunchedEffect(Unit) {
         signupViewModel.clearPetStyle()
@@ -68,22 +115,22 @@ fun PetStyleScreen(
         RunCombiSelectableButton(
             text = "에너지가 넘쳐요!",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == WalkStyle.ENERGETIC,
-            onClick = { petStyleViewModel.selectStyle(WalkStyle.ENERGETIC) },
+            isSelected = uiState.selectedStyle == RunStyle.ENERGETIC,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.ENERGETIC) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "여유롭게 걸어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == WalkStyle.RELAXED,
-            onClick = { petStyleViewModel.selectStyle(WalkStyle.RELAXED) },
+            isSelected = uiState.selectedStyle == RunStyle.RELAXED,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.RELAXED) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "천천히 걸으며 자주 쉬어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == WalkStyle.SLOW,
-            onClick = { petStyleViewModel.selectStyle(WalkStyle.SLOW) },
+            isSelected = uiState.selectedStyle == RunStyle.SLOW,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.SLOW) },
         )
 
         Spacer(Modifier.weight(1f))
@@ -91,13 +138,11 @@ fun PetStyleScreen(
             onClick = {
                 keyboardController?.hide()
                 localFocusManager.clearFocus()
-                signupViewModel.setPetStyle(PetStyleData(walkStyle = uiState.selectedStyle.name))
-                signupViewModel.getSignupFormData().run {
-                    onSuccess(
-                        profile.nickname,
-                        petProfile.name
-                    )
-                }
+
+                signupViewModel.setPetStyle(PetStyleData(walkStyle = uiState.selectedStyle))
+
+                val signupData = signupViewModel.getSignupData()
+                petStyleViewModel.signup(signupData)
             },
             text = "완료",
             enabled = uiState.isButtonEnabled

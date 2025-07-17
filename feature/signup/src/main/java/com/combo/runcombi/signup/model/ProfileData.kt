@@ -1,6 +1,8 @@
 package com.combo.runcombi.signup.model
 
+import java.io.File
+
 data class ProfileData(
-    val profileImageUrl: String? = null,
+    val profileFile: File? = null,
     val nickname: String = ""
 ) 

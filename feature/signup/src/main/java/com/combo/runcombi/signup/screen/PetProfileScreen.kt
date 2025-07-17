@@ -60,6 +60,7 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.model.PermissionType
 import com.combo.runcombi.signup.model.PetProfileData
 import com.combo.runcombi.signup.model.ProfileEvent
+import com.combo.runcombi.signup.util.BitmapUtil
 import com.combo.runcombi.signup.viewmodel.ProfileViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 
@@ -86,14 +87,18 @@ fun PetProfileScreen(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            profileViewModel.onImageSelected(bitmap)
+            val resizedBitmap = BitmapUtil.resizeBitmap(bitmap, 300, 300)
+            profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
-        bitmap?.let { profileViewModel.onImageSelected(it) }
+        bitmap?.let {
+            val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
+            profileViewModel.setProfileBitmap(resizedBitmap)
+        }
     }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
@@ -122,7 +127,7 @@ fun PetProfileScreen(
     }
 
     LaunchedEffect(true) {
-        Log.d("TEST", "확인 ${signupViewModel.getSignupFormData().profile.nickname}")
+        Log.d("TEST", "확인 ${signupViewModel.getSignupData().profile.nickname}")
         signupViewModel.clearPetProfile()
     }
 
@@ -212,7 +217,19 @@ fun PetProfileScreen(
                 localFocusManager.clearFocus()
 
                 profileViewModel.validateAndProceed {
-                    signupViewModel.setPetProfile(PetProfileData(name = uiState.name))
+                    val file = profileBitmap?.let {
+                        BitmapUtil.bitmapToFile(
+                            context,
+                            it,
+                            "pet_profile.jpg"
+                        )
+                    }
+                    signupViewModel.setPetProfile(
+                        PetProfileData(
+                            name = uiState.name,
+                            profileFile = file
+                        )
+                    )
                     onNext()
                 }
             },

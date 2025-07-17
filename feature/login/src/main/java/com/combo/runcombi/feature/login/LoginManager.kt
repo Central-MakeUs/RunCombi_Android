@@ -1,6 +1,7 @@
 package com.combo.runcombi.feature.login
 
 import android.content.Context
+import com.combo.runcombi.feature.login.model.LoginData
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
@@ -8,11 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-
-sealed class LoginData {
-    data class Success(val token: String) : LoginData()
-    data class Failed(val exception: Exception) : LoginData()
-}
 
 class LoginManager(
     private val context: Context,

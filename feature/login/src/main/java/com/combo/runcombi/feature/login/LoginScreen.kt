@@ -54,11 +54,7 @@ fun LoginRoute(
         modifier = modifier,
         onKakaoLoginClick = {
             coroutineScope.launch {
-                if (BuildConfig.DEBUG) {
-                    onLoginSuccess(true)
-                } else {
-                    viewModel.login(loginManager.request())
-                }
+                viewModel.login(loginManager.request())
             }
         }
     )
