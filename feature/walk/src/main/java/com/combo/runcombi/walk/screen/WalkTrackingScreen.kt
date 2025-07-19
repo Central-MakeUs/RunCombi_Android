@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
@@ -41,7 +42,6 @@ import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Primary02
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
 import com.combo.runcombi.feature.walk.R
-import com.combo.runcombi.walk.component.WalkBottomSheet
 import com.combo.runcombi.walk.model.BottomSheetType
 import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
@@ -126,7 +126,7 @@ fun WalkTrackingScreen(
 
     val content = getBottomSheetContent(showSheet.value)
     content?.let {
-        WalkBottomSheet(
+        RunCombiBottomSheet(
             show = true,
             onDismiss = { showSheet.value = BottomSheetType.NONE },
             onAccept = {

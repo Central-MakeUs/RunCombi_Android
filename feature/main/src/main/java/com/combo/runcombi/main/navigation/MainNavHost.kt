@@ -55,17 +55,20 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = { memberStatus ->
-                    when(memberStatus) {
+                    navigator.navigateToSignupInput()
+              /*      when (memberStatus) {
                         MemberStatus.PENDING_AGREE -> {
                             navigator.navigateToSignup()
                         }
+
                         MemberStatus.PENDING_MEMBER_DETAIL -> {
                             navigator.navigateToSignupInput()
                         }
+
                         MemberStatus.LIVE -> {
                             navigator.navigationToMainTab()
                         }
-                    }
+                    }*/
                 }
             )
 
@@ -80,17 +83,22 @@ internal fun MainNavHost(
                 onPetStyleSuccess = { userName, petName ->
                     navigator.navigateToSignupComplete(userName, petName)
                 },
-                onSignupComplete = {
-                    navigator.navigationToMainTab()
+                onSignupComplete = { addPet ->
+                    if (addPet) {
+                        navigator.navigationToMainTab(mainTabDataModel = MainTabDataModel.Setting)
+                    } else {
+                        navigator.navigationToMainTab()
+                    }
                 },
                 onBack = { navigator.popBackStack() },
             )
 
             composable<RouteModel.MainTab>(
                 typeMap = mapOf(typeOf<MainTabDataModel>() to MainTabDataModelType)
-            ) {
+            ) { backStackEntry ->
                 MainTabContent(
                     navigator = navigator,
+                    mainTabDataModel = backStackEntry.toRoute<RouteModel.MainTab>().mainTabDataModel
                 )
             }
         }

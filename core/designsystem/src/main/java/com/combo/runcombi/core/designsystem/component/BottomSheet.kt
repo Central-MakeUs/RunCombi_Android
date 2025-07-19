@@ -1,4 +1,4 @@
-package com.combo.runcombi.walk.component
+package com.combo.runcombi.core.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +25,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WalkBottomSheet(
+fun RunCombiBottomSheet(
     show: Boolean,
     onDismiss: () -> Unit,
     onAccept: () -> Unit,
@@ -60,16 +60,16 @@ fun WalkBottomSheet(
                 Spacer(Modifier.height(32.dp))
                 Row {
                     RunCombiButton(
-                        text = acceptButtonText,
-                        onClick = onAccept,
+                        text = cancelButtonText,
+                        onClick = onCancel,
                         modifier = Modifier.weight(1f),
                         enabledColor = Grey04,
                         textColor = Grey08,
                     )
                     Spacer(Modifier.width(10.dp))
                     RunCombiButton(
-                        text = cancelButtonText,
-                        onClick = onCancel,
+                        text = acceptButtonText,
+                        onClick = onAccept,
                         modifier = Modifier.weight(1f),
                         enabledColor = Primary01,
                         textColor = Grey02,

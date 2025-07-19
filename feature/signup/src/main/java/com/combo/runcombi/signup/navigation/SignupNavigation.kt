@@ -72,7 +72,7 @@ fun NavGraphBuilder.signupNavGraph(
     onPetProfileNext: () -> Unit,
     onPetInfoNext: () -> Unit,
     onPetStyleSuccess: (String, String) -> Unit,
-    onSignupComplete: () -> Unit = {},
+    onSignupComplete: (Boolean) -> Unit = {},
     onBack: () -> Unit = {},
 ) {
     navigation<RouteModel.Signup>(

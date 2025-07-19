@@ -12,6 +12,7 @@ import com.combo.runcombi.walk.navigation.walkNavGraph
 @Composable
 fun MainTabNavHost(
     mainNavigator: MainNavigator,
+    mainTabDataModel: MainTabDataModel,
     mainTabNavigator: MainTabNavigator,
     padding: PaddingValues,
     modifier: Modifier = Modifier,
@@ -19,7 +20,7 @@ fun MainTabNavHost(
     NavHost(
         modifier = modifier,
         navController = mainTabNavigator.navController,
-        startDestination = MainTabDataModel.Walk
+        startDestination = mainTabDataModel
     ) {
         historyNavGraph()
 

@@ -1,5 +1,6 @@
 package com.combo.runcombi.core.designsystem.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -63,11 +64,13 @@ fun RunCombiSelectableButton(
     selectedTextColor: Color = Grey03,
     unselectedTextColor: Color = Color(0xFF9E9E9E),
     cornerRadius: Int = 6,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadius.dp),
+        contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (isSelected) selectedColor else unselectedColor,
             contentColor = if (isSelected) selectedTextColor else unselectedTextColor

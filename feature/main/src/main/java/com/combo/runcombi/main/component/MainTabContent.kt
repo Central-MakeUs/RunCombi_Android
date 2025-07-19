@@ -17,6 +17,7 @@ import com.combo.runcombi.main.navigation.rememberMainTabNavigator
 @Composable
 fun MainTabContent(
     navigator: MainNavigator,
+    mainTabDataModel: MainTabDataModel,
     mainTabNavigator: MainTabNavigator = rememberMainTabNavigator(),
 ) {
     val backStackEntryState =
@@ -44,7 +45,8 @@ fun MainTabContent(
             MainTabNavHost(
                 mainNavigator = navigator,
                 mainTabNavigator = mainTabNavigator,
-                padding = paddingValues
+                padding = paddingValues,
+                mainTabDataModel = mainTabDataModel
             )
         }
     )

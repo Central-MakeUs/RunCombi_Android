@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             RunCombiTheme {
                 MainScreen(
                     navigator = navigator,
-                    startDestination = if (isNewUser) RouteModel.Login else RouteModel.MainTab()
+                    startDestination =RouteModel.Login
                 )
             }
         }
