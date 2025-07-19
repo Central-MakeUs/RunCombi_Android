@@ -20,7 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
@@ -144,20 +144,20 @@ fun PetProfileScreen(
             contentAlignment = Alignment.BottomEnd,
             modifier = Modifier
                 .padding(top = 29.dp, bottom = 26.dp)
-                .size(120.dp)
+                .size(100.dp)
         ) {
             profileBitmap?.let {
                 Image(
                     bitmap = it.asImageBitmap(),
                     contentDescription = "프로필 이미지",
                     modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape),
+                        .size(89.dp)
+                        .clip(RoundedCornerShape(4.dp)),
                     contentScale = ContentScale.Crop
                 )
             } ?: StableImage(
-                drawableResId = R.drawable.dog_profile,
-                modifier = Modifier.size(100.dp)
+                drawableResId = R.drawable.default_dog_profile,
+                modifier = Modifier.size(89.dp)
             )
 
             IconButton(
@@ -170,7 +170,7 @@ fun PetProfileScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .offset(x = 8.dp, y = 8.dp)
+                    .offset(x = 20.dp, y = 20.dp)
             ) {
                 StableImage(
                     drawableResId = R.drawable.camera_setting,
