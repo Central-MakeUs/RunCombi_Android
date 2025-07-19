@@ -74,6 +74,9 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.fillMaxHeight
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -178,7 +181,12 @@ fun WalkMainContent(
     isLocationPermissionGranted: Boolean = false,
     onPetClick: (Pet) -> Unit = {},
     onStartWalk: () -> Unit = {},
+    showBottomSheet: Boolean = false,
+    bottomSheetContent: @Composable (() -> Unit)? = null
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Box(modifier = modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -206,27 +214,76 @@ fun WalkMainContent(
                 .background(Color.Black.copy(alpha = 0.6f))
         )
 
-        Column(
-            modifier = Modifier.padding(top = 15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LocationAddressLabel(
-                address = if (isLocationPermissionGranted) uiState.address else "위치 접근 미허용",
-            )
-            Spacer(modifier = Modifier.height(46.dp))
-            CombiList(
-                member = uiState.member,
-                petUiList = uiState.petUiList,
-                onPetClick = onPetClick
+        if (isLandscape) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 72.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                LocationAddressLabel(
+                    address = if (isLocationPermissionGranted) uiState.address else "위치 접근 미허용",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CombiList(
+                            member = uiState.member,
+                            petUiList = uiState.petUiList,
+                            onPetClick = onPetClick
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        StartWalkButton(
+                            modifier = Modifier.size(120.dp),
+                            onClick = onStartWalk
+                        )
+                    }
+                }
+                if (showBottomSheet && bottomSheetContent != null) {
+                    bottomSheetContent()
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.padding(top = 15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LocationAddressLabel(
+                    address = if (isLocationPermissionGranted) uiState.address else "위치 접근 미허용",
+                )
+                Spacer(modifier = Modifier.height(46.dp))
+                CombiList(
+                    member = uiState.member,
+                    petUiList = uiState.petUiList,
+                    onPetClick = onPetClick
+                )
+            }
+            StartWalkButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 130.dp),
+                onClick = onStartWalk
             )
         }
-
-        StartWalkButton(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 130.dp),
-            onClick = onStartWalk
-        )
     }
 }
 
