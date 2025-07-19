@@ -51,6 +51,7 @@ import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
 import com.combo.runcombi.walk.util.FormatUtils
+import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -63,6 +64,7 @@ import kotlinx.coroutines.flow.collectLatest
 @SuppressLint("MissingPermission")
 @Composable
 fun WalkTrackingScreen(
+    walkMainViewModel: WalkMainViewModel,
     onFinish: () -> Unit,
     onBack: () -> Unit,
     walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),

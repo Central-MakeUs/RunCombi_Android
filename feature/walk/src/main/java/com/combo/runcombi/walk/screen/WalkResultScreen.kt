@@ -48,9 +48,11 @@ import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import com.google.android.gms.maps.model.LatLng
 import androidx.compose.ui.tooling.preview.Preview
+import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 
 @Composable
 fun WalkResultScreen(
+    walkMainViewModel: WalkMainViewModel,
     walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
 ) {

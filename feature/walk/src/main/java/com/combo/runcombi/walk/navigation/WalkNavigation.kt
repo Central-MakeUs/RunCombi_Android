@@ -16,6 +16,7 @@ import com.combo.runcombi.walk.screen.WalkResultScreen
 import com.combo.runcombi.walk.screen.WalkTrackingScreen
 import com.combo.runcombi.walk.screen.WalkTypeSelectScreen
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
+import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 
 fun NavController.navigateToWalkMain(
     navOptions: NavOptions? = androidx.navigation.navOptions {
@@ -67,15 +68,25 @@ fun NavGraphBuilder.walkNavGraph(
     navigation<MainTabDataModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkMain,
     ) {
-        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkMain> {
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkMain> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainTabDataModel.Walk)
+            }
+            val walkMainViewModel = hiltViewModel<WalkMainViewModel>(parentEntry)
             WalkMainScreen(
+                walkMainViewModel = walkMainViewModel,
                 onStartWalk = onStartWalk
             )
         }
 
 
-        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct> {
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct> { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(MainTabDataModel.Walk)
+            }
+            val walkMainViewModel = hiltViewModel<WalkMainViewModel>(parentEntry)
             WalkTypeSelectScreen(
+                walkMainViewModel = walkMainViewModel,
                 onBack = onBack,
                 onTypeSelected = onTypeSelected
             )
@@ -108,22 +119,22 @@ fun NavGraphBuilder.walkTrackingNavGraph(
     ) {
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkTracking> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(RouteModel.MainTabRoute.WalkRouteModel.Walk)
+                navController.getBackStackEntry(MainTabDataModel.Walk)
             }
-            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(parentEntry)
+            val walkMainViewModel = hiltViewModel<WalkMainViewModel>(parentEntry)
             WalkTrackingScreen(
-                walkRecordViewModel = walkRecordViewModel,
+                walkMainViewModel = walkMainViewModel,
                 onFinish = onFinish,
                 onBack = onBack
             )
         }
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkResult> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(RouteModel.MainTabRoute.WalkRouteModel.Walk)
+                navController.getBackStackEntry(MainTabDataModel.Walk)
             }
-            val walkRecordViewModel = hiltViewModel<WalkRecordViewModel>(parentEntry)
+            val walkMainViewModel = hiltViewModel<WalkMainViewModel>(parentEntry)
             WalkResultScreen(
-                walkRecordViewModel = walkRecordViewModel,
+                walkMainViewModel = walkMainViewModel,
                 onBack = onBack,
             )
         }

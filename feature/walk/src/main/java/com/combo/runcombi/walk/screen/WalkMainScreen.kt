@@ -80,8 +80,8 @@ import kotlinx.coroutines.flow.collectLatest
 @SuppressLint("MissingPermission")
 @Composable
 fun WalkMainScreen(
+    walkMainViewModel: WalkMainViewModel,
     modifier: Modifier = Modifier,
-    walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     onStartWalk: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -377,7 +377,7 @@ private fun CombiList(
                 PetProfile(
                     pet = petUi.pet,
                     isSelected = petUi.isSelected,
-                    isCenter = allPets.size > 1 && index == 0, // 펫이 2마리 이상일 때만 첫 번째 펫에 center 적용
+                    isCenter = allPets.size > 1 && index == 0,
                     onClick = { onPetClick(petUi.pet) }
                 )
             }
