@@ -31,6 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -159,32 +162,76 @@ fun WalkTrackingContent(
     onCancelClick: () -> Unit,
     onFinishClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Grey01),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(Modifier.height(72.dp))
-        Text("함께 운동한 시간", color = Grey08, style = RunCombiTypography.giantsTitle3)
-        Spacer(Modifier.height(10.45.dp))
-        TimeDisplayLarge(uiState.time)
-        Spacer(Modifier.height(26.55.dp))
-        DistanceDisplayLarge(uiState.distance)
-        Spacer(Modifier.weight(1f))
-        if (uiState.isPaused) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(48.dp),
-                verticalAlignment = Alignment.CenterVertically
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    if (isLandscape) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Grey01)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                FinishButtonLongPress(onLongClick = onFinishClick)
-                ResumeButton(onClick = onPauseToggle)
+                Text("함께 운동한 시간", color = Grey08, style = RunCombiTypography.giantsTitle3)
+                Spacer(Modifier.height(10.45.dp))
+                TimeDisplayLarge(uiState.time)
+                Spacer(Modifier.height(26.55.dp))
+                DistanceDisplayLarge(uiState.distance)
             }
-        } else {
-            PauseButton(onClick = onPauseToggle)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (uiState.isPaused) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        FinishButtonLongPress(onLongClick = onFinishClick)
+                        ResumeButton(onClick = onPauseToggle)
+                    }
+                } else {
+                    PauseButton(onClick = onPauseToggle)
+                }
+            }
         }
-        Spacer(Modifier.height(80.dp))
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Grey01),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Spacer(Modifier.height(72.dp))
+            Text("함께 운동한 시간", color = Grey08, style = RunCombiTypography.giantsTitle3)
+            Spacer(Modifier.height(10.45.dp))
+            TimeDisplayLarge(uiState.time)
+            Spacer(Modifier.height(26.55.dp))
+            DistanceDisplayLarge(uiState.distance)
+            Spacer(Modifier.weight(1f))
+            if (uiState.isPaused) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(48.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FinishButtonLongPress(onLongClick = onFinishClick)
+                    ResumeButton(onClick = onPauseToggle)
+                }
+            } else {
+                PauseButton(onClick = onPauseToggle)
+            }
+            Spacer(Modifier.height(80.dp))
+        }
     }
 }
 
