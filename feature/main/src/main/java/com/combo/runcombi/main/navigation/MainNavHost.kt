@@ -20,6 +20,7 @@ import com.combo.runcombi.core.designsystem.util.setStatusBar
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.MainTabDataModelType
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.domain.user.model.MemberStatus
 import com.combo.runcombi.feature.login.BuildConfig
 import com.combo.runcombi.feature.login.LoginEvent
 import com.combo.runcombi.feature.login.navigation.loginNavGraph
@@ -53,13 +54,21 @@ internal fun MainNavHost(
             startDestination = startDestination
         ) {
             loginNavGraph(
-                onLoginSuccess = { isFinishedRegister ->
-                    if (isFinishedRegister) {
-                        navigator.navigationToMainTab()
-                    } else {
-                        navigator.navigateToSignup()
-                    }
+                onLoginSuccess = { memberStatus ->
 
+                    navigator.navigateToSignupInput()
+
+                    when(memberStatus) {
+                        MemberStatus.PENDING_AGREE -> {
+                            navigator.navigateToSignup()
+                        }
+                        MemberStatus.PENDING_MEMBER_DETAIL -> {
+                            navigator.navigateToSignupInput()
+                        }
+                        MemberStatus.LIVE -> {
+                            navigator.navigationToMainTab()
+                        }
+                    }
                 }
             )
 
@@ -75,7 +84,6 @@ internal fun MainNavHost(
                     navigator.navigateToSignupComplete(userName, petName)
                 },
                 onSignupComplete = {
-                    // TODO: 회원가입 완료 후 처리
                     navigator.navigationToMainTab()
                 },
                 onBack = { navigator.popBackStack() },

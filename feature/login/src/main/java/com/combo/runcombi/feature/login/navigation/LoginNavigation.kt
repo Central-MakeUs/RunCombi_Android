@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.domain.user.model.MemberStatus
 import com.combo.runcombi.feature.login.LoginRoute
 
 fun NavController.navigateToLogin() {
@@ -15,7 +16,7 @@ fun NavController.navigateToLogin() {
 }
 
 fun NavGraphBuilder.loginNavGraph(
-    onLoginSuccess: (Boolean) -> Unit,
+    onLoginSuccess: (MemberStatus) -> Unit,
 ) {
     composable<RouteModel.Login> {
         LoginRoute(

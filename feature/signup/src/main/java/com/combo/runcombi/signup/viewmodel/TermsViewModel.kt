@@ -3,6 +3,7 @@ package com.combo.runcombi.signup.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.domain.user.model.MemberStatus
 import com.combo.runcombi.domain.user.usecase.AgreeTermsUseCase
 import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
 import com.combo.runcombi.signup.model.TermsEvent
@@ -65,10 +66,13 @@ class TermsViewModel @Inject constructor(
                 when (result) {
                     is DomainResult.Success -> {
                         val userInfo = result.data
-                        val userStatus = userInfo.userStatus
+                        val userStatus = userInfo.memberStatus
 
-                        /// TODO: userStatus로 상태 체크
-                        _eventFlow.emit(TermsEvent.NavigateNext)
+                        if (userStatus == MemberStatus.PENDING_MEMBER_DETAIL) {
+                            _eventFlow.emit(TermsEvent.NavigateNext)
+                        } else {
+                            _eventFlow.emit(TermsEvent.Error(errorMessage = "잠시 후 다시 시도해 주세요."))
+                        }
                     }
 
                     else -> {

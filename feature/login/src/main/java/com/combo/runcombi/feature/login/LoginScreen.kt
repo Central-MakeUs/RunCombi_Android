@@ -27,13 +27,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
+import com.combo.runcombi.domain.user.model.MemberStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoute(
-    onLoginSuccess: (Boolean) -> Unit,
+    onLoginSuccess: (MemberStatus) -> Unit,
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     loginManager: LoginManager = rememberLoginManager(),
@@ -44,7 +45,7 @@ fun LoginRoute(
             when (it) {
                 LoginEvent.Error -> Unit
                 is LoginEvent.Success -> {
-                    onLoginSuccess(it.isFinishedRegister)
+                    onLoginSuccess(it.memberStatus)
                 }
             }
         }

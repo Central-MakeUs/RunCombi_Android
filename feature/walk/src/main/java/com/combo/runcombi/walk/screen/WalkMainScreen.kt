@@ -396,7 +396,7 @@ fun WalkMainContentPreview() {
                         weight = 10.0,
                         age = 10,
                         profileImageUrl = null,
-                        runStyle = RunStyle.SLOW
+                        runStyle = RunStyle.WALKING
                     ),
                     isSelected = true,
                     originIndex = 0,
@@ -407,7 +407,7 @@ fun WalkMainContentPreview() {
                         weight = 10.0,
                         age = 10,
                         profileImageUrl = null,
-                        runStyle = RunStyle.SLOW
+                        runStyle = RunStyle.WALKING
                     ),
                     isSelected = false,
                     originIndex = 1,

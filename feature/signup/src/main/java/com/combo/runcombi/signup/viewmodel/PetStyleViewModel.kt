@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.domain.user.model.Member
+import com.combo.runcombi.domain.user.model.MemberStatus
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
@@ -12,6 +13,7 @@ import com.combo.runcombi.domain.user.usecase.SetUserInfoUseCase
 import com.combo.runcombi.signup.model.PetStyleUiState
 import com.combo.runcombi.signup.model.SignupData
 import com.combo.runcombi.signup.model.SignupEvent
+import com.combo.runcombi.signup.model.TermsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,13 +54,29 @@ class PetStyleViewModel @Inject constructor(
                 when (result) {
                     is DomainResult.Success -> {
                         val userInfo = result.data
-                        val userStatus = userInfo.userStatus
+                        val userStatus = userInfo.memberStatus
 
-                        /// TODO: userStatus로 상태 체크
-                        _eventFlow.emit(SignupEvent.NavigateNext)
+                        if (userStatus == MemberStatus.LIVE) {
+                            _eventFlow.emit(SignupEvent.NavigateNext)
+                        } else {
+                            _eventFlow.emit(SignupEvent.Error(errorMessage = "잠시 후 다시 시도해 주세요."))
+                        }
                     }
 
-                    else -> {
+                    is DomainResult.Error -> {
+                        Log.e(
+                            "[PetStyleViewModel]",
+                            "[Error]: message: ${result.message}, code: ${result.code}"
+                        )
+                        _eventFlow.emit(
+                            SignupEvent.Error(
+                                errorMessage = "네트워크 에러가 발생했습니다."
+                            )
+                        )
+                    }
+
+                    is DomainResult.Exception -> {
+                        Log.e("[PetStyleViewModel]", "[Exception]: message: ${result.error}")
                         _eventFlow.emit(
                             SignupEvent.Error(
                                 errorMessage = "네트워크 에러가 발생했습니다."

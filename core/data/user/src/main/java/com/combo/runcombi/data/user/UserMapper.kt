@@ -2,6 +2,7 @@ package com.combo.runcombi.data.user
 
 import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.domain.user.model.Member
+import com.combo.runcombi.domain.user.model.MemberStatus
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.domain.user.model.UserInfo
@@ -14,7 +15,10 @@ fun UserInfoResponse.toDomainModel(): UserInfo {
         UserInfo(
             member = member.toDomainModel(),
             petList = petList?.map { it.toDomainModel() } ?: emptyList(),
-            userStatus = memberStatus.orEmpty())
+            memberStatus = runCatching {
+                enumValueOf<MemberStatus>(memberStatus ?: "")
+            }.getOrNull() ?: MemberStatus.PENDING_AGREE
+        )
     }
 }
 
@@ -22,8 +26,8 @@ fun MemberModel.toDomainModel(): Member {
     return Member(
         nickname = nickname ?: "",
         gender = if (gender == "male") Gender.MALE else Gender.FEMALE,
-        height = height ?: 0,
-        weight = weight ?: 0,
+        height = height?.toInt() ?: 0,
+        weight = weight?.toInt() ?: 0,
         profileImageUrl = profileImgUrl
     )
 }
@@ -32,8 +36,8 @@ fun Member.toDataModel(): MemberModel {
     return MemberModel(
         nickname = nickname,
         gender = gender.name,
-        height = height,
-        weight = weight
+        height = height.toDouble(),
+        weight = weight.toDouble()
     )
 }
 
@@ -42,7 +46,7 @@ fun PetModel.toDomainModel(): Pet {
         name = name ?: "",
         age = age ?: 0,
         weight = weight ?: 0.0,
-        runStyle = RunStyle.RELAXED,
+        runStyle = RunStyle.RUNNING,
         profileImageUrl = petImageUrl
     )
 }

@@ -115,22 +115,22 @@ fun PetStyleScreen(
         RunCombiSelectableButton(
             text = "에너지가 넘쳐요!",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.ENERGETIC,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.ENERGETIC) },
+            isSelected = uiState.selectedStyle == RunStyle.RUNNING,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.RUNNING) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "여유롭게 걸어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.RELAXED,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.RELAXED) },
+            isSelected = uiState.selectedStyle == RunStyle.WALKING,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.WALKING) },
         )
         Spacer(Modifier.height(14.dp))
         RunCombiSelectableButton(
             text = "천천히 걸으며 자주 쉬어요",
             modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.SLOW,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.SLOW) },
+            isSelected = uiState.selectedStyle == RunStyle.SLOW_WALKING,
+            onClick = { petStyleViewModel.selectStyle(RunStyle.SLOW_WALKING) },
         )
 
         Spacer(Modifier.weight(1f))
