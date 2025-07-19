@@ -55,8 +55,7 @@ internal fun MainNavHost(
         ) {
             loginNavGraph(
                 onLoginSuccess = { memberStatus ->
-                    navigator.navigateToSignupInput()
-              /*      when (memberStatus) {
+                    when (memberStatus) {
                         MemberStatus.PENDING_AGREE -> {
                             navigator.navigateToSignup()
                         }
@@ -68,7 +67,7 @@ internal fun MainNavHost(
                         MemberStatus.LIVE -> {
                             navigator.navigationToMainTab()
                         }
-                    }*/
+                    }
                 }
             )
 
