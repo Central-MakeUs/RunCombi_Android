@@ -1,4 +1,4 @@
-package com.combo.runcombi.core.designsystem.ext
+package com.combo.runcombi.ui.ext
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity

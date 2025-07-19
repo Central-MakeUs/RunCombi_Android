@@ -1,6 +1,5 @@
 package com.combo.runcombi.main.navigation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,16 +15,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.toRoute
 import com.combo.runcombi.core.designsystem.theme.Grey01
-import com.combo.runcombi.core.designsystem.util.setStatusBar
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.MainTabDataModelType
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.domain.user.model.MemberStatus
-import com.combo.runcombi.feature.login.BuildConfig
-import com.combo.runcombi.feature.login.LoginEvent
 import com.combo.runcombi.feature.login.navigation.loginNavGraph
 import com.combo.runcombi.main.component.MainTabContent
 import com.combo.runcombi.signup.navigation.signupNavGraph
+import com.combo.runcombi.ui.util.setStatusBar
 import kotlin.reflect.typeOf
 
 @Composable

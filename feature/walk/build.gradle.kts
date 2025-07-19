@@ -21,4 +21,6 @@ dependencies {
     implementation(libs.accompanist.permissions)
 
     implementation(libs.lottie.compose)
+
+    implementation(libs.androidx.graphics.shapes)
 }

@@ -1,4 +1,4 @@
-package com.combo.runcombi.core.designsystem.util
+package com.combo.runcombi.ui.util
 
 import android.app.Activity
 import android.content.Context

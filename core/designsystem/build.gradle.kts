@@ -50,6 +50,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.lottie.compose)
+    implementation(libs.coil.compose)
     implementation(libs.androidx.core.splashscreen)
 
 }

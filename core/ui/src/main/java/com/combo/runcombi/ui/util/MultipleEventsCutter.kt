@@ -1,4 +1,4 @@
-package com.combo.runcombi.core.designsystem.util
+package com.combo.runcombi.ui.util
 
 interface MultipleEventsCutter {
     fun processEvent(event: () -> Unit)

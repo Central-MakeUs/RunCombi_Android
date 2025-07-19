@@ -30,12 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.combo.runcombi.core.designsystem.component.NetworkImage
+import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -50,7 +53,7 @@ import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.feature.walk.R
-import com.combo.runcombi.walk.component.LocationPermissionDialog
+import com.combo.runcombi.ui.ext.customPolygonClip
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
@@ -85,7 +88,7 @@ fun WalkMainScreen(
     val cameraPositionState = rememberCameraPositionState()
     val uiState by walkMainViewModel.uiState.collectAsState()
     val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
-    var showPermissionDialog by remember { mutableStateOf(false) }
+    var showPermissionSettingSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (!locationPermissionState.status.isGranted) {
@@ -120,7 +123,7 @@ fun WalkMainScreen(
         walkMainViewModel.eventFlow.collectLatest { event ->
             when (event) {
                 is WalkEvent.RequestLocationPermission -> {
-                    showPermissionDialog = true
+                    showPermissionSettingSheet = true
                 }
 
                 else -> Unit
@@ -128,16 +131,22 @@ fun WalkMainScreen(
         }
     }
 
-    LocationPermissionDialog(
-        show = showPermissionDialog,
-        onDismiss = { showPermissionDialog = false },
-        onConfirm = {
-            showPermissionDialog = false
+    RunCombiBottomSheet(
+        show = showPermissionSettingSheet,
+        onDismiss = { showPermissionSettingSheet = false },
+        onAccept = {
+            showPermissionSettingSheet = false
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                 data = ("package:" + context.packageName).toUri()
             }
             context.startActivity(intent)
-        })
+        },
+        onCancel = { showPermissionSettingSheet = false },
+        title = "정확한 워치 권한 필요",
+        subtitle = "운동을 시작하려면 정확한 위치 권한이 필요해요.\n설정에서 권한을 허용해주세요.",
+        acceptButtonText = "설정으로 이동",
+        cancelButtonText = "취소"
+    )
 
     WalkMainContent(
         modifier = modifier,
@@ -269,11 +278,15 @@ private fun MemberProfile(member: Member) {
                 .width(84.dp),
         )
 
-        StableImage(
+        NetworkImage(
+            contentScale = ContentScale.Crop,
+            imageUrl = member.profileImageUrl,
             drawableResId = R.drawable.person_profile,
             modifier = Modifier
-                .size(50.dp)
-                .padding(end = 10.dp)
+                .fillMaxSize()
+                .padding(6.dp)
+                .padding(end = 12.dp)
+                .customPolygonClip(bottomLeft = true, topRight = true, polygonSize = 16.dp)
         )
     }
 }
@@ -295,7 +308,8 @@ private fun PetProfile(
 
         val boxHeight = if (isCenter) 77.dp else 77.dp
         val boxWidth = if (isCenter) 99.dp else 85.dp
-        val startPadding = if (isCenter) 0.dp else 10.dp
+        val startPadding = 12.dp
+        val endPadding = if (isCenter) 12.dp else 0.dp
 
         Box(
             modifier = Modifier
@@ -310,15 +324,20 @@ private fun PetProfile(
                     .height(boxHeight)
                     .width(boxWidth),
             )
-            StableImage(
+            NetworkImage(
+                contentScale = ContentScale.Crop,
+                imageUrl = pet.profileImageUrl,
                 drawableResId = R.drawable.ic_pet_defalut,
                 modifier = Modifier
-                    .padding(start = startPadding)
-                    .height(31.dp)
-                    .width(52.dp)
-
+                    .fillMaxSize()
+                    .padding(start = startPadding, end = endPadding)
+                    .padding(6.dp)
+                    .customPolygonClip(
+                        bottomLeft = true,
+                        topRight = true,
+                        polygonSize = 16.dp
+                    )
             )
-
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(

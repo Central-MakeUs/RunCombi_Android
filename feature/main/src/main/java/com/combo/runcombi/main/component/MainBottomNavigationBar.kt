@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import com.combo.runcombi.core.designsystem.R
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
+import com.combo.runcombi.ui.ext.clickableWithoutRipple
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.navigation.model.RouteModel

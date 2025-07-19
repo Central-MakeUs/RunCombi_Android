@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
+import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
 import com.combo.runcombi.domain.user.model.MemberStatus
 import kotlinx.coroutines.CoroutineScope

@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
-import com.combo.runcombi.core.designsystem.ext.clickableWithoutRipple
-import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
+import com.combo.runcombi.ui.ext.clickableWithoutRipple
+import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1

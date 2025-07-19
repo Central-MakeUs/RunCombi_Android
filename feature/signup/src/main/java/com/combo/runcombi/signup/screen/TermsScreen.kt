@@ -24,7 +24,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
-import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
@@ -32,6 +31,7 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.component.AgreementItem
 import com.combo.runcombi.signup.model.TermsEvent
 import com.combo.runcombi.signup.viewmodel.TermsViewModel
+import com.combo.runcombi.ui.ext.screenDefaultPadding
 
 @Composable
 fun TermsScreen(

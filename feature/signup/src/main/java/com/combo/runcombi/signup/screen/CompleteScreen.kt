@@ -16,16 +16,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.core.designsystem.ext.screenDefaultPadding
+import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.heading1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.signup.R
-import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 
 @Composable
@@ -74,24 +72,23 @@ fun CompleteScreen(
         LottieImage(
             modifier = Modifier.fillMaxSize(), lottieRes = R.raw.animation_celebration
         )
-        if (showSheet.value) {
-            RunCombiBottomSheet(
-                show = true,
-                onDismiss = { showSheet.value = false },
-                onAccept = {
-                    showSheet.value = false
-                    onDone(true)
-                },
-                onCancel = {
-                    showSheet.value = false
-                    onDone(false)
-                },
-                title = "혹시 콤비가 더 있나요?",
-                subtitle = "런콤비는 최대 2마리의 반려견과 함께할 수 있어요. 지금 바로 반려견을 추가해볼까요?",
-                acceptButtonText = "추가",
-                cancelButtonText = "괜찮아요"
-            )
-        }
+
+        RunCombiBottomSheet(
+            show = showSheet.value,
+            onDismiss = { showSheet.value = false },
+            onAccept = {
+                showSheet.value = false
+                onDone(true)
+            },
+            onCancel = {
+                showSheet.value = false
+                onDone(false)
+            },
+            title = "혹시 콤비가 더 있나요?",
+            subtitle = "런콤비는 최대 2마리의 반려견과 함께할 수 있어요. 지금 바로 반려견을 추가해볼까요?",
+            acceptButtonText = "추가",
+            cancelButtonText = "괜찮아요"
+        )
     }
 }
 
