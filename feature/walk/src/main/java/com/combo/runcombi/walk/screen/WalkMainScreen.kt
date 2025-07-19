@@ -286,7 +286,7 @@ private fun MemberProfile(member: Member) {
                 .fillMaxSize()
                 .padding(6.dp)
                 .padding(end = 12.dp)
-                .customPolygonClip(bottomLeft = true, topRight = true, polygonSize = 16.dp)
+                .customPolygonClip(bottomLeft = true, topRight = true, polygonSize = 16.dp, bottomLeftAngle = 62.0)
         )
     }
 }
@@ -335,7 +335,9 @@ private fun PetProfile(
                     .customPolygonClip(
                         bottomLeft = true,
                         topRight = true,
-                        polygonSize = 16.dp
+                        polygonSize = 16.dp,
+                        bottomLeftAngle = 58.0,
+                        topRightAngle = 63.0
                     )
             )
         }

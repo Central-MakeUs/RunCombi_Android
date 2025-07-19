@@ -64,10 +64,15 @@ fun Modifier.customPolygonClip(
     topRight: Boolean = false,
     bottomLeft: Boolean = false,
     bottomRight: Boolean = false,
-    polygonSize: Dp = 32.dp
+    polygonSize: Dp = 32.dp,
+    topLeftAngle: Double = 60.0,
+    topRightAngle: Double = 60.0,
+    bottomRightAngle: Double = 60.0,
+    bottomLeftAngle: Double = 60.0
 ) = clip(
     CustomPolygonShape(
-        topLeft, topRight, bottomLeft, bottomRight, polygonSize
+        topLeft, topRight, bottomLeft, bottomRight, polygonSize,
+        topLeftAngle, topRightAngle, bottomRightAngle, bottomLeftAngle
     )
 )
 
@@ -77,7 +82,11 @@ class CustomPolygonShape(
     private val topRight: Boolean,
     private val bottomLeft: Boolean,
     private val bottomRight: Boolean,
-    private val polygonSize: Dp
+    private val polygonSize: Dp,
+    private val topLeftAngle: Double = 60.0,
+    private val topRightAngle: Double = 60.0,
+    private val bottomRightAngle: Double = 60.0,
+    private val bottomLeftAngle: Double = 60.0
 ) : Shape {
     override fun createOutline(
         size: androidx.compose.ui.geometry.Size,
@@ -85,26 +94,33 @@ class CustomPolygonShape(
         density: Density
     ): Outline {
         val px = with(density) { polygonSize.toPx() }
-        val angle = Math.toRadians(60.0)
-        val offsetX = px * cos(angle).toFloat()
-        val offsetY = px * sin(angle).toFloat()
         val width = size.width
         val height = size.height
 
+        val topLeftRad = Math.toRadians(topLeftAngle)
+        val topRightRad = Math.toRadians(topRightAngle)
+        val bottomRightRad = Math.toRadians(bottomRightAngle)
+        val bottomLeftRad = Math.toRadians(bottomLeftAngle)
+
+        val topLeftX = px * cos(topLeftRad).toFloat()
+        val topLeftY = px * sin(topLeftRad).toFloat()
+        val topRightX = px * cos(topRightRad).toFloat()
+        val topRightY = px * sin(topRightRad).toFloat()
+        val bottomRightX = px * cos(bottomRightRad).toFloat()
+        val bottomRightY = px * sin(bottomRightRad).toFloat()
+        val bottomLeftX = px * cos(bottomLeftRad).toFloat()
+        val bottomLeftY = px * sin(bottomLeftRad).toFloat()
+
         val path = Path()
 
-        // Top Left
-        if (topLeft) path.moveTo(offsetX, 0f) else path.moveTo(0f, 0f)
-        // Top Right
-        if (topRight) path.lineTo(width - offsetX, 0f) else path.lineTo(width, 0f)
-        if (topRight) path.lineTo(width, offsetY) else path.lineTo(width, 0f)
-        // Bottom Right
-        if (bottomRight) path.lineTo(width, height - offsetY) else path.lineTo(width, height)
-        if (bottomRight) path.lineTo(width - offsetX, height) else path.lineTo(width, height)
-        // Bottom Left
-        if (bottomLeft) path.lineTo(offsetX, height) else path.lineTo(0f, height)
-        if (bottomLeft) path.lineTo(0f, height - offsetY) else path.lineTo(0f, height)
-        if (topLeft) path.lineTo(0f, offsetY) else path.lineTo(0f, 0f)
+        if (topLeft) path.moveTo(topLeftX, 0f) else path.moveTo(0f, 0f)
+        if (topRight) path.lineTo(width - topRightX, 0f) else path.lineTo(width, 0f)
+        if (topRight) path.lineTo(width, topRightY) else path.lineTo(width, 0f)
+        if (bottomRight) path.lineTo(width, height - bottomRightY) else path.lineTo(width, height)
+        if (bottomRight) path.lineTo(width - bottomRightX, height) else path.lineTo(width, height)
+        if (bottomLeft) path.lineTo(bottomLeftX, height) else path.lineTo(0f, height)
+        if (bottomLeft) path.lineTo(0f, height - bottomLeftY) else path.lineTo(0f, height)
+        if (topLeft) path.lineTo(0f, topLeftY) else path.lineTo(0f, 0f)
 
         path.close()
         return Outline.Generic(path)
