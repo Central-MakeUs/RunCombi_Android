@@ -51,5 +51,5 @@ fun AgreementItem(
 @Preview(showBackground = true, backgroundColor = 0xFF171717)
 @Composable
 fun PreviewAgreementItem() {
-    AgreementItem(text = "이용약관 동의", checked = true, onCheckedChange = {})
+    AgreementItem(text = "이용약관 동의", checked = false, onCheckedChange = {})
 } 

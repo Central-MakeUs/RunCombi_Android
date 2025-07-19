@@ -14,14 +14,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.combo.runcombi.core.designsystem.R
+import com.combo.runcombi.core.designsystem.theme.Grey04
+import com.combo.runcombi.core.designsystem.theme.Primary01
 
 @Composable
 fun RunCombiCheckbox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    checkedColor: Color = Color(0xFFD7FE63),
-    uncheckedColor: Color = Color(0xFF292929),
+    checkedColor: Color = Primary01,
+    uncheckedColor: Color = Grey04,
 ) {
     Box(
         modifier = modifier
@@ -33,14 +35,12 @@ fun RunCombiCheckbox(
             .clickable { onCheckedChange(!checked) },
         contentAlignment = Alignment.Center
     ) {
-        if (checked) {
-            StableImage(
-                drawableResId = R.drawable.ic_check,
-                modifier = Modifier
-                    .height(10.83.dp)
-                    .width(14.58.dp)
-            )
-        }
+        StableImage(
+            drawableResId = R.drawable.ic_check,
+            modifier = Modifier
+                .height(10.83.dp)
+                .width(14.58.dp)
+        )
     }
 }
 

@@ -95,21 +95,21 @@ fun TermsScreen(
 
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 이용 약관 동의",
+            text = "[필수] 서비스 이용약관",
             checked = uiState.uiModel.termsChecked,
             onCheckedChange = { viewModel.updateTermsChecked(!uiState.uiModel.termsChecked) },
         )
 
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 개인정보 처리방침",
+            text = "[필수] 개인정보처리방침",
             checked = uiState.uiModel.privacyChecked,
             onCheckedChange = { viewModel.updatePrivacyChecked(!uiState.uiModel.privacyChecked) },
         )
 
         AgreementItem(
             modifier = Modifier.padding(bottom = 27.dp),
-            text = "[필수] 위치기반 서비스 이용 약관",
+            text = "[필수] 위치정보 이용약관",
             checked = uiState.uiModel.locationChecked,
             onCheckedChange = { viewModel.updateLocationChecked(!uiState.uiModel.locationChecked) },
         )
