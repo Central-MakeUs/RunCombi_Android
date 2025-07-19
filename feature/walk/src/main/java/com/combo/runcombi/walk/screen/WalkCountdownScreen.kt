@@ -27,7 +27,9 @@ import com.combo.runcombi.feature.walk.R
 import kotlinx.coroutines.delay
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontStyle
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,8 +77,10 @@ fun WalkCountdownScreen(
                 text = "$count",
                 style = giantsHeading2,
                 color = Color.White,
+                fontStyle = FontStyle.Italic,
                 modifier = Modifier
                     .align(Alignment.Center)
+                    .padding(end = 12.dp)
                     .graphicsLayer(scaleX = scale.value, scaleY = scale.value)
             )
         }

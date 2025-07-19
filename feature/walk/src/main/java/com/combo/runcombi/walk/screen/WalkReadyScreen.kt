@@ -45,6 +45,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import android.os.Build
+import androidx.compose.ui.text.font.FontStyle
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -77,7 +78,13 @@ private fun WalkReadyContent(
         ) {
             Text("함께 운동한 시간", style = giantsTitle3, color = Grey08)
             Spacer(modifier = Modifier.height(10.dp))
-            Text("00:00", style = giantsHeading1, color = Color.White)
+            Text(
+                "00:00",
+                style = giantsHeading1,
+                fontStyle = FontStyle.Italic,
+                color = Color.White,
+                modifier = Modifier.padding(end = 12.dp)
+            )
             Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier

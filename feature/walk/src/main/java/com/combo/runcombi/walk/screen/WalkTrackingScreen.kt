@@ -1,16 +1,19 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.combo.runcombi.walk.screen
 
 import android.annotation.SuppressLint
 import android.os.Looper
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,10 +40,10 @@ import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
-import com.combo.runcombi.core.designsystem.theme.Grey05
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
-import com.combo.runcombi.core.designsystem.theme.Primary02
+import com.combo.runcombi.core.designsystem.theme.Grey09
+import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.model.BottomSheetType
@@ -160,33 +164,64 @@ fun WalkTrackingContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-        ) {
-            Text(
-                "취소",
-                style = RunCombiTypography.title3,
-                color = Grey05,
-                modifier = Modifier.clickable { onCancelClick() })
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                "완료",
-                style = RunCombiTypography.title3,
-                color = Primary02,
-                modifier = Modifier.clickable { onFinishClick() })
-        }
-        Spacer(Modifier.height(22.dp))
+        Spacer(Modifier.height(72.dp))
         Text("함께 운동한 시간", color = Grey08, style = RunCombiTypography.giantsTitle3)
         Spacer(Modifier.height(10.45.dp))
         TimeDisplayLarge(uiState.time)
         Spacer(Modifier.height(26.55.dp))
         DistanceDisplayLarge(uiState.distance)
         Spacer(Modifier.weight(1f))
-        PauseButton(onClick = onPauseToggle, isPaused = uiState.isPaused)
+        if (uiState.isPaused) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(48.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FinishButtonLongPress(onLongClick = onFinishClick)
+                ResumeButton(onClick = onPauseToggle)
+            }
+        } else {
+            PauseButton(onClick = onPauseToggle)
+        }
         Spacer(Modifier.height(80.dp))
+    }
+}
+
+@Composable
+fun ResumeButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clickable { onClick() }
+            .background(color = Primary01, shape = RoundedCornerShape(4.dp))
+            .size(100.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = R.drawable.ic_resume,
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp)
+        )
+    }
+}
+
+@Composable
+fun FinishButtonLongPress(onLongClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .combinedClickable(
+                onClick = {},
+                onLongClick = onLongClick
+            )
+            .background(color = Grey09, shape = RoundedCornerShape(4.dp))
+            .size(100.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = R.drawable.ic_stop,
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp)
+        )
     }
 }
 
@@ -196,7 +231,9 @@ fun TimeDisplayLarge(time: Int) {
     Text(
         text = formattedTime,
         color = Color.White,
-        style = RunCombiTypography.giantsHeading1
+        fontStyle = FontStyle.Italic,
+        style = RunCombiTypography.giantsHeading1,
+        modifier = Modifier.padding(end = 12.dp)
     )
 }
 
@@ -207,11 +244,14 @@ fun DistanceDisplayLarge(distance: Double) {
         Text(
             text = formattedDistance,
             color = Grey06,
+            fontStyle = FontStyle.Italic,
             style = RunCombiTypography.giantsTitle2,
-            modifier = Modifier.alignByBaseline()
+            modifier = Modifier
+                .padding(end = 8.dp)
+                .alignByBaseline()
         )
         Text(
-            text = " Km",
+            text = "Km",
             color = Grey06,
             style = RunCombiTypography.giantsTitle6,
             modifier = Modifier.alignByBaseline()
@@ -230,7 +270,7 @@ fun CalorieDisplayLarge(calorie: Double) {
 }
 
 @Composable
-fun PauseButton(onClick: () -> Unit, isPaused: Boolean) {
+fun PauseButton(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .clickable { onClick() }
@@ -239,10 +279,9 @@ fun PauseButton(onClick: () -> Unit, isPaused: Boolean) {
         contentAlignment = Alignment.Center
     ) {
         StableImage(
-            drawableResId = if (isPaused) R.drawable.ic_resume else R.drawable.ic_pause,
+            drawableResId = R.drawable.ic_pause,
             modifier = Modifier
-                .width(if (isPaused) 32.dp else 17.8.dp)
-                .height(if (isPaused) 32.dp else 24.dp)
+                .size(32.dp)
         )
     }
 }

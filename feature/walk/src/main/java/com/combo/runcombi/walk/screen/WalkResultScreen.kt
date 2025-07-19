@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
@@ -172,7 +173,13 @@ fun StatInfoSection(
     ) {
         Column(horizontalAlignment = CenterHorizontally) {
             Text("운동 시간", color = Grey06, style = body2)
-            Text(timeText, color = Grey07, style = giantsTitle2)
+            Text(
+                timeText,
+                color = Grey07,
+                style = giantsTitle2,
+                modifier = Modifier.padding(end = 12.dp),
+                fontStyle = FontStyle.Italic
+            )
         }
         Column(horizontalAlignment = CenterHorizontally) {
             Text("운동 거리", color = Grey06, style = body2)
@@ -181,7 +188,8 @@ fun StatInfoSection(
                     distanceText,
                     color = Grey07,
                     style = giantsTitle2,
-                    modifier = Modifier.alignByBaseline()
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier.alignByBaseline().padding(end = 8.dp)
                 )
                 Text(
                     " km",
