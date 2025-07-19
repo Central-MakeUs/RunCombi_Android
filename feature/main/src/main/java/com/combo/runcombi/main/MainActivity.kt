@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.combo.runcombi.auth.usecase.GetIsNewUserUseCase
 import com.combo.runcombi.core.designsystem.theme.RunCombiTheme
+import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.main.navigation.MainNavigator
 import com.combo.runcombi.main.navigation.rememberMainNavigator
@@ -38,7 +39,9 @@ class MainActivity : ComponentActivity() {
             RunCombiTheme {
                 MainScreen(
                     navigator = navigator,
-                    startDestination = if (isNewUser) RouteModel.Login else RouteModel.MainTab()
+                    startDestination = if (isNewUser) RouteModel.Login else RouteModel.MainTab(
+                        mainTabDataModel = MainTabDataModel.Walk
+                    )
                 )
             }
         }
