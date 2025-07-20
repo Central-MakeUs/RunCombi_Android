@@ -57,7 +57,7 @@ fun WalkResultScreen(
     onBack: () -> Unit = {},
 ) {
     val uiState = walkRecordViewModel.uiState.collectAsState().value
-    val formattedTime = FormatUtils.formatTime(uiState.time)
+    val formattedTime = FormatUtils.formatMinute(uiState.time)
     val formattedDistance = FormatUtils.formatDistance(uiState.distance)
 
     WalkResultContent(
@@ -175,13 +175,21 @@ fun StatInfoSection(
     ) {
         Column(horizontalAlignment = CenterHorizontally) {
             Text("운동 시간", color = Grey06, style = body2)
-            Text(
-                timeText,
-                color = Grey07,
-                style = giantsTitle2,
-                modifier = Modifier.padding(end = 12.dp),
-                fontStyle = FontStyle.Italic
-            )
+            Row {
+                Text(
+                    timeText,
+                    color = Grey07,
+                    style = giantsTitle2,
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier.alignByBaseline().padding(end = 8.dp)
+                )
+                Text(
+                    " min",
+                    color = Grey07,
+                    style = giantsTitle6,
+                    modifier = Modifier.alignByBaseline()
+                )
+            }
         }
         Column(horizontalAlignment = CenterHorizontally) {
             Text("운동 거리", color = Grey06, style = body2)
@@ -241,12 +249,12 @@ fun CelebrationEffect() {
 @Composable
 fun WalkResultContentPreview() {
     WalkResultContent(
-        timeText = "45:12",
+        timeText = "12",
         distanceText = "3.2",
         pathPoints = listOf(
-            com.google.android.gms.maps.model.LatLng(37.5665, 126.9780),
-            com.google.android.gms.maps.model.LatLng(37.5670, 126.9790),
-            com.google.android.gms.maps.model.LatLng(37.5675, 126.9800)
+            LatLng(37.5665, 126.9780),
+            LatLng(37.5670, 126.9790),
+            LatLng(37.5675, 126.9800)
         ),
         onBack = {}
     )

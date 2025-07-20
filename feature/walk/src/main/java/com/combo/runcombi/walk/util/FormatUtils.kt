@@ -10,6 +10,11 @@ object FormatUtils {
         return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
     }
 
+    fun formatMinute(time: Int): String {
+        val minutes = time / 60
+        return minutes.toString()
+    }
+
     fun formatDistance(distance: Double): String {
         val distanceKm = distance / 1000.0
         return String.format(Locale.getDefault(), "%.2f", distanceKm)
