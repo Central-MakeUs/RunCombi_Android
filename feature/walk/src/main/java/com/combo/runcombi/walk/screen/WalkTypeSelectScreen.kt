@@ -60,7 +60,7 @@ fun WalkTypeSelectScreen(
             Spacer(Modifier.height(16.dp))
             RunCombiButton(
                 onClick = {
-                    walkMainViewModel.updateExerciseType(ExerciseType.FAST_WALKING)
+                    walkMainViewModel.updateExerciseType(ExerciseType.RUNNING)
                     onTypeSelected()
                 },
                 textColor = WhiteFF,
@@ -70,7 +70,7 @@ fun WalkTypeSelectScreen(
             Spacer(Modifier.height(16.dp))
             RunCombiButton(
                 onClick = {
-                    walkMainViewModel.updateExerciseType(ExerciseType.JOGGING)
+                    walkMainViewModel.updateExerciseType(ExerciseType.RUNNING)
                     onTypeSelected()
                 },
                 textColor = WhiteFF,
