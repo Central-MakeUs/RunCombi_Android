@@ -1,6 +1,5 @@
 package com.combo.runcombi.walk.screen
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +24,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +47,15 @@ import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.MarkerComposable
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun WalkResultScreen(
@@ -108,52 +116,66 @@ fun WalkResultContent(
 
 @Composable
 fun PathPreview(pathPoints: List<LatLng>) {
+    val cameraPositionState = rememberCameraPositionState {
+        position = if (pathPoints.isNotEmpty()) {
+            com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
+                pathPoints.first(), 16f
+            )
+        } else {
+            com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
+                LatLng(37.5665, 126.9780), 16f
+            )
+        }
+    }
+
     Box(
         modifier = Modifier
             .size(240.dp)
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
+            .padding(10.dp)
     ) {
-        if (pathPoints.size > 1) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val xs = pathPoints.map { it.longitude }
-                val ys = pathPoints.map { it.latitude }
-                val minX = xs.minOrNull() ?: return@Canvas
-                val maxX = xs.maxOrNull() ?: return@Canvas
-                val minY = ys.minOrNull() ?: return@Canvas
-                val maxY = ys.maxOrNull() ?: return@Canvas
-
-                val scaleX = size.width / (maxX - minX).coerceAtLeast(0.0001)
-                val scaleY = size.height / (maxY - minY).coerceAtLeast(0.0001)
-
-                val centerX = (xs.maxOrNull()!! + xs.minOrNull()!!) / 2.0
-                val centerY = (ys.maxOrNull()!! + ys.minOrNull()!!) / 2.0
-                val canvasCenter = Offset(size.width / 2f, size.height / 2f)
-
-                fun toCanvasOffset(point: LatLng): Offset {
-                    val x = ((point.longitude - minX) * scaleX).toFloat()
-                    val y = size.height - ((point.latitude - minY) * scaleY).toFloat()
-                    val pathCenterX = ((centerX - minX) * scaleX).toFloat()
-                    val pathCenterY = size.height - ((centerY - minY) * scaleY).toFloat()
-                    val offsetX = canvasCenter.x - pathCenterX
-                    val offsetY = canvasCenter.y - pathCenterY
-                    return Offset(x + offsetX, y + offsetY)
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(
+                isMyLocationEnabled = false,
+                mapType = MapType.NORMAL,
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    LocalContext.current, R.raw.google_map_dark_theme_style
+                )
+            ),
+            uiSettings = MapUiSettings(
+                zoomGesturesEnabled = false,
+                zoomControlsEnabled = false,
+                compassEnabled = false,
+                myLocationButtonEnabled = false,
+                scrollGesturesEnabled = false,
+                tiltGesturesEnabled = false
+            )
+        ) {
+            if (pathPoints.isNotEmpty()) {
+                Polyline(points = pathPoints, color = Primary01, width = 10f)
+                MarkerComposable(
+                    state = rememberMarkerState(position = pathPoints.first()),
+                    anchor = Offset(0.5f, 0.5f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .background(Color.White, shape = CircleShape)
+                    )
                 }
-
-                val path = Path().apply {
-                    pathPoints.forEachIndexed { index, point ->
-                        val offset = toCanvasOffset(point)
-                        if (index == 0) moveTo(offset.x, offset.y) else lineTo(offset.x, offset.y)
+                if (pathPoints.size > 1) {
+                    MarkerComposable(
+                        state = rememberMarkerState(position = pathPoints.last()),
+                        anchor = Offset(0.5f, 0.5f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(14.dp)
+                                .background(Primary01, shape = CircleShape)
+                        )
                     }
                 }
-
-                drawPath(path, color = Primary01, style = Stroke(width = 10f))
-
-                val startOffset = toCanvasOffset(pathPoints.first())
-                val endOffset = toCanvasOffset(pathPoints.last())
-
-                drawCircle(Color(0xFFFFFDFD), radius = 14f, center = startOffset)
-                drawCircle(Color(0xFFFFFDFD), radius = 14f, center = endOffset)
             }
         }
     }
