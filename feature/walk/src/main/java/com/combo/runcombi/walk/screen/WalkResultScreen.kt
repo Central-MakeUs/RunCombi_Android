@@ -78,7 +78,6 @@ fun WalkResultScreen(
     }
 }
 
-
 @Composable
 fun WalkResultContent(
     timeText: String,

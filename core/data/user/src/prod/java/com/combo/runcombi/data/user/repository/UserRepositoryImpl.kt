@@ -3,8 +3,8 @@ package com.combo.runcombi.data.user.repository
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.common.convert
 import com.combo.runcombi.common.handleResult
-import com.combo.runcombi.data.user.toDataModel
-import com.combo.runcombi.data.user.toDomainModel
+import com.combo.runcombi.data.user.mapper.toDataModel
+import com.combo.runcombi.data.user.mapper.toDomainModel
 import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.model.UserInfo

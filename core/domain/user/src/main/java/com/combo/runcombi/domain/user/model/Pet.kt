@@ -1,6 +1,7 @@
 package com.combo.runcombi.domain.user.model
 
 data class Pet(
+    val id: Int = 0,
     val name: String,
     val age: Int,
     val weight: Double,

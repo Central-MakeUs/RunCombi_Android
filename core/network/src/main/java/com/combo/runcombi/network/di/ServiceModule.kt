@@ -5,6 +5,7 @@ import com.combo.runcombi.network.di.TokenRetrofit
 import com.combo.runcombi.network.service.LoginService
 import com.combo.runcombi.network.service.TokenService
 import com.combo.runcombi.network.service.UserService
+import com.combo.runcombi.network.service.WalkService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,8 +38,16 @@ object ServiceModule {
     @Singleton
     fun provideUserService(
         @TokenRetrofit retrofit: Retrofit,
-    ): UserService{
+    ): UserService {
         return retrofit.create(UserService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWalkService(
+        @TokenRetrofit retrofit: Retrofit,
+    ): WalkService {
+        return retrofit.create(WalkService::class.java)
     }
 
 }

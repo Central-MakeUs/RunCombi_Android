@@ -505,6 +505,7 @@ fun WalkTrackingContentPreview() {
     val petList = listOf(
         WalkPetUIModel(
             pet = Pet(
+                id = 0,
                 name = "멍멍이",
                 age = 3,
                 weight = 8.5,
@@ -513,6 +514,7 @@ fun WalkTrackingContentPreview() {
             ), calorie = 56.7
         ), WalkPetUIModel(
             pet = Pet(
+                id = 1,
                 name = "야옹이",
                 age = 2,
                 weight = 4.2,
@@ -545,6 +547,7 @@ fun CombiCalorieListPreview() {
     val petList = listOf(
         WalkPetUIModel(
             pet = Pet(
+                id = 1,
                 name = "야옹이",
                 age = 2,
                 weight = 4.2,

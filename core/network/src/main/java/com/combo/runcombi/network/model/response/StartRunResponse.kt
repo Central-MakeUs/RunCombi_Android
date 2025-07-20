@@ -1,0 +1,8 @@
+package com.combo.runcombi.network.model.response
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class StartRunResponse(
+    val result: StartRunResult
+): BaseResponse()

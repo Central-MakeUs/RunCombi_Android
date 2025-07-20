@@ -470,6 +470,7 @@ fun WalkMainContentPreview() {
             petUiList = listOf(
                 PetUiModel(
                     pet = Pet(
+                        id = 0,
                         name = "초코",
                         weight = 10.0,
                         age = 10,
@@ -481,6 +482,7 @@ fun WalkMainContentPreview() {
                 ),
                 PetUiModel(
                     pet = Pet(
+                        id = 1,
                         name = "초코",
                         weight = 10.0,
                         age = 10,

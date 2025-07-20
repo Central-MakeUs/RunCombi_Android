@@ -1,4 +1,4 @@
-package com.combo.runcombi.data.user
+package com.combo.runcombi.data.user.mapper
 
 import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.domain.user.model.Member
@@ -43,6 +43,7 @@ fun Member.toDataModel(): MemberModel {
 
 fun PetModel.toDomainModel(): Pet {
     return Pet(
+        id = petId ?: 0,
         name = name ?: "",
         age = age ?: 0,
         weight = weight ?: 0.0,
