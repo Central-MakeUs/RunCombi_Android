@@ -1,7 +1,10 @@
 package com.combo.runcombi.signup.screen
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +35,11 @@ import com.combo.runcombi.signup.component.AgreementItem
 import com.combo.runcombi.signup.model.TermsEvent
 import com.combo.runcombi.signup.viewmodel.TermsViewModel
 import com.combo.runcombi.ui.ext.screenDefaultPadding
+
+fun openUrl(context: android.content.Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
+}
 
 @Composable
 fun TermsScreen(
@@ -94,21 +102,42 @@ fun TermsScreen(
         )
 
         AgreementItem(
-            modifier = Modifier.padding(bottom = 27.dp),
+            modifier = Modifier
+                .padding(bottom = 27.dp)
+                .clickable {
+                    openUrl(
+                        context,
+                        "https://encouraging-potential-f2d.notion.site/2366951266db80dabc10c701a65875fe?source=copy_link"
+                    )
+                },
             text = "[필수] 서비스 이용약관",
             checked = uiState.uiModel.termsChecked,
             onCheckedChange = { viewModel.updateTermsChecked(!uiState.uiModel.termsChecked) },
         )
 
         AgreementItem(
-            modifier = Modifier.padding(bottom = 27.dp),
+            modifier = Modifier
+                .padding(bottom = 27.dp)
+                .clickable {
+                    openUrl(
+                        context,
+                        "https://encouraging-potential-f2d.notion.site/2366951266db8035ad23c11c502fd243?source=copy_link"
+                    )
+                },
             text = "[필수] 개인정보처리방침",
             checked = uiState.uiModel.privacyChecked,
             onCheckedChange = { viewModel.updatePrivacyChecked(!uiState.uiModel.privacyChecked) },
         )
 
         AgreementItem(
-            modifier = Modifier.padding(bottom = 27.dp),
+            modifier = Modifier
+                .padding(bottom = 27.dp)
+                .clickable {
+                    openUrl(
+                        context,
+                        "https://encouraging-potential-f2d.notion.site/2366951266db80efabead10fb511a343?source=copy_link"
+                    )
+                },
             text = "[필수] 위치정보 이용약관",
             checked = uiState.uiModel.locationChecked,
             onCheckedChange = { viewModel.updateLocationChecked(!uiState.uiModel.locationChecked) },
