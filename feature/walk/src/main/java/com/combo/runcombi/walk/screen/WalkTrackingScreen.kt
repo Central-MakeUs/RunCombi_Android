@@ -109,6 +109,7 @@ fun WalkTrackingScreen(
     }
 
     LaunchedEffect(Unit) {
+        walkMainViewModel.startRun()
         val member = walkMainViewModel.walkData.value.member
         val exerciseType = walkMainViewModel.walkData.value.exerciseType
         val selectedPetList = walkMainViewModel.walkData.value.petList

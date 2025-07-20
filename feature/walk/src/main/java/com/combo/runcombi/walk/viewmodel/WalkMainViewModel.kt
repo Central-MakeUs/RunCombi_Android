@@ -22,10 +22,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.combo.runcombi.walk.usecase.StartRunUseCase
 
 @HiltViewModel
 class WalkMainViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val startRunUseCase: StartRunUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState
@@ -129,11 +131,6 @@ class WalkMainViewModel @Inject constructor(
         _walkData.update { it.copy(exerciseType = type) }
     }
 
-    fun setError(message: String) {
-        _uiState.update { it.copy(isLoading = false) }
-        emitEvent(WalkEvent.Error(message))
-    }
-
     private fun emitEvent(event: WalkEvent) {
         viewModelScope.launch { _eventFlow.emit(event) }
     }
@@ -150,5 +147,20 @@ class WalkMainViewModel @Inject constructor(
 
     fun clearResultData() {
         _walkData.update { it.copy(time = 0, distance = 0.0, pathPoints = emptyList()) }
+    }
+
+    fun startRun() {
+        viewModelScope.launch {
+            val member = walkData.value.member
+            val petList = walkData.value.petList
+            val exerciseType = walkData.value.exerciseType
+            if (member != null && petList.isNotEmpty()) {
+                val result = startRunUseCase(petList.map { it.id }, exerciseType.name)
+                val runId = (result as? DomainResult.Success)?.data
+                if (runId != null) {
+                    _walkData.update { it.copy(runId = runId) }
+                }
+            }
+        }
     }
 }

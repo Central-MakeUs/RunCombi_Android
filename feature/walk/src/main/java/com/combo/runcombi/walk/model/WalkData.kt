@@ -9,5 +9,6 @@ data class WalkData(
     val exerciseType: ExerciseType = ExerciseType.WALKING,
     val time: Int = 0,
     val distance: Double = 0.0,
-    val pathPoints: List<com.google.android.gms.maps.model.LatLng> = emptyList()
+    val pathPoints: List<com.google.android.gms.maps.model.LatLng> = emptyList(),
+    val runId: Int? = null
 ) 

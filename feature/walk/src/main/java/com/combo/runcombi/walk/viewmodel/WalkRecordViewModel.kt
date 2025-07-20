@@ -112,12 +112,6 @@ class WalkRecordViewModel @Inject constructor(
         _uiState.update { it.copy(isPaused = !it.isPaused) }
     }
 
-    fun clear() {
-        _uiState.value = WalkUiState()
-        lastPoint = null
-        speedList = emptyList()
-    }
-
     fun emitShowBottomSheet(type: BottomSheetType) {
         viewModelScope.launch {
             _eventFlow.emit(WalkTrackingEvent.ShowBottomSheet(type))

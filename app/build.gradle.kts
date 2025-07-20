@@ -74,4 +74,5 @@ dependencies {
     implementation(project(":core:data:common"))
     implementation(project(":core:data:auth"))
     implementation(project(":core:data:user"))
+    implementation(project(":core:data:walk"))
 }
