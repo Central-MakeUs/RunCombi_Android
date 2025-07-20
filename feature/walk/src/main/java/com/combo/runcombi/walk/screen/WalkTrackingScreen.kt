@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
 
 package com.combo.runcombi.walk.screen
 
@@ -146,7 +146,10 @@ fun WalkTrackingScreen(
         uiState = uiState,
         onPauseToggle = walkRecordViewModel::togglePause,
         onCancelClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.CANCEL) },
-        onFinishClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.FINISH) })
+        onFinishClick = {
+            walkRecordViewModel.emitShowBottomSheet(BottomSheetType.FINISH)
+        }
+    )
 
     val content = getBottomSheetContent(showSheet.value)
     content?.let {
@@ -155,7 +158,15 @@ fun WalkTrackingScreen(
             onDismiss = { showSheet.value = BottomSheetType.NONE },
             onAccept = {
                 when (showSheet.value) {
-                    BottomSheetType.FINISH -> onFinish()
+                    BottomSheetType.FINISH -> {
+                        walkMainViewModel.setResultData(
+                            time = uiState.time,
+                            distance = uiState.distance,
+                            pathPoints = uiState.pathPoints
+                        )
+                        onFinish()
+                    }
+
                     BottomSheetType.CANCEL -> onBack()
                     else -> Unit
                 }

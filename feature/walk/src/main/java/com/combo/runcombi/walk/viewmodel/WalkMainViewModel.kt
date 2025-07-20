@@ -143,4 +143,12 @@ class WalkMainViewModel @Inject constructor(
             emitEvent(WalkEvent.RequestLocationPermission)
         }
     }
+
+    fun setResultData(time: Int, distance: Double, pathPoints: List<com.google.android.gms.maps.model.LatLng>) {
+        _walkData.update { it.copy(time = time, distance = distance, pathPoints = pathPoints) }
+    }
+
+    fun clearResultData() {
+        _walkData.update { it.copy(time = 0, distance = 0.0, pathPoints = emptyList()) }
+    }
 }

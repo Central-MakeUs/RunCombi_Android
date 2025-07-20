@@ -6,5 +6,8 @@ import com.combo.runcombi.domain.user.model.Pet
 data class WalkData(
     val member: Member? = null,
     val petList: List<Pet> = emptyList(),
-    val exerciseType: ExerciseType = ExerciseType.WALKING
+    val exerciseType: ExerciseType = ExerciseType.WALKING,
+    val time: Int = 0,
+    val distance: Double = 0.0,
+    val pathPoints: List<com.google.android.gms.maps.model.LatLng> = emptyList()
 ) 

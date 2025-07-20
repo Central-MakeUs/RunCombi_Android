@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
@@ -45,30 +46,27 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.util.FormatUtils
-import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
-import com.google.android.gms.maps.model.LatLng
-import androidx.compose.ui.tooling.preview.Preview
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
+import com.google.android.gms.maps.model.LatLng
 
 @Composable
 fun WalkResultScreen(
-    walkMainViewModel: WalkMainViewModel,
-    walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
+    walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
 ) {
-    val uiState = walkRecordViewModel.uiState.collectAsState().value
-    val formattedTime = FormatUtils.formatMinute(uiState.time)
-    val formattedDistance = FormatUtils.formatDistance(uiState.distance)
+    val walkData = walkMainViewModel.walkData.collectAsState().value
+    val formattedTime = FormatUtils.formatMinute(walkData.time)
+    val formattedDistance = FormatUtils.formatDistance(walkData.distance)
 
     WalkResultContent(
         timeText = formattedTime,
         distanceText = formattedDistance,
-        pathPoints = uiState.pathPoints,
+        pathPoints = walkData.pathPoints,
         onBack = onBack
     )
 
     DisposableEffect(Unit) {
-        onDispose { walkRecordViewModel.clear() }
+        onDispose { walkMainViewModel.clearResultData() }
     }
 }
 
@@ -181,7 +179,9 @@ fun StatInfoSection(
                     color = Grey07,
                     style = giantsTitle2,
                     fontStyle = FontStyle.Italic,
-                    modifier = Modifier.alignByBaseline().padding(end = 8.dp)
+                    modifier = Modifier
+                        .alignByBaseline()
+                        .padding(end = 8.dp)
                 )
                 Text(
                     " min",
@@ -199,7 +199,9 @@ fun StatInfoSection(
                     color = Grey07,
                     style = giantsTitle2,
                     fontStyle = FontStyle.Italic,
-                    modifier = Modifier.alignByBaseline().padding(end = 8.dp)
+                    modifier = Modifier
+                        .alignByBaseline()
+                        .padding(end = 8.dp)
                 )
                 Text(
                     " km",
