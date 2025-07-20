@@ -21,6 +21,7 @@ import com.combo.runcombi.core.designsystem.theme.Grey04
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
+import com.combo.runcombi.walk.model.ExerciseType
 
 @Composable
 fun WalkTypeSelectScreen(
@@ -28,10 +29,9 @@ fun WalkTypeSelectScreen(
     onBack: () -> Unit = {},
     onTypeSelected: () -> Unit = {},
 ) {
-    val uiState by walkMainViewModel.uiState.collectAsState()
-    val selected= uiState.petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
-    val selectedCombis = selected.map { it.pet.name }.joinToString()
-
+    val uiState by walkMainViewModel.walkData.collectAsState()
+    val selectedCombis = uiState.petList.map { it.name }.joinToString()
+    
     Column(
         modifier = Modifier
             .background(color = Grey01)
@@ -49,24 +49,33 @@ fun WalkTypeSelectScreen(
             )
             Spacer(Modifier.weight(1f))
             RunCombiButton(
-                onClick = onTypeSelected,
+                onClick = {
+                    walkMainViewModel.updateExerciseType(ExerciseType.WALKING)
+                    onTypeSelected()
+                },
                 textColor = WhiteFF,
                 enabledColor = Grey04,
                 text = "걷기",
             )
             Spacer(Modifier.height(16.dp))
             RunCombiButton(
-                onClick = onTypeSelected,
+                onClick = {
+                    walkMainViewModel.updateExerciseType(ExerciseType.FAST_WALKING)
+                    onTypeSelected()
+                },
                 textColor = WhiteFF,
                 enabledColor = Grey04,
                 text = "빠른 걷기",
             )
             Spacer(Modifier.height(16.dp))
             RunCombiButton(
-                onClick = onTypeSelected,
+                onClick = {
+                    walkMainViewModel.updateExerciseType(ExerciseType.JOGGING)
+                    onTypeSelected()
+                },
                 textColor = WhiteFF,
                 enabledColor = Grey04,
-                text = "슬로우 러닝",
+                text = "조깅",
             )
             Spacer(Modifier.height(93.dp))
         }

@@ -3,6 +3,7 @@
 package com.combo.runcombi.walk.screen
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Looper
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,27 +32,39 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey06
+import com.combo.runcombi.core.designsystem.theme.Grey07
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Grey09
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle2
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle4
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle6
+import com.combo.runcombi.domain.user.model.Gender
+import com.combo.runcombi.domain.user.model.Member
+import com.combo.runcombi.domain.user.model.Pet
+import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.model.BottomSheetType
+import com.combo.runcombi.walk.model.WalkMemberUiModel
+import com.combo.runcombi.walk.model.WalkPetUIModel
 import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
@@ -67,9 +82,9 @@ import kotlinx.coroutines.flow.collectLatest
 @SuppressLint("MissingPermission")
 @Composable
 fun WalkTrackingScreen(
-    walkMainViewModel: WalkMainViewModel,
     onFinish: () -> Unit,
     onBack: () -> Unit,
+    walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -84,10 +99,7 @@ fun WalkTrackingScreen(
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location ->
                     walkRecordViewModel.addPathPointFromService(
-                        location.latitude,
-                        location.longitude,
-                        location.accuracy,
-                        location.time
+                        location.latitude, location.longitude, location.accuracy, location.time
                     )
                 }
             }
@@ -95,6 +107,13 @@ fun WalkTrackingScreen(
     }
 
     LaunchedEffect(Unit) {
+        val member = walkMainViewModel.walkData.value.member
+        val exerciseType = walkMainViewModel.walkData.value.exerciseType
+        val selectedPetList = walkMainViewModel.walkData.value.petList
+        if (member != null) {
+            walkRecordViewModel.initWalkData(exerciseType, member, selectedPetList)
+        }
+
         walkRecordViewModel.eventFlow.collectLatest { event ->
             if (event is WalkTrackingEvent.ShowBottomSheet) {
                 showSheet.value = event.type
@@ -105,13 +124,10 @@ fun WalkTrackingScreen(
     DisposableEffect(isPaused) {
         if (!isPaused) {
             val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-                .setMinUpdateIntervalMillis(1000)
-                .build()
+                .setMinUpdateIntervalMillis(1000).build()
 
             fusedLocationClient.requestLocationUpdates(
-                request,
-                locationCallback,
-                Looper.getMainLooper()
+                request, locationCallback, Looper.getMainLooper()
             )
         }
         onDispose {
@@ -130,8 +146,7 @@ fun WalkTrackingScreen(
         uiState = uiState,
         onPauseToggle = walkRecordViewModel::togglePause,
         onCancelClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.CANCEL) },
-        onFinishClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.FINISH) }
-    )
+        onFinishClick = { walkRecordViewModel.emitShowBottomSheet(BottomSheetType.FINISH) })
 
     val content = getBottomSheetContent(showSheet.value)
     content?.let {
@@ -219,6 +234,11 @@ fun WalkTrackingContent(
             Spacer(Modifier.height(26.55.dp))
             DistanceDisplayLarge(uiState.distance)
             Spacer(Modifier.weight(1f))
+            if (uiState.walkMemberUiModel != null && uiState.walkPetUIModelList != null) CombiCalorieList(
+                member = uiState.walkMemberUiModel, petUiList = uiState.walkPetUIModelList
+            )
+
+            Spacer(Modifier.weight(1f))
             if (uiState.isPaused) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(48.dp),
@@ -242,11 +262,9 @@ fun ResumeButton(onClick: () -> Unit) {
             .clickable { onClick() }
             .background(color = Primary01, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
-        contentAlignment = Alignment.Center
-    ) {
+        contentAlignment = Alignment.Center) {
         StableImage(
-            drawableResId = R.drawable.ic_resume,
-            modifier = Modifier
+            drawableResId = R.drawable.ic_resume, modifier = Modifier
                 .width(48.dp)
                 .height(48.dp)
         )
@@ -258,16 +276,14 @@ fun FinishButtonLongPress(onLongClick: () -> Unit) {
     Box(
         modifier = Modifier
             .combinedClickable(
-                onClick = {},
-                onLongClick = onLongClick
+                onClick = {}, onLongClick = onLongClick
             )
             .background(color = Grey09, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
         contentAlignment = Alignment.Center
     ) {
         StableImage(
-            drawableResId = R.drawable.ic_stop,
-            modifier = Modifier
+            drawableResId = R.drawable.ic_stop, modifier = Modifier
                 .width(48.dp)
                 .height(48.dp)
         )
@@ -294,28 +310,163 @@ fun DistanceDisplayLarge(distance: Double) {
             text = formattedDistance,
             color = Grey06,
             fontStyle = FontStyle.Italic,
-            style = RunCombiTypography.giantsTitle2,
+            style = giantsTitle2,
             modifier = Modifier
                 .padding(end = 8.dp)
                 .alignByBaseline()
         )
         Text(
-            text = "Km",
-            color = Grey06,
-            style = RunCombiTypography.giantsTitle6,
-            modifier = Modifier.alignByBaseline()
+            text = "Km", color = Grey06, style = giantsTitle6, modifier = Modifier.alignByBaseline()
         )
     }
 }
 
 @Composable
-fun CalorieDisplayLarge(calorie: Double) {
+private fun CombiCalorieList(
+    member: WalkMemberUiModel,
+    petUiList: List<WalkPetUIModel>,
+) {
+    val size = petUiList.size
+
+    Row(
+        modifier = Modifier
+            .height(155.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        MemberCalorieContent(
+            modifier = Modifier
+                .fillMaxHeight(),
+            size = size,
+            member = member
+        )
+        petUiList.forEachIndexed { index, pet ->
+            PetCalorieContent(
+                modifier = Modifier
+                    .fillMaxHeight(),
+                pet = pet,
+                size = size,
+                isCenter = petUiList.size > 1 && index == 0,
+            )
+        }
+    }
+}
+
+private fun getMemberWidth(size: Int): Dp =
+    if (size > 1) 99.7826.dp else 152.dp
+
+private fun getPetWidth(size: Int, isCenter: Boolean): Dp =
+    when {
+        size == 1 -> 152.dp
+        size == 2 && isCenter -> 106.4348.dp
+        else -> 99.7826.dp
+    }
+
+@Composable
+private fun MemberCalorieContent(
+    modifier: Modifier = Modifier,
+    member: WalkMemberUiModel,
+    size: Int,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(getMemberWidth(size)),
+        contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = if (size == 1) R.drawable.ic_walk_box_left else R.drawable.ic_walk_box_type_b_left,
+            modifier = Modifier.fillMaxSize()
+        )
+        CalorieContent(
+            modifier = Modifier.padding(end = 12.dp),
+            name = member.member.nickname,
+            imageUrl = member.member.profileImageUrl ?: "",
+            drawableResId = R.drawable.person_profile,
+            calorie = member.calorie,
+            size = size,
+        )
+    }
+}
+
+@Composable
+private fun PetCalorieContent(
+    modifier: Modifier = Modifier,
+    pet: WalkPetUIModel,
+    size: Int,
+    isCenter: Boolean = false,
+) {
+    val boxImage =
+        if (isCenter) R.drawable.ic_walk_box_type_b_center else (if (size == 1) R.drawable.ic_walk_box_right else R.drawable.ic_walk_box_type_b_right)
+    val startPadding = 12.dp
+    val endPadding = if (isCenter) 12.dp else 0.dp
+
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(getPetWidth(size, isCenter)),
+        contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = boxImage, modifier = Modifier.fillMaxSize()
+        )
+        CalorieContent(
+            modifier = Modifier.padding(start = startPadding, end = endPadding),
+            name = pet.pet.name,
+            imageUrl = pet.pet.profileImageUrl ?: "",
+            drawableResId = R.drawable.ic_pet_defalut,
+            calorie = pet.calorie,
+            size = size,
+        )
+    }
+}
+
+@Composable
+fun CalorieContent(
+    modifier: Modifier = Modifier,
+    name: String, imageUrl: String, drawableResId: Int, calorie: Double, size: Int,
+) {
     val formattedCalorie = FormatUtils.formatCalorie(calorie)
-    Text(
-        text = "$formattedCalorie Kcal",
-        color = Color.White,
-        fontSize = 28.sp
-    )
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        NetworkImage(
+            contentScale = ContentScale.Crop,
+            imageUrl = imageUrl,
+            drawableResId = drawableResId,
+            modifier = Modifier
+                .background(color = Primary01)
+                .size(42.dp)
+                .padding(2.dp)
+                .clip(RoundedCornerShape(4.dp)),
+        )
+
+        Text(
+            modifier = Modifier.padding(vertical = 10.dp),
+            text = name,
+            color = Grey07,
+            style = body2,
+        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = formattedCalorie,
+                color = Grey07,
+                style = if (size == 1) giantsTitle2 else giantsTitle4,
+                modifier = Modifier.alignByBaseline()
+            )
+            Text(
+                text = " Kcal",
+                color = Grey07,
+                style = giantsTitle6,
+                modifier = Modifier.alignByBaseline()
+            )
+        }
+    }
 }
 
 @Composable
@@ -325,12 +476,9 @@ fun PauseButton(onClick: () -> Unit) {
             .clickable { onClick() }
             .background(color = Grey02, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
-        contentAlignment = Alignment.Center
-    ) {
+        contentAlignment = Alignment.Center) {
         StableImage(
-            drawableResId = R.drawable.ic_pause,
-            modifier = Modifier
-                .size(32.dp)
+            drawableResId = R.drawable.ic_pause, modifier = Modifier.size(32.dp)
         )
     }
 }
@@ -338,15 +486,60 @@ fun PauseButton(onClick: () -> Unit) {
 @Preview(showBackground = true, backgroundColor = 0xFF171717)
 @Composable
 fun WalkTrackingContentPreview() {
+    val member = Member(
+        nickname = "홍길동", gender = Gender.MALE, height = 175, weight = 70, profileImageUrl = null
+    )
+    val petList = listOf(
+        WalkPetUIModel(
+            pet = Pet(
+                name = "멍멍이",
+                age = 3,
+                weight = 8.5,
+                runStyle = RunStyle.WALKING,
+                profileImageUrl = null
+            ), calorie = 56.7
+        ), WalkPetUIModel(
+            pet = Pet(
+                name = "야옹이",
+                age = 2,
+                weight = 4.2,
+                runStyle = RunStyle.SLOW_WALKING,
+                profileImageUrl = null
+            ), calorie = 78.9
+        )
+    )
+
     WalkTrackingContent(
         uiState = WalkUiState(
-            time = 1234,
-            distance = 2.5,
-            calorie = 120.0,
-            isPaused = false
-        ),
-        onPauseToggle = {},
-        onCancelClick = {},
-        onFinishClick = {}
-    )
+            time = 1234, distance = 2.5, isPaused = false, walkMemberUiModel = WalkMemberUiModel(
+                member = member, calorie = 123.4
+            ), walkPetUIModelList = petList
+        ), onPauseToggle = {}, onCancelClick = {}, onFinishClick = {})
 }
+
+@Preview(showBackground = true, backgroundColor = 0xFF171717)
+@Composable
+fun CombiCalorieListPreview() {
+    val member = WalkMemberUiModel(
+        member = Member(
+            nickname = "홍길동",
+            gender = Gender.MALE,
+            height = 175,
+            weight = 70,
+            profileImageUrl = null
+        ), calorie = 123.4
+    )
+    val petList = listOf(
+        WalkPetUIModel(
+            pet = Pet(
+                name = "야옹이",
+                age = 2,
+                weight = 4.2,
+                runStyle = RunStyle.SLOW_WALKING,
+                profileImageUrl = null
+            ), calorie = 78.9
+        )
+    )
+    CombiCalorieList(member = member, petUiList = petList)
+}
+

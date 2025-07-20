@@ -3,7 +3,6 @@ package com.combo.runcombi.walk.usecase
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.walk.model.LocationPoint
 import com.combo.runcombi.walk.model.WalkUpdateResult
-import com.combo.runcombi.walk.util.CalorieCalculator
 import com.combo.runcombi.walk.util.DistanceCalculator
 import com.combo.runcombi.walk.util.MovementValidator
 import javax.inject.Inject
@@ -12,14 +11,14 @@ class UpdateWalkRecordUseCase @Inject constructor() {
     operator fun invoke(
         prevPoint: LocationPoint?,
         newPoint: LocationPoint,
-        speedList: List<Double>
+        speedList: List<Double>,
+
     ): DomainResult<WalkUpdateResult> {
         if (prevPoint == null) {
             return DomainResult.Success(
                 WalkUpdateResult(
                     distance = 0.0,
                     averageSpeed = 0.0,
-                    calorie = 0.0
                 )
             )
         }
@@ -37,7 +36,6 @@ class UpdateWalkRecordUseCase @Inject constructor() {
         val result = WalkUpdateResult(
             distance = distance,
             averageSpeed = updatedSpeedList.average(),
-            calorie = CalorieCalculator.calculateCalories(distance)
         )
         return DomainResult.Success(result)
     }

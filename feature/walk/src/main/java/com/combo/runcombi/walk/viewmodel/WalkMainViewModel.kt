@@ -3,11 +3,14 @@ package com.combo.runcombi.walk.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
 import com.combo.runcombi.walk.model.PetUiModel
 import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
+import com.combo.runcombi.walk.model.WalkData
+import com.combo.runcombi.walk.model.ExerciseType
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,6 +30,9 @@ class WalkMainViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState
 
+    private val _walkData = MutableStateFlow(WalkData())
+    val walkData: StateFlow<WalkData> = _walkData
+
     private val _eventFlow = MutableSharedFlow<WalkEvent>()
     val eventFlow: SharedFlow<WalkEvent> = _eventFlow.asSharedFlow()
 
@@ -40,20 +46,26 @@ class WalkMainViewModel @Inject constructor(
                 when (result) {
                     is DomainResult.Success -> {
                         val userInfo = result.data
-
                         val member = userInfo.member
                         val petList = userInfo.petList
 
+                        _walkData.update {
+                            it.copy(
+                                member = member,
+                                petList = petList
+                            )
+                        }
                         _uiState.update {
                             it.copy(
                                 member = member,
-                                petUiList = petList.mapIndexed { idx, pet ->
+                                petUiList = userInfo.petList.mapIndexed { idx, pet ->
                                     PetUiModel(
                                         pet,
                                         false,
                                         idx
                                     )
-                                })
+                                }
+                            )
                         }
                     }
 
@@ -111,6 +123,10 @@ class WalkMainViewModel @Inject constructor(
 
     fun updateAddress(address: String) {
         _uiState.update { it.copy(address = address, isLoading = false) }
+    }
+
+    fun updateExerciseType(type: ExerciseType) {
+        _walkData.update { it.copy(exerciseType = type) }
     }
 
     fun setError(message: String) {

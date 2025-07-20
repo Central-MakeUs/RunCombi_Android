@@ -48,7 +48,6 @@ import android.os.Build
 import androidx.compose.ui.text.font.FontStyle
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
-@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("MissingPermission")
 @Composable
 fun WalkReadyScreen(
