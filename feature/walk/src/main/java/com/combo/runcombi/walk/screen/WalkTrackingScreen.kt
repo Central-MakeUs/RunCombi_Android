@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
 package com.combo.runcombi.walk.screen
@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -94,6 +95,8 @@ fun WalkTrackingScreen(
     val isPaused = uiState.isPaused
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
+    val isInitialized = rememberSaveable { mutableStateOf(false) }
+
     val showSheet = remember { mutableStateOf(BottomSheetType.NONE) }
 
     val locationCallback = remember {
@@ -108,13 +111,17 @@ fun WalkTrackingScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        walkMainViewModel.startRun()
-        val member = walkMainViewModel.walkData.value.member
-        val exerciseType = walkMainViewModel.walkData.value.exerciseType
-        val selectedPetList = walkMainViewModel.walkData.value.petList
-        if (member != null) {
-            walkRecordViewModel.initWalkData(exerciseType, member, selectedPetList)
+    LaunchedEffect(isInitialized.value) {
+        if (!isInitialized.value) {
+            walkMainViewModel.startRun()
+
+            val member = walkMainViewModel.walkData.value.member
+            val exerciseType = walkMainViewModel.walkData.value.exerciseType
+            val selectedPetList = walkMainViewModel.walkData.value.petList
+            if (member != null) {
+                walkRecordViewModel.initWalkData(exerciseType, member, selectedPetList)
+            }
+            isInitialized.value = true
         }
 
         walkRecordViewModel.eventFlow.collectLatest { event ->

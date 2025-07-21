@@ -8,6 +8,8 @@ import com.combo.runcombi.network.model.response.MemberRunData
 import com.combo.runcombi.network.model.response.PetRunData
 import com.combo.runcombi.network.service.WalkService
 import com.combo.runcombi.walk.mapper.toDataModel
+import com.combo.runcombi.walk.mapper.toDomainModel
+import com.combo.runcombi.walk.model.StartRunData
 import com.combo.runcombi.walk.model.WalkPet
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -20,7 +22,10 @@ import javax.inject.Inject
 
 class WalkRepositoryImpl @Inject constructor(private val walkService: WalkService) :
     WalkRepository {
-    override suspend fun startRun(petList: List<Int>, memberRunStyle: String): DomainResult<Int> =
+    override suspend fun startRun(
+        petList: List<Int>,
+        memberRunStyle: String,
+    ): DomainResult<StartRunData> =
         handleResult {
             walkService.requestStartRun(
                 StartRunRequest(
@@ -29,7 +34,7 @@ class WalkRepositoryImpl @Inject constructor(private val walkService: WalkServic
                 )
             )
         }.convert {
-            it.result.runId
+            it.toDomainModel()
         }
 
     override suspend fun endRun(

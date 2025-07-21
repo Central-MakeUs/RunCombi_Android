@@ -1,12 +1,13 @@
 package com.combo.runcombi.walk.repository
 
 import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.walk.model.StartRunData
 import com.combo.runcombi.walk.model.WalkPet
 import java.io.File
 
 
 interface WalkRepository {
-    suspend fun startRun(petList: List<Int>, memberRunStyle: String): DomainResult<Int>
+    suspend fun startRun(petList: List<Int>, memberRunStyle: String): DomainResult<StartRunData>
 
     suspend fun endRun(
         runId: Int,

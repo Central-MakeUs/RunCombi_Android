@@ -4,5 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StartRunResult(
-    val runId: Int
+    val runId: Int,
+    val isFirstRun: String,
+    val nthRun: Int,
 )

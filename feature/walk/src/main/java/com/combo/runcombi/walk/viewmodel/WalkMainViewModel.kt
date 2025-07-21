@@ -141,7 +141,11 @@ class WalkMainViewModel @Inject constructor(
         }
     }
 
-    fun setResultData(time: Int, distance: Double, pathPoints: List<com.google.android.gms.maps.model.LatLng>) {
+    fun setResultData(
+        time: Int,
+        distance: Double,
+        pathPoints: List<com.google.android.gms.maps.model.LatLng>,
+    ) {
         _walkData.update { it.copy(time = time, distance = distance, pathPoints = pathPoints) }
     }
 
@@ -156,9 +160,9 @@ class WalkMainViewModel @Inject constructor(
             val exerciseType = walkData.value.exerciseType
             if (member != null && petList.isNotEmpty()) {
                 val result = startRunUseCase(petList.map { it.id }, exerciseType.name)
-                val runId = (result as? DomainResult.Success)?.data
-                if (runId != null) {
-                    _walkData.update { it.copy(runId = runId) }
+                val runData = (result as? DomainResult.Success)?.data
+                if (runData != null) {
+                    _walkData.update { it.copy(runData = runData) }
                 }
             }
         }

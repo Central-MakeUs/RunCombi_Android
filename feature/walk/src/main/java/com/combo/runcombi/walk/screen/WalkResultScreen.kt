@@ -46,6 +46,7 @@ import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
@@ -63,6 +64,7 @@ fun WalkResultScreen(
     onBack: () -> Unit = {},
 ) {
     val walkData = walkMainViewModel.walkData.collectAsState().value
+    val startRunData = walkData.runData
     val formattedTime = FormatUtils.formatMinute(walkData.time)
     val formattedDistance = FormatUtils.formatDistance(walkData.distance)
 
@@ -70,7 +72,9 @@ fun WalkResultScreen(
         timeText = formattedTime,
         distanceText = formattedDistance,
         pathPoints = walkData.pathPoints,
-        onBack = onBack
+        isFirstRun = startRunData?.isFirstRun == "Y",
+        nthRun = startRunData?.nthRun ?: 0,
+        onBack = onBack,
     )
 
     DisposableEffect(Unit) {
@@ -82,6 +86,8 @@ fun WalkResultScreen(
 fun WalkResultContent(
     timeText: String,
     distanceText: String,
+    isFirstRun: Boolean,
+    nthRun: Int,
     pathPoints: List<LatLng>,
     onBack: () -> Unit = {},
 ) {
@@ -90,12 +96,14 @@ fun WalkResultContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Grey01),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
             RunCombiAppTopBar(isVisibleBackBtn = false, isVisibleCloseBtn = true, onClose = onBack)
             Spacer(modifier = Modifier.height(22.dp))
 
-            TitleSection()
+            TitleSection(
+                isFirstRun = isFirstRun, nthRun = nthRun
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             PathPreview(pathPoints = pathPoints)
@@ -117,11 +125,11 @@ fun WalkResultContent(
 fun PathPreview(pathPoints: List<LatLng>) {
     val cameraPositionState = rememberCameraPositionState {
         position = if (pathPoints.isNotEmpty()) {
-            com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
+            CameraPosition.fromLatLngZoom(
                 pathPoints.first(), 16f
             )
         } else {
-            com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
+            CameraPosition.fromLatLngZoom(
                 LatLng(37.5665, 126.9780), 16f
             )
         }
@@ -236,10 +244,12 @@ fun StatInfoSection(
 }
 
 @Composable
-fun TitleSection() {
-    Text("이번 달 7번째 운동", style = giantsTitle1, color = WhiteFF)
+fun TitleSection(isFirstRun: Boolean, nthRun: Int) {
+    val title = if (isFirstRun) "첫 운동 찢었다" else "이번 달 ${nthRun}번째 운동"
+    val subTitle = if (isFirstRun) "사진을 찍어 추억을 남겨보세요" else "앞으로도 계속 함께 할 거죠?"
+    Text(title, style = giantsTitle1, color = WhiteFF, fontStyle = FontStyle.Italic)
     Spacer(modifier = Modifier.height(8.dp))
-    Text("앞으로도 계속 함께 할 거죠?", style = giantsTitle5, color = Color(0xEDEDEDE0))
+    Text(subTitle, style = giantsTitle5, color = Color(0xEDEDEDE0))
 }
 
 @Composable
@@ -249,8 +259,7 @@ fun CameraButton(onClick: () -> Unit) {
             .clickable { onClick() }
             .background(Primary02, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
-        contentAlignment = Alignment.Center
-    ) {
+        contentAlignment = Alignment.Center) {
         StableImage(
             drawableResId = R.drawable.ic_camera_fill,
             modifier = Modifier
@@ -263,8 +272,7 @@ fun CameraButton(onClick: () -> Unit) {
 @Composable
 fun CelebrationEffect() {
     LottieImage(
-        modifier = Modifier.fillMaxSize(),
-        lottieRes = R.raw.animation_celebration
+        modifier = Modifier.fillMaxSize(), lottieRes = R.raw.animation_celebration
     )
 }
 
@@ -272,14 +280,11 @@ fun CelebrationEffect() {
 @Composable
 fun WalkResultContentPreview() {
     WalkResultContent(
-        timeText = "12",
-        distanceText = "3.2",
-        pathPoints = listOf(
-            LatLng(37.5665, 126.9780),
-            LatLng(37.5670, 126.9790),
-            LatLng(37.5675, 126.9800)
-        ),
-        onBack = {}
+        timeText = "12", distanceText = "3.2", pathPoints = listOf(
+            LatLng(37.5665, 126.9780), LatLng(37.5670, 126.9790), LatLng(37.5675, 126.9800)
+        ), onBack = {},
+        isFirstRun = true,
+        nthRun = 0
     )
 }
 
