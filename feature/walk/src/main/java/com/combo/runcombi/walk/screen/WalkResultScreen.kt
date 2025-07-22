@@ -44,6 +44,7 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle6
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.walk.R
+import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -256,7 +257,7 @@ fun TitleSection(isFirstRun: Boolean, nthRun: Int) {
 fun CameraButton(onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .clickable { onClick() }
+            .clickableSingle { onClick() }
             .background(Primary02, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
         contentAlignment = Alignment.Center) {

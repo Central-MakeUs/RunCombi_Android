@@ -77,6 +77,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxHeight
+import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.ext.clickableWithoutRipple
 
 
@@ -316,7 +317,7 @@ private fun StartWalkButton(
         modifier = modifier
             .size(100.dp)
             .background(Primary01, shape = RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick), contentAlignment = Alignment.Center
+            .clickableSingle(onClick = onClick), contentAlignment = Alignment.Center
     ) {
         Text(
             text = "운동", style = giantsTitle2, color = Grey02
