@@ -44,6 +44,9 @@ fun MainTabNavHost(
             onBack = {
                 mainTabNavigator.navController.popBackStack()
             },
+            onNavigateToRecord = {
+                mainTabNavigator.navigationToRecord(it)
+            }
         )
 
         settingNavGraph()

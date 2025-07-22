@@ -15,7 +15,6 @@ import com.combo.runcombi.walk.screen.WalkReadyScreen
 import com.combo.runcombi.walk.screen.WalkResultScreen
 import com.combo.runcombi.walk.screen.WalkTrackingScreen
 import com.combo.runcombi.walk.screen.WalkTypeSelectScreen
-import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 
 fun NavController.navigateToWalkMain(
@@ -64,6 +63,7 @@ fun NavGraphBuilder.walkNavGraph(
     onCountdownFinished: () -> Unit,
     onFinish: () -> Unit,
     onBack: () -> Unit,
+    onNavigateToRecord: (List<String>) -> Unit,
 ) {
     navigation<MainTabDataModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkMain,
@@ -79,11 +79,11 @@ fun NavGraphBuilder.walkNavGraph(
             )
         }
 
-
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(MainTabDataModel.Walk)
             }
+
             val walkMainViewModel = hiltViewModel<WalkMainViewModel>(parentEntry)
             WalkTypeSelectScreen(
                 walkMainViewModel = walkMainViewModel,
@@ -105,7 +105,7 @@ fun NavGraphBuilder.walkNavGraph(
             )
         }
 
-        walkTrackingNavGraph(navController, onFinish, onBack)
+        walkTrackingNavGraph(navController, onFinish, onBack, onNavigateToRecord)
     }
 }
 
@@ -113,6 +113,7 @@ fun NavGraphBuilder.walkTrackingNavGraph(
     navController: NavController,
     onFinish: () -> Unit,
     onBack: () -> Unit,
+    onNavigateToRecord: (List<String>) -> Unit,
 ) {
     navigation<RouteModel.MainTabRoute.WalkRouteModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkTracking,
@@ -136,6 +137,7 @@ fun NavGraphBuilder.walkTrackingNavGraph(
             WalkResultScreen(
                 walkMainViewModel = walkMainViewModel,
                 onBack = onBack,
+                onNavigateToRecord = onNavigateToRecord
             )
         }
     }

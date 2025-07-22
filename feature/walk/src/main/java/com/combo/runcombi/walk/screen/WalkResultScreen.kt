@@ -58,8 +58,8 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.ui.ext.clickableSingle
-import com.combo.runcombi.ui.util.BitmapUtil
 import com.combo.runcombi.ui.util.FormatUtils
+import com.combo.runcombi.ui.util.BitmapUtil
 import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
@@ -71,6 +71,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
 
 fun createCircleMarkerBitmap(color: Int, size: Int = 42): Bitmap {
     val bitmap = createBitmap(size, size)
@@ -88,12 +90,30 @@ fun WalkResultScreen(
     walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     walkResultViewModel: WalkResultViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
+    onNavigateToRecord: (List<String>) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    var cameraImagePath by remember { mutableStateOf<String?>(null) }
+    var captureImagePath by remember { mutableStateOf<String?>(null) }
+    val showCaptureRequest = remember { mutableStateOf(false) }
+    var shouldRequestCameraPermission by remember { mutableStateOf(false) }
+
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
-            bitmap?.let {
-                val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
-                // TODO: 운동 기록 페이지로 이동
+            if (bitmap != null) {
+                val file = BitmapUtil.bitmapToFile(context, bitmap, "camera_${System.currentTimeMillis()}.jpg")
+                cameraImagePath = file.absolutePath
+            } else {
+                cameraImagePath = null
+            }
+            captureImagePath?.let { capturePath ->
+                val resultList = if (cameraImagePath != null) {
+                    listOf(capturePath, cameraImagePath!!)
+                } else {
+                    listOf(capturePath)
+                }
+                onNavigateToRecord(resultList)
+                cameraImagePath = null
             }
         }
     val cameraPermissionLauncher =
@@ -110,15 +130,20 @@ fun WalkResultScreen(
     LaunchedEffect(true) {
         walkResultViewModel.eventFlow.collect { event ->
             when (event) {
-                is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(
-                    Manifest.permission.CAMERA
-                )
-
+                is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
                 is WalkResultEvent.OpenCamera -> cameraLauncher.launch(null)
-                is WalkResultEvent.PermissionDenied -> { /* TODO: 운동 기록 페이지로 이동 */
+                is WalkResultEvent.PermissionDenied -> {
+                    captureImagePath?.let { capturePath ->
+                        onNavigateToRecord(listOf(capturePath))
+                    }
                 }
             }
         }
+    }
+
+    fun tryOpenCamera() {
+        showCaptureRequest.value = true
+        shouldRequestCameraPermission = true
     }
 
     WalkResultContent(
@@ -128,10 +153,27 @@ fun WalkResultScreen(
         isFirstRun = startRunData?.isFirstRun == "Y",
         nthRun = startRunData?.nthRun ?: 0,
         onBack = onBack,
+        showCaptureRequest = showCaptureRequest.value,
+        onCaptured = { bitmap ->
+            if (captureImagePath == null) {
+                val file = BitmapUtil.bitmapToFile(context, bitmap, "walk_map_${System.currentTimeMillis()}.jpg")
+                captureImagePath = file.absolutePath
+            }
+            showCaptureRequest.value = false
+            if (shouldRequestCameraPermission) {
+                shouldRequestCameraPermission = false
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    walkResultViewModel.openCamera()
+                } else {
+                    walkResultViewModel.onCameraButtonClick()
+                }
+            }
+        },
         onClickCamera = {
-
+            tryOpenCamera()
         }
     )
+
     DisposableEffect(Unit) { onDispose { walkMainViewModel.clearResultData() } }
 }
 
@@ -143,11 +185,10 @@ fun WalkResultContent(
     nthRun: Int,
     pathPoints: List<LatLng>,
     onBack: () -> Unit = {},
+    showCaptureRequest: Boolean = false,
+    onCaptured: (Bitmap) -> Unit = {},
     onClickCamera: () -> Unit = {},
 ) {
-    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
-    var showCaptureRequest by remember { mutableStateOf(false) }
-
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -167,44 +208,18 @@ fun WalkResultContent(
                 mapStyleResId = R.raw.google_map_dark_theme_style,
                 captureRequest = showCaptureRequest,
                 onCaptured = { bitmap ->
-                    capturedBitmap = bitmap
-                    showCaptureRequest = false
+                    onCaptured(bitmap)
                 }
             )
             Spacer(modifier = Modifier.height(12.dp))
             StatInfoSection(timeText = timeText, distanceText = distanceText)
             Spacer(modifier = Modifier.weight(1f))
             CameraButton(onClick = {
-                showCaptureRequest = true
                 onClickCamera()
             })
             Spacer(modifier = Modifier.height(44.dp))
         }
         CelebrationEffect()
-
-        // TODO: 실험용 팝업이므로 제거
-        if (capturedBitmap != null) {
-            AlertDialog(
-                onDismissRequest = { capturedBitmap = null },
-                confirmButton = {
-                    TextButton(onClick = {
-                        capturedBitmap = null
-                    }) { Text("닫기") }
-                },
-                title = { Text("지도 캡처 미리보기") },
-                text = {
-                    capturedBitmap?.let {
-                        Image(
-                            bitmap = it.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(300.dp)
-                        )
-                    }
-                }
-            )
-        }
     }
 }
 

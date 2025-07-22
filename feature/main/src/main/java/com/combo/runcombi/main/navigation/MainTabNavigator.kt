@@ -8,6 +8,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.combo.runcombi.history.navigation.navigateToHistory
+import com.combo.runcombi.history.navigation.navigateToRecord
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
 import com.combo.runcombi.walk.navigation.navigateToWalkMain
@@ -21,6 +22,10 @@ class MainTabNavigator(
 ) {
     fun navigationToHistory() {
         navController.navigateToHistory()
+    }
+
+    fun navigationToRecord(imagePaths: List<String>) {
+        navController.navigateToRecord(imagePaths)
     }
 
     fun navigationToSetting() {
