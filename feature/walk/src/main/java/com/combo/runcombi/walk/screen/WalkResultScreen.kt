@@ -2,8 +2,11 @@ package com.combo.runcombi.walk.screen
 
 import android.Manifest
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,22 +19,29 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.createBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
@@ -39,7 +49,6 @@ import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey07
-import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.Primary02
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle1
@@ -55,17 +64,24 @@ import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkResultViewModel
-import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.MarkerComposable
-import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
+
+fun createCircleMarkerBitmap(color: Int, size: Int = 42): Bitmap {
+    val bitmap = createBitmap(size, size)
+    val canvas = Canvas(bitmap)
+    val paint = Paint().apply {
+        isAntiAlias = true
+        this.color = color
+    }
+    canvas.drawCircle(size / 2f, size / 2f, size / 2f, paint)
+    return bitmap
+}
 
 @Composable
 fun WalkResultScreen(
@@ -73,22 +89,18 @@ fun WalkResultScreen(
     walkResultViewModel: WalkResultViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
 ) {
-    val cameraLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { bitmap: Bitmap? ->
-        bitmap?.let {
-            val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
-
-            // TODO: 운동 기록 페이지로 이동
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
+            bitmap?.let {
+                val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
+                // TODO: 운동 기록 페이지로 이동
+            }
         }
-    }
-
-    val cameraPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) walkResultViewModel.openCamera()
-        else walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
-    }
+    val cameraPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) walkResultViewModel.openCamera()
+            else walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
+        }
 
     val walkData = walkMainViewModel.walkData.collectAsState().value
     val startRunData = walkData.runData
@@ -98,14 +110,12 @@ fun WalkResultScreen(
     LaunchedEffect(true) {
         walkResultViewModel.eventFlow.collect { event ->
             when (event) {
-                is WalkResultEvent.RequestCameraPermission ->
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(
+                    Manifest.permission.CAMERA
+                )
 
-                is WalkResultEvent.OpenCamera ->
-                    cameraLauncher.launch(null)
-
-                is WalkResultEvent.PermissionDenied -> {
-                    // TODO: 운동 기록 페이지로 이동
+                is WalkResultEvent.OpenCamera -> cameraLauncher.launch(null)
+                is WalkResultEvent.PermissionDenied -> { /* TODO: 운동 기록 페이지로 이동 */
                 }
             }
         }
@@ -119,13 +129,10 @@ fun WalkResultScreen(
         nthRun = startRunData?.nthRun ?: 0,
         onBack = onBack,
         onClickCamera = {
-            walkResultViewModel.onCameraButtonClick()
+
         }
     )
-
-    DisposableEffect(Unit) {
-        onDispose { walkMainViewModel.clearResultData() }
-    }
+    DisposableEffect(Unit) { onDispose { walkMainViewModel.clearResultData() } }
 }
 
 @Composable
@@ -136,8 +143,11 @@ fun WalkResultContent(
     nthRun: Int,
     pathPoints: List<LatLng>,
     onBack: () -> Unit = {},
-    onClickCamera: () -> Unit,
+    onClickCamera: () -> Unit = {},
 ) {
+    var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var showCaptureRequest by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -147,101 +157,130 @@ fun WalkResultContent(
         ) {
             RunCombiAppTopBar(isVisibleBackBtn = false, isVisibleCloseBtn = true, onClose = onBack)
             Spacer(modifier = Modifier.height(22.dp))
-
-            TitleSection(
-                isFirstRun = isFirstRun, nthRun = nthRun
-            )
+            TitleSection(isFirstRun = isFirstRun, nthRun = nthRun)
             Spacer(modifier = Modifier.height(16.dp))
-
-            PathPreview(pathPoints = pathPoints)
+            MapViewContainer(
+                modifier = Modifier
+                    .size(240.dp)
+                    .padding(10.dp),
+                pathPoints = pathPoints,
+                mapStyleResId = R.raw.google_map_dark_theme_style,
+                captureRequest = showCaptureRequest,
+                onCaptured = { bitmap ->
+                    capturedBitmap = bitmap
+                    showCaptureRequest = false
+                }
+            )
             Spacer(modifier = Modifier.height(12.dp))
-
             StatInfoSection(timeText = timeText, distanceText = distanceText)
             Spacer(modifier = Modifier.weight(1f))
-
-            CameraButton(onClick = onClickCamera)
+            CameraButton(onClick = {
+                showCaptureRequest = true
+                onClickCamera()
+            })
             Spacer(modifier = Modifier.height(44.dp))
         }
-
         CelebrationEffect()
+
+        // TODO: 실험용 팝업이므로 제거
+        if (capturedBitmap != null) {
+            AlertDialog(
+                onDismissRequest = { capturedBitmap = null },
+                confirmButton = {
+                    TextButton(onClick = {
+                        capturedBitmap = null
+                    }) { Text("닫기") }
+                },
+                title = { Text("지도 캡처 미리보기") },
+                text = {
+                    capturedBitmap?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(300.dp)
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
-
 @Composable
-fun PathPreview(pathPoints: List<LatLng>) {
-    val cameraPositionState = rememberCameraPositionState {
-        position = if (pathPoints.isNotEmpty()) {
-            CameraPosition.fromLatLngZoom(
-                pathPoints.first(), 16f
-            )
-        } else {
-            CameraPosition.fromLatLngZoom(
-                LatLng(37.5665, 126.9780), 16f
-            )
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .size(240.dp)
-            .padding(10.dp)
-    ) {
-        GoogleMap(
-            modifier = Modifier
-                .fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                isMyLocationEnabled = false,
-                mapType = MapType.NORMAL,
-                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                    LocalContext.current, R.raw.google_map_dark_theme_style
-                )
-            ),
-            uiSettings = MapUiSettings(
-                zoomGesturesEnabled = false,
-                zoomControlsEnabled = false,
-                compassEnabled = false,
-                myLocationButtonEnabled = false,
-                scrollGesturesEnabled = false,
-                tiltGesturesEnabled = false
-            )
-        ) {
-            if (pathPoints.isNotEmpty()) {
-                Polyline(points = pathPoints, color = Primary01, width = 10f)
-                MarkerComposable(
-                    state = rememberMarkerState(position = pathPoints.first()),
-                    anchor = Offset(0.5f, 0.5f)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(14.dp)
-                            .background(Color.White, shape = CircleShape)
-                    )
-                }
-                if (pathPoints.size > 1) {
-                    MarkerComposable(
-                        state = rememberMarkerState(position = pathPoints.last()),
-                        anchor = Offset(0.5f, 0.5f)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .background(Primary01, shape = CircleShape)
+fun MapViewContainer(
+    modifier: Modifier = Modifier,
+    pathPoints: List<LatLng>,
+    mapStyleResId: Int? = null,
+    captureRequest: Boolean = false,
+    onCaptured: (Bitmap) -> Unit = {},
+) {
+    val context = LocalContext.current
+    val primary01Int = 0xFFD7FE63.toInt()
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            MapView(ctx).apply {
+                onCreate(null)
+                onResume()
+                getMapAsync { googleMap ->
+                    googleMap.uiSettings.apply {
+                        isCompassEnabled = false
+                        isZoomControlsEnabled = false
+                        isMyLocationButtonEnabled = false
+                        isMapToolbarEnabled = false
+                        isIndoorLevelPickerEnabled = false
+                        isScrollGesturesEnabled = false
+                        isTiltGesturesEnabled = false
+                        isRotateGesturesEnabled = false
+                        isZoomGesturesEnabled = false
+                    }
+                    mapStyleResId?.let {
+                        try {
+                            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, it))
+                        } catch (_: Exception) {
+                        }
+                    }
+                    if (pathPoints.isNotEmpty()) {
+                        val polylineOptions = PolylineOptions()
+                            .addAll(pathPoints)
+                            .color(primary01Int)
+                            .width(10f)
+                        googleMap.addPolyline(polylineOptions)
+                        val whiteMarker =
+                            BitmapDescriptorFactory.fromBitmap(createCircleMarkerBitmap(android.graphics.Color.WHITE))
+                        googleMap.addMarker(
+                            MarkerOptions().position(pathPoints.first()).icon(whiteMarker)
+                        )
+                        if (pathPoints.size > 1) {
+                            googleMap.addMarker(
+                                MarkerOptions().position(pathPoints.last()).icon(whiteMarker)
+                            )
+                        }
+                        googleMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                pathPoints.first(), 16f
+                            )
                         )
                     }
                 }
             }
+        },
+        update = { mapView ->
+            if (captureRequest) {
+                mapView.getMapAsync { googleMap ->
+                    googleMap.snapshot { bitmap ->
+                        if (bitmap != null) onCaptured(bitmap)
+                    }
+                }
+            }
         }
-    }
+    )
 }
 
-
 @Composable
-fun StatInfoSection(
-    timeText: String,
-    distanceText: String,
-) {
+fun StatInfoSection(timeText: String, distanceText: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -295,7 +334,12 @@ fun StatInfoSection(
 fun TitleSection(isFirstRun: Boolean, nthRun: Int) {
     val title = if (isFirstRun) "첫 운동 찢었다" else "이번 달 ${nthRun}번째 운동"
     val subTitle = if (isFirstRun) "사진을 찍어 추억을 남겨보세요" else "앞으로도 계속 함께 할 거죠?"
-    Text(title, style = giantsTitle1, color = WhiteFF, fontStyle = FontStyle.Italic)
+    Text(
+        title,
+        style = giantsTitle1,
+        color = WhiteFF,
+        fontStyle = FontStyle.Italic
+    )
     Spacer(modifier = Modifier.height(8.dp))
     Text(subTitle, style = giantsTitle5, color = Color(0xEDEDEDE0))
 }
@@ -307,7 +351,8 @@ fun CameraButton(onClick: () -> Unit) {
             .clickableSingle { onClick() }
             .background(Primary02, shape = RoundedCornerShape(4.dp))
             .size(100.dp),
-        contentAlignment = Alignment.Center) {
+        contentAlignment = Alignment.Center
+    ) {
         StableImage(
             drawableResId = R.drawable.ic_camera_fill,
             modifier = Modifier
@@ -330,7 +375,9 @@ fun WalkResultContentPreview() {
     WalkResultContent(
         timeText = "12", distanceText = "3.2",
         pathPoints = listOf(
-            LatLng(37.5665, 126.9780), LatLng(37.5670, 126.9790), LatLng(37.5675, 126.9800)
+            LatLng(37.5665, 126.9780),
+            LatLng(37.5670, 126.9790),
+            LatLng(37.5675, 126.9800)
         ),
         isFirstRun = true,
         nthRun = 0,
