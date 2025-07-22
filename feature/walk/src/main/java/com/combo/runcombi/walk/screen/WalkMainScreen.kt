@@ -77,6 +77,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxHeight
+import com.combo.runcombi.ui.ext.clickableWithoutRipple
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -182,7 +183,7 @@ fun WalkMainContent(
     onPetClick: (Pet) -> Unit = {},
     onStartWalk: () -> Unit = {},
     showBottomSheet: Boolean = false,
-    bottomSheetContent: @Composable (() -> Unit)? = null
+    bottomSheetContent: @Composable (() -> Unit)? = null,
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -216,7 +217,9 @@ fun WalkMainContent(
 
         if (isLandscape) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 72.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 72.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 LocationAddressLabel(
@@ -343,7 +346,12 @@ private fun MemberProfile(member: Member) {
                 .fillMaxSize()
                 .padding(6.dp)
                 .padding(end = 12.dp)
-                .customPolygonClip(bottomLeft = true, topRight = true, polygonSize = 16.dp, bottomLeftAngle = 62.0)
+                .customPolygonClip(
+                    bottomLeft = true,
+                    topRight = true,
+                    polygonSize = 16.dp,
+                    bottomLeftAngle = 62.0
+                )
         )
     }
 }
@@ -372,7 +380,7 @@ private fun PetProfile(
             modifier = Modifier
                 .height(boxHeight)
                 .width(boxWidth)
-                .clickable(enabled = onClick != null) { onClick?.invoke() },
+                .clickableWithoutRipple { onClick?.invoke() },
             contentAlignment = Alignment.Center
         ) {
             StableImage(
