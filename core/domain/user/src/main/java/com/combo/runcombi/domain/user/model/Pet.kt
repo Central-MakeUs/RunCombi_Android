@@ -17,7 +17,7 @@ data class Pet(
  * activityFactor: 활동 계수 (칼로리 연산 시 사용)
  * */
 enum class RunStyle(val activityFactor: Double) {
-    RUNNING(2.5),
-    WALKING(2.0),
-    SLOW_WALKING(1.5)
+    RUNNING(6.4),
+    WALKING(4.8),
+    SLOW_WALKING(3.2)
 }
