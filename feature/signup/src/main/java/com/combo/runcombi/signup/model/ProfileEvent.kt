@@ -1,7 +1,5 @@
 package com.combo.runcombi.signup.model
 
-import android.graphics.Bitmap
-
 sealed interface ProfileEvent {
     object ShowImagePickerBottomSheet : ProfileEvent
     object RequestCameraPermission : ProfileEvent

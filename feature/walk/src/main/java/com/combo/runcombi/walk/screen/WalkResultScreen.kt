@@ -1,7 +1,10 @@
 package com.combo.runcombi.walk.screen
 
+import android.Manifest
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -45,8 +49,12 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.ui.ext.clickableSingle
-import com.combo.runcombi.walk.util.FormatUtils
+import com.combo.runcombi.ui.util.BitmapUtil
+import com.combo.runcombi.ui.util.FormatUtils
+import com.combo.runcombi.walk.model.PermissionType
+import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
+import com.combo.runcombi.walk.viewmodel.WalkResultViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -62,12 +70,46 @@ import com.google.maps.android.compose.rememberMarkerState
 @Composable
 fun WalkResultScreen(
     walkMainViewModel: WalkMainViewModel = hiltViewModel(),
+    walkResultViewModel: WalkResultViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
 ) {
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { bitmap: Bitmap? ->
+        bitmap?.let {
+            val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
+
+            // TODO: 운동 기록 페이지로 이동
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) walkResultViewModel.openCamera()
+        else walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
+    }
+
     val walkData = walkMainViewModel.walkData.collectAsState().value
     val startRunData = walkData.runData
     val formattedTime = FormatUtils.formatMinute(walkData.time)
     val formattedDistance = FormatUtils.formatDistance(walkData.distance)
+
+    LaunchedEffect(true) {
+        walkResultViewModel.eventFlow.collect { event ->
+            when (event) {
+                is WalkResultEvent.RequestCameraPermission ->
+                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+
+                is WalkResultEvent.OpenCamera ->
+                    cameraLauncher.launch(null)
+
+                is WalkResultEvent.PermissionDenied -> {
+                    // TODO: 운동 기록 페이지로 이동
+                }
+            }
+        }
+    }
 
     WalkResultContent(
         timeText = formattedTime,
@@ -76,6 +118,9 @@ fun WalkResultScreen(
         isFirstRun = startRunData?.isFirstRun == "Y",
         nthRun = startRunData?.nthRun ?: 0,
         onBack = onBack,
+        onClickCamera = {
+            walkResultViewModel.onCameraButtonClick()
+        }
     )
 
     DisposableEffect(Unit) {
@@ -91,6 +136,7 @@ fun WalkResultContent(
     nthRun: Int,
     pathPoints: List<LatLng>,
     onBack: () -> Unit = {},
+    onClickCamera: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -113,7 +159,7 @@ fun WalkResultContent(
             StatInfoSection(timeText = timeText, distanceText = distanceText)
             Spacer(modifier = Modifier.weight(1f))
 
-            CameraButton(onClick = { /* TODO */ })
+            CameraButton(onClick = onClickCamera)
             Spacer(modifier = Modifier.height(44.dp))
         }
 
@@ -142,7 +188,8 @@ fun PathPreview(pathPoints: List<LatLng>) {
             .padding(10.dp)
     ) {
         GoogleMap(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
                 isMyLocationEnabled = false,
@@ -281,11 +328,14 @@ fun CelebrationEffect() {
 @Composable
 fun WalkResultContentPreview() {
     WalkResultContent(
-        timeText = "12", distanceText = "3.2", pathPoints = listOf(
+        timeText = "12", distanceText = "3.2",
+        pathPoints = listOf(
             LatLng(37.5665, 126.9780), LatLng(37.5670, 126.9790), LatLng(37.5675, 126.9800)
-        ), onBack = {},
+        ),
         isFirstRun = true,
-        nthRun = 0
+        nthRun = 0,
+        onClickCamera = {},
+        onBack = {},
     )
 }
 

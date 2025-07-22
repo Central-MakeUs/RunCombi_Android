@@ -49,8 +49,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.ui.ext.clickableWithoutRipple
-import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
@@ -60,9 +58,11 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.model.PermissionType
 import com.combo.runcombi.signup.model.PetProfileData
 import com.combo.runcombi.signup.model.ProfileEvent
-import com.combo.runcombi.signup.util.BitmapUtil
 import com.combo.runcombi.signup.viewmodel.ProfileViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
+import com.combo.runcombi.ui.ext.clickableWithoutRipple
+import com.combo.runcombi.ui.ext.screenDefaultPadding
+import com.combo.runcombi.ui.util.BitmapUtil
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

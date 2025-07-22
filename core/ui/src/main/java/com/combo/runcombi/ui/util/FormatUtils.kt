@@ -1,4 +1,4 @@
-package com.combo.runcombi.walk.util
+package com.combo.runcombi.ui.util
 
 
 import java.util.Locale

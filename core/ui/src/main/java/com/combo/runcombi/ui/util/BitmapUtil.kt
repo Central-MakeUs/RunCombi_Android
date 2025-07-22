@@ -1,4 +1,4 @@
-package com.combo.runcombi.signup.util
+package com.combo.runcombi.ui.util
 
 import android.content.Context
 import android.graphics.Bitmap

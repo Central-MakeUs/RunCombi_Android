@@ -65,13 +65,13 @@ import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.Pet
 import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.feature.walk.R
+import com.combo.runcombi.ui.util.FormatUtils
 import com.combo.runcombi.walk.model.BottomSheetType
 import com.combo.runcombi.walk.model.WalkMemberUiModel
 import com.combo.runcombi.walk.model.WalkPetUIModel
 import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
-import com.combo.runcombi.walk.util.FormatUtils
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
 import com.google.android.gms.location.LocationCallback
