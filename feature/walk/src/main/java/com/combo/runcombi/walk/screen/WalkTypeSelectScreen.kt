@@ -30,8 +30,8 @@ fun WalkTypeSelectScreen(
     onTypeSelected: () -> Unit = {},
 ) {
     val uiState by walkMainViewModel.walkData.collectAsState()
-    val selectedCombis = uiState.petList.map { it.name }.joinToString()
-    
+    val selectedCombis = uiState.petList.joinToString { it.pet.name }
+
     Column(
         modifier = Modifier
             .background(color = Grey01)

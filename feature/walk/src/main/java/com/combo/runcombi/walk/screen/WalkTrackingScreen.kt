@@ -172,7 +172,9 @@ fun WalkTrackingScreen(
                         walkMainViewModel.setResultData(
                             time = uiState.time,
                             distance = uiState.distance,
-                            pathPoints = uiState.pathPoints
+                            pathPoints = uiState.pathPoints,
+                            member = uiState.walkMemberUiModel,
+                            petList = uiState.walkPetUIModelList ?: emptyList()
                         )
                         onFinish()
                     }

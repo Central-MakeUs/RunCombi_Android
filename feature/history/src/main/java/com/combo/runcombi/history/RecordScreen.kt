@@ -9,14 +9,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import com.combo.runcombi.core.navigation.model.RecordDataModel
 
 @Composable
-fun RecordScreen(imagePaths: List<String>) {
+fun RecordScreen(recordDataModel: RecordDataModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        val imagePaths = recordDataModel.imagePaths
+
         imagePaths.forEach { path ->
             val bitmap = remember(path) { BitmapFactory.decodeFile(path) }
             bitmap?.let {

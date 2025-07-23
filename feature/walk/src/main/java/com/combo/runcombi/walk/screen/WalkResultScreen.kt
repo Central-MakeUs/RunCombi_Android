@@ -1,12 +1,12 @@
 package com.combo.runcombi.walk.screen
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,9 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -35,12 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.combo.runcombi.core.designsystem.component.LottieImage
@@ -56,10 +54,12 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle5
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle6
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
+import com.combo.runcombi.core.navigation.model.PetCal
+import com.combo.runcombi.core.navigation.model.RecordDataModel
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.ui.ext.clickableSingle
-import com.combo.runcombi.ui.util.FormatUtils
 import com.combo.runcombi.ui.util.BitmapUtil
+import com.combo.runcombi.ui.util.FormatUtils
 import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
@@ -71,8 +71,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 fun createCircleMarkerBitmap(color: Int, size: Int = 42): Bitmap {
     val bitmap = createBitmap(size, size)
@@ -90,7 +90,7 @@ fun WalkResultScreen(
     walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     walkResultViewModel: WalkResultViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    onNavigateToRecord: (List<String>) -> Unit = {},
+    onNavigateToRecord: (RecordDataModel) -> Unit = {},
 ) {
     val context = LocalContext.current
     var cameraImagePath by remember { mutableStateOf<String?>(null) }
@@ -98,10 +98,19 @@ fun WalkResultScreen(
     val showCaptureRequest = remember { mutableStateOf(false) }
     var shouldRequestCameraPermission by remember { mutableStateOf(false) }
 
+    val walkData = walkMainViewModel.walkData.collectAsState().value
+    val startRunData = walkData.runData
+    val formattedTime = FormatUtils.formatMinute(walkData.time)
+    val formattedDistance = FormatUtils.formatDistance(walkData.distance)
+
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
             if (bitmap != null) {
-                val file = BitmapUtil.bitmapToFile(context, bitmap, "camera_${System.currentTimeMillis()}.jpg")
+                val file = BitmapUtil.bitmapToFile(
+                    context,
+                    bitmap,
+                    "camera_${System.currentTimeMillis()}.jpg"
+                )
                 cameraImagePath = file.absolutePath
             } else {
                 cameraImagePath = null
@@ -112,7 +121,26 @@ fun WalkResultScreen(
                 } else {
                     listOf(capturePath)
                 }
-                onNavigateToRecord(resultList)
+                onNavigateToRecord(
+                    RecordDataModel(
+                        runId = walkData.runData?.runId ?: 0,
+                        memberCal = walkData.member?.calorie?.toInt() ?: 0,
+                        runTime = walkData.time,
+                        runDistance = walkData.distance,
+                        petCalList = walkData.petList.map {
+                            PetCal(
+                                it.pet.id,
+                                it.calorie.toInt()
+                            )
+                        },
+                        imagePaths = resultList.map {
+                            URLEncoder.encode(
+                                it,
+                                StandardCharsets.UTF_8.toString()
+                            )
+                        }
+                    )
+                )
                 cameraImagePath = null
             }
         }
@@ -122,19 +150,36 @@ fun WalkResultScreen(
             else walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
         }
 
-    val walkData = walkMainViewModel.walkData.collectAsState().value
-    val startRunData = walkData.runData
-    val formattedTime = FormatUtils.formatMinute(walkData.time)
-    val formattedDistance = FormatUtils.formatDistance(walkData.distance)
-
     LaunchedEffect(true) {
         walkResultViewModel.eventFlow.collect { event ->
             when (event) {
-                is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(
+                    Manifest.permission.CAMERA
+                )
+
                 is WalkResultEvent.OpenCamera -> cameraLauncher.launch(null)
                 is WalkResultEvent.PermissionDenied -> {
                     captureImagePath?.let { capturePath ->
-                        onNavigateToRecord(listOf(capturePath))
+                        onNavigateToRecord(
+                            RecordDataModel(
+                                runId = walkData.runData?.runId ?: 0,
+                                memberCal = walkData.member?.calorie?.toInt() ?: 0,
+                                runTime = walkData.time,
+                                runDistance = walkData.distance,
+                                petCalList = walkData.petList.map {
+                                    PetCal(
+                                        it.pet.id,
+                                        it.calorie.toInt()
+                                    )
+                                },
+                                imagePaths = listOf(
+                                    URLEncoder.encode(
+                                        capturePath,
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                )
+                            )
+                        )
                     }
                 }
             }
@@ -156,13 +201,21 @@ fun WalkResultScreen(
         showCaptureRequest = showCaptureRequest.value,
         onCaptured = { bitmap ->
             if (captureImagePath == null) {
-                val file = BitmapUtil.bitmapToFile(context, bitmap, "walk_map_${System.currentTimeMillis()}.jpg")
+                val file = BitmapUtil.bitmapToFile(
+                    context,
+                    bitmap,
+                    "walk_map_${System.currentTimeMillis()}.jpg"
+                )
                 captureImagePath = file.absolutePath
             }
             showCaptureRequest.value = false
             if (shouldRequestCameraPermission) {
                 shouldRequestCameraPermission = false
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
                     walkResultViewModel.openCamera()
                 } else {
                     walkResultViewModel.onCameraButtonClick()
@@ -170,7 +223,8 @@ fun WalkResultScreen(
             }
         },
         onClickCamera = {
-            tryOpenCamera()
+            showCaptureRequest.value = true
+            shouldRequestCameraPermission = true
         }
     )
 

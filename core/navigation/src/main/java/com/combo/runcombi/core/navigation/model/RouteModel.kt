@@ -81,8 +81,9 @@ sealed interface RouteModel {
         sealed interface HistoryRouteModel : MainTabRoute {
             @Serializable
             data object History : HistoryRouteModel
+
             @Serializable
-            data class Record(val imagePaths: List<String> = emptyList()) : HistoryRouteModel // 운동 기록 작성 화면
+            data class Record(val recordDataModel: RecordDataModel) : HistoryRouteModel
         }
 
         @Serializable

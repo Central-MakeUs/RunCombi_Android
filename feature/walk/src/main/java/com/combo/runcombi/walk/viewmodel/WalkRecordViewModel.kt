@@ -118,11 +118,15 @@ class WalkRecordViewModel @Inject constructor(
         }
     }
 
-    fun initWalkData(exerciseType: ExerciseType, member: Member, petList: List<Pet>) {
+    fun initWalkData(
+        exerciseType: ExerciseType,
+        member: WalkMemberUiModel,
+        petList: List<WalkPetUIModel>,
+    ) {
         _uiState.update { state ->
             state.copy(
-                walkMemberUiModel = WalkMemberUiModel(member),
-                walkPetUIModelList = petList.map { WalkPetUIModel(pet = it) },
+                walkMemberUiModel = member,
+                walkPetUIModelList = petList,
                 exerciseType = exerciseType
             )
         }

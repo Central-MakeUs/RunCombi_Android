@@ -9,7 +9,10 @@ import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.RecordScreen
 import androidx.navigation.toRoute
+import com.combo.runcombi.core.navigation.model.RecordDataModel
+import com.combo.runcombi.core.navigation.model.RecordDataModelType
 import com.combo.runcombi.history.HistoryScreen
+import kotlin.reflect.typeOf
 
 fun NavController.navigateToHistory(
     navOptions: NavOptions? = androidx.navigation.navOptions {
@@ -24,10 +27,11 @@ fun NavController.navigateToHistory(
 }
 
 fun NavController.navigateToRecord(
-    imagePaths: List<String>,
+    recordDataModel: RecordDataModel,
     navOptions: NavOptions? = null,
 ) {
-    this.navigate(RouteModel.MainTabRoute.HistoryRouteModel.Record(imagePaths), navOptions)
+    val route = RouteModel.MainTabRoute.HistoryRouteModel.Record(recordDataModel)
+    this.navigate(route, navOptions)
 }
 
 fun NavGraphBuilder.historyNavGraph() {
@@ -37,9 +41,11 @@ fun NavGraphBuilder.historyNavGraph() {
         composable<RouteModel.MainTabRoute.HistoryRouteModel.History> {
             HistoryScreen()
         }
-        composable<RouteModel.MainTabRoute.HistoryRouteModel.Record> { backStackEntry ->
+        composable<RouteModel.MainTabRoute.HistoryRouteModel.Record>(
+            typeMap = mapOf(typeOf<RecordDataModel>() to RecordDataModelType)
+        ) { backStackEntry ->
             val route = backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.Record>()
-            RecordScreen(route.imagePaths)
+            RecordScreen(route.recordDataModel)
         }
     }
 }

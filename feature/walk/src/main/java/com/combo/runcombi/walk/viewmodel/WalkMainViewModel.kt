@@ -11,6 +11,8 @@ import com.combo.runcombi.walk.model.WalkEvent
 import com.combo.runcombi.walk.model.WalkMainUiState
 import com.combo.runcombi.walk.model.WalkData
 import com.combo.runcombi.walk.model.ExerciseType
+import com.combo.runcombi.walk.model.WalkMemberUiModel
+import com.combo.runcombi.walk.model.WalkPetUIModel
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,78 +48,87 @@ class WalkMainViewModel @Inject constructor(
         viewModelScope.launch {
             getUserInfoUseCase().collectLatest { result ->
                 when (result) {
-                    is DomainResult.Success -> {
-                        val userInfo = result.data
-                        val member = userInfo.member
-                        val petList = userInfo.petList
-
-                        _walkData.update {
-                            it.copy(
-                                member = member,
-                                petList = petList
-                            )
-                        }
-                        _uiState.update {
-                            it.copy(
-                                member = member,
-                                petUiList = userInfo.petList.mapIndexed { idx, pet ->
-                                    PetUiModel(
-                                        pet,
-                                        false,
-                                        idx
-                                    )
-                                }
-                            )
-                        }
-                    }
-
-                    is DomainResult.Error -> {
-
-                    }
-
-                    is DomainResult.Exception -> {}
+                    is DomainResult.Success -> handleUserInfoSuccess(result.data)
+                    is DomainResult.Error -> handleUserInfoError()
+                    is DomainResult.Exception -> handleUserInfoException()
                 }
             }
         }
+    }
+
+    private fun handleUserInfoSuccess(userInfo: com.combo.runcombi.domain.user.model.UserInfo) {
+        val member = userInfo.member
+        val petList = userInfo.petList
+        _walkData.update {
+            it.copy(
+                member = WalkMemberUiModel(member = member),
+                petList = petList.map { pet -> WalkPetUIModel(pet = pet) }
+            )
+        }
+        _uiState.update {
+            it.copy(
+                member = member,
+                petUiList = petList.mapIndexed { idx, pet ->
+                    PetUiModel(
+                        pet,
+                        false,
+                        idx
+                    )
+                }
+            )
+        }
+    }
+
+    private fun handleUserInfoError() {
+        // TODO: 에러 처리 로직 추가
+    }
+
+    private fun handleUserInfoException() {
+        // TODO: 예외 처리 로직 추가
     }
 
     fun togglePetSelect(pet: Pet) {
         _uiState.update { state ->
             val petUiList = state.petUiList
             val tapped = petUiList.find { it.pet == pet } ?: return@update state
-            val selectedList =
-                petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+            val selectedList = getSelectedPetList(petUiList)
 
             if (tapped.isSelected) {
-                val newList = petUiList.map {
-                    if (it.pet == pet) it.copy(isSelected = false, selectedOrder = null)
-                    else it
-                }
-                val remainSelected =
-                    newList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
-                val reordered = if (remainSelected.isNotEmpty()) {
-                    newList.map {
-                        if (it.isSelected) {
-                            val idx = remainSelected.indexOfFirst { sel -> sel.pet == it.pet }
-                            it.copy(selectedOrder = idx)
-                        } else it
-                    }
-                } else {
-                    newList.map { it.copy(selectedOrder = null) }
-                }
-                return@update state.copy(petUiList = reordered)
+                return@update state.copy(petUiList = deselectPet(petUiList, pet))
             }
 
             if (selectedList.size == 2) return@update state
 
-            val nextOrder = selectedList.size
-            val newList = petUiList.map {
-                if (it.pet == pet) it.copy(isSelected = true, selectedOrder = nextOrder)
-                else it
-            }
-            return@update state.copy(petUiList = newList)
+            return@update state.copy(petUiList = selectPet(petUiList, pet, selectedList.size))
         }
     }
+
+    private fun getSelectedPetList(petUiList: List<PetUiModel>): List<PetUiModel> =
+        petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+
+    private fun deselectPet(petUiList: List<PetUiModel>, pet: Pet): List<PetUiModel> {
+        val newList = petUiList.map {
+            if (it.pet == pet) it.copy(isSelected = false, selectedOrder = null)
+            else it
+        }
+        val remainSelected = newList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+        return if (remainSelected.isNotEmpty()) {
+            newList.map {
+                if (it.isSelected) {
+                    val idx = remainSelected.indexOfFirst { sel -> sel.pet == it.pet }
+                    it.copy(selectedOrder = idx)
+                } else it
+            }
+        } else {
+            newList.map { it.copy(selectedOrder = null) }
+        }
+    }
+
+    private fun selectPet(petUiList: List<PetUiModel>, pet: Pet, nextOrder: Int): List<PetUiModel> =
+        petUiList.map {
+            if (it.pet == pet) it.copy(isSelected = true, selectedOrder = nextOrder)
+            else it
+        }
 
     fun updateLocation(latLng: LatLng) {
         _uiState.update { it.copy(myLocation = latLng, isLoading = true) }
@@ -144,9 +155,19 @@ class WalkMainViewModel @Inject constructor(
     fun setResultData(
         time: Int,
         distance: Double,
-        pathPoints: List<com.google.android.gms.maps.model.LatLng>,
+        pathPoints: List<LatLng>,
+        petList: List<WalkPetUIModel>,
+        member: WalkMemberUiModel?,
     ) {
-        _walkData.update { it.copy(time = time, distance = distance, pathPoints = pathPoints) }
+        _walkData.update {
+            it.copy(
+                time = time,
+                distance = distance,
+                pathPoints = pathPoints,
+                petList = petList,
+                member = member
+            )
+        }
     }
 
     fun clearResultData() {
@@ -159,7 +180,7 @@ class WalkMainViewModel @Inject constructor(
             val petList = walkData.value.petList
             val exerciseType = walkData.value.exerciseType
             if (member != null && petList.isNotEmpty()) {
-                val result = startRunUseCase(petList.map { it.id }, exerciseType.name)
+                val result = startRunUseCase(petList.map { it.pet.id }, exerciseType.name)
                 val runData = (result as? DomainResult.Success)?.data
                 if (runData != null) {
                     _walkData.update { it.copy(runData = runData) }
