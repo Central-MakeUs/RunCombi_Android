@@ -6,8 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
-import com.combo.runcombi.core.navigation.model.RecordDataModel
+
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.history.navigation.navigateToRecord
 import com.combo.runcombi.setting.navigation.navigateToSetting
@@ -25,8 +24,8 @@ class MainTabNavigator(
         navController.navigateToHistory()
     }
 
-    fun navigationToRecord(recordDataModel: RecordDataModel) {
-        navController.navigateToRecord(recordDataModel)
+    fun navigationToRecord(runId: Int) {
+        navController.navigateToRecord(runId = runId)
     }
 
     fun navigationToSetting() {

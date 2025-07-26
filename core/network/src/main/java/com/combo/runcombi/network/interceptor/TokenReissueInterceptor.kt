@@ -17,7 +17,7 @@ class TokenReissueInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val newRequest = chain.request().newBuilder().apply {
             runBlocking {
-                val token = tokenProvider.getAccessToken()
+                val token = tokenProvider.getRefreshToken()
                 token?.let {
                     addHeader("Authorization", "Bearer $it")
                 }

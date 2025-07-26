@@ -8,7 +8,6 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
-import com.combo.runcombi.core.navigation.model.RecordDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.walk.screen.WalkCountdownScreen
 import com.combo.runcombi.walk.screen.WalkMainScreen
@@ -64,7 +63,7 @@ fun NavGraphBuilder.walkNavGraph(
     onCountdownFinished: () -> Unit,
     onFinish: () -> Unit,
     onBack: () -> Unit,
-    onNavigateToRecord: (RecordDataModel) -> Unit,
+    onNavigateToRecord: (Int) -> Unit,
 ) {
     navigation<MainTabDataModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkMain,
@@ -114,7 +113,7 @@ fun NavGraphBuilder.walkTrackingNavGraph(
     navController: NavController,
     onFinish: () -> Unit,
     onBack: () -> Unit,
-    onNavigateToRecord: (RecordDataModel) -> Unit,
+    onNavigateToRecord: (Int) -> Unit,
 ) {
     navigation<RouteModel.MainTabRoute.WalkRouteModel.Walk>(
         startDestination = RouteModel.MainTabRoute.WalkRouteModel.WalkRoute.WalkTracking,

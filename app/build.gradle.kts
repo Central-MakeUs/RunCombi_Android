@@ -75,4 +75,5 @@ dependencies {
     implementation(project(":core:data:auth"))
     implementation(project(":core:data:user"))
     implementation(project(":core:data:walk"))
+    implementation(project(":core:data:history"))
 }

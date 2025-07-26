@@ -1,4 +1,4 @@
-package com.combo.runcombi.history
+package com.combo.runcombi.history.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

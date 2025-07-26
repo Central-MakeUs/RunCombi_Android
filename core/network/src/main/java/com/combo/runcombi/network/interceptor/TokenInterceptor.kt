@@ -47,7 +47,7 @@ class TokenInterceptor @Inject constructor(
                 val retryRequest = chain.request().newBuilder().apply {
                     runBlocking {
                         tokenProvider.getRefreshToken()?.let {
-                            val newToken = tokenService.requestTokenReissue(TokenReissueRequest(it))
+                            val newToken = tokenService.requestTokenReissue()
                             if (newToken.isSuccessful) {
                                 newToken.body()?.let { token ->
                                     addHeader("Authorization", "Bearer ${token.accessToken}")

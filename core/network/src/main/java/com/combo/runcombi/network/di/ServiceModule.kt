@@ -2,6 +2,7 @@ package com.goalpanzi.mission_mate.core.network.di
 
 import com.combo.runcombi.network.di.TokenReissueRetrofit
 import com.combo.runcombi.network.di.TokenRetrofit
+import com.combo.runcombi.network.service.HistoryService
 import com.combo.runcombi.network.service.LoginService
 import com.combo.runcombi.network.service.TokenService
 import com.combo.runcombi.network.service.UserService
@@ -48,6 +49,14 @@ object ServiceModule {
         @TokenRetrofit retrofit: Retrofit,
     ): WalkService {
         return retrofit.create(WalkService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHistoryService(
+        @TokenRetrofit retrofit: Retrofit,
+    ): HistoryService {
+        return retrofit.create(HistoryService::class.java)
     }
 
 }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -54,8 +55,6 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle5
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle6
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
-import com.combo.runcombi.core.navigation.model.PetCal
-import com.combo.runcombi.core.navigation.model.RecordDataModel
 import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.util.BitmapUtil
@@ -71,8 +70,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import java.io.File
+import android.widget.Toast
 
 fun createCircleMarkerBitmap(color: Int, size: Int = 42): Bitmap {
     val bitmap = createBitmap(size, size)
@@ -90,18 +89,28 @@ fun WalkResultScreen(
     walkMainViewModel: WalkMainViewModel = hiltViewModel(),
     walkResultViewModel: WalkResultViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    onNavigateToRecord: (RecordDataModel) -> Unit = {},
+    onNavigateToRecord: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
-    var cameraImagePath by remember { mutableStateOf<String?>(null) }
-    var captureImagePath by remember { mutableStateOf<String?>(null) }
+
+    var cameraImageFile by remember { mutableStateOf<File?>(null) }
+    var captureImageFile by remember { mutableStateOf<File?>(null) }
+
     val showCaptureRequest = remember { mutableStateOf(false) }
-    var shouldRequestCameraPermission by remember { mutableStateOf(false) }
 
     val walkData = walkMainViewModel.walkData.collectAsState().value
     val startRunData = walkData.runData
     val formattedTime = FormatUtils.formatMinute(walkData.time)
     val formattedDistance = FormatUtils.formatDistance(walkData.distance)
+
+    val isLoading by walkResultViewModel.isLoading.collectAsState()
+    val errorMessageFlow = walkResultViewModel.errorMessage
+
+    LaunchedEffect(Unit) {
+        errorMessageFlow.collect { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
@@ -111,46 +120,25 @@ fun WalkResultScreen(
                     bitmap,
                     "camera_${System.currentTimeMillis()}.jpg"
                 )
-                cameraImagePath = file.absolutePath
+                cameraImageFile = file
             } else {
-                cameraImagePath = null
+                cameraImageFile = null
             }
-            captureImagePath?.let { capturePath ->
-                val resultList = if (cameraImagePath != null) {
-                    listOf(capturePath, cameraImagePath!!)
-                } else {
-                    listOf(capturePath)
-                }
-                onNavigateToRecord(
-                    RecordDataModel(
-                        runId = walkData.runData?.runId ?: 0,
-                        memberCal = walkData.member?.calorie?.toInt() ?: 0,
-                        runTime = walkData.time,
-                        runDistance = walkData.distance,
-                        petCalList = walkData.petList.map {
-                            PetCal(
-                                it.pet.id,
-                                it.calorie.toInt()
-                            )
-                        },
-                        imagePaths = resultList.map {
-                            URLEncoder.encode(
-                                it,
-                                StandardCharsets.UTF_8.toString()
-                            )
-                        }
-                    )
-                )
-                cameraImagePath = null
-            }
+
+            walkResultViewModel.saveRun(
+                walkData = walkData,
+                routeImage = captureImageFile,
+                runImage = cameraImageFile
+            )
         }
+
     val cameraPermissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) walkResultViewModel.openCamera()
             else walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
         }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         walkResultViewModel.eventFlow.collect { event ->
             when (event) {
                 is WalkResultEvent.RequestCameraPermission -> cameraPermissionLauncher.launch(
@@ -159,36 +147,18 @@ fun WalkResultScreen(
 
                 is WalkResultEvent.OpenCamera -> cameraLauncher.launch(null)
                 is WalkResultEvent.PermissionDenied -> {
-                    captureImagePath?.let { capturePath ->
-                        onNavigateToRecord(
-                            RecordDataModel(
-                                runId = walkData.runData?.runId ?: 0,
-                                memberCal = walkData.member?.calorie?.toInt() ?: 0,
-                                runTime = walkData.time,
-                                runDistance = walkData.distance,
-                                petCalList = walkData.petList.map {
-                                    PetCal(
-                                        it.pet.id,
-                                        it.calorie.toInt()
-                                    )
-                                },
-                                imagePaths = listOf(
-                                    URLEncoder.encode(
-                                        capturePath,
-                                        StandardCharsets.UTF_8.toString()
-                                    )
-                                )
-                            )
-                        )
-                    }
+                    walkResultViewModel.saveRun(
+                        walkData = walkData,
+                        routeImage = captureImageFile,
+                        runImage = cameraImageFile
+                    )
+                }
+
+                is WalkResultEvent.Success -> {
+                    onNavigateToRecord(walkData.runData?.runId ?: 0)
                 }
             }
         }
-    }
-
-    fun tryOpenCamera() {
-        showCaptureRequest.value = true
-        shouldRequestCameraPermission = true
     }
 
     WalkResultContent(
@@ -200,33 +170,39 @@ fun WalkResultScreen(
         onBack = onBack,
         showCaptureRequest = showCaptureRequest.value,
         onCaptured = { bitmap ->
-            if (captureImagePath == null) {
-                val file = BitmapUtil.bitmapToFile(
-                    context,
-                    bitmap,
-                    "walk_map_${System.currentTimeMillis()}.jpg"
-                )
-                captureImagePath = file.absolutePath
-            }
+            val file = BitmapUtil.bitmapToFile(
+                context,
+                bitmap,
+                "walk_map_${System.currentTimeMillis()}.jpg"
+            )
+            captureImageFile = file
             showCaptureRequest.value = false
-            if (shouldRequestCameraPermission) {
-                shouldRequestCameraPermission = false
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.CAMERA
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    walkResultViewModel.openCamera()
-                } else {
-                    walkResultViewModel.onCameraButtonClick()
-                }
+
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                walkResultViewModel.openCamera()
+            } else {
+                walkResultViewModel.onCameraButtonClick()
             }
         },
         onClickCamera = {
             showCaptureRequest.value = true
-            shouldRequestCameraPermission = true
         }
     )
+
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x80000000)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Primary02)
+        }
+    }
 
     DisposableEffect(Unit) { onDispose { walkMainViewModel.clearResultData() } }
 }
@@ -256,8 +232,8 @@ fun WalkResultContent(
             Spacer(modifier = Modifier.height(16.dp))
             MapViewContainer(
                 modifier = Modifier
-                    .size(240.dp)
-                    .padding(10.dp),
+                    .fillMaxWidth()
+                    .height(264.dp),
                 pathPoints = pathPoints,
                 mapStyleResId = R.raw.google_map_dark_theme_style,
                 captureRequest = showCaptureRequest,

@@ -28,4 +28,5 @@ dependencies {
     implementation(project(":core:domain:common"))
     implementation(project(":core:domain:user"))
     implementation(project(":core:domain:walk"))
+    implementation(project(":core:domain:history"))
 }
