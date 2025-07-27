@@ -7,6 +7,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.combo.runcombi.auth.usecase.GetIsNewUserUseCase
 import com.combo.runcombi.core.designsystem.theme.RunCombiTheme
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
@@ -23,6 +24,11 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var getUserStatusUseCase: GetUserStatusUseCase
 
+    @Inject
+    lateinit var getIsNewUserUseCase: GetIsNewUserUseCase
+
+    private var status: MemberStatus? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -32,8 +38,11 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(Color.BLACK, Color.BLACK)
         )
 
-        val status = getUserStatusUseCase()
+        val isNew = getIsNewUserUseCase()
 
+        if (!isNew) {
+            status = getUserStatusUseCase()
+        }
 
         setContent {
             val navigator: MainNavigator = rememberMainNavigator()
@@ -41,7 +50,7 @@ class MainActivity : ComponentActivity() {
             RunCombiTheme {
                 MainScreen(
                     navigator = navigator,
-                    startDestination = if (status == MemberStatus.LIVE) RouteModel.MainTab(
+                    startDestination = if (!isNew && status == MemberStatus.LIVE) RouteModel.MainTab(
                         mainTabDataModel = MainTabDataModel.Walk
                     ) else RouteModel.Login
                 )
