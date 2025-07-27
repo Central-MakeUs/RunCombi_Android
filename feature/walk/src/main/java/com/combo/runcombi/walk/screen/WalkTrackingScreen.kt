@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
@@ -91,7 +92,7 @@ fun WalkTrackingScreen(
     walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val uiState by walkRecordViewModel.uiState.collectAsState()
+    val uiState by walkRecordViewModel.uiState.collectAsStateWithLifecycle()
     val isPaused = uiState.isPaused
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 

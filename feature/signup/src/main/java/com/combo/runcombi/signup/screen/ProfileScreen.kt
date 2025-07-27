@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.core.designsystem.component.StableImage
@@ -75,8 +76,8 @@ fun ProfileScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
-    val uiState by profileViewModel.uiState.collectAsState()
-    val profileBitmap by profileViewModel.profileBitmap.collectAsState()
+    val uiState by profileViewModel.uiState.collectAsStateWithLifecycle()
+    val profileBitmap by profileViewModel.profileBitmap.collectAsStateWithLifecycle()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     val albumLauncher = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -108,7 +109,7 @@ fun ProfileScreen(
         else profileViewModel.onPermissionDenied(PermissionType.CAMERA)
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         profileViewModel.eventFlow.collect { event ->
             when (event) {
                 is ProfileEvent.ShowImagePickerBottomSheet -> showBottomSheet = true
@@ -126,7 +127,7 @@ fun ProfileScreen(
         }
     }
 
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         signupViewModel.clearProfile()
     }
 

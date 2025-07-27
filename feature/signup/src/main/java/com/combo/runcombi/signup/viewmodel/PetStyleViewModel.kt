@@ -13,7 +13,6 @@ import com.combo.runcombi.domain.user.usecase.SetUserInfoUseCase
 import com.combo.runcombi.signup.model.PetStyleUiState
 import com.combo.runcombi.signup.model.SignupData
 import com.combo.runcombi.signup.model.SignupEvent
-import com.combo.runcombi.signup.model.TermsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -92,27 +91,30 @@ class PetStyleViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { _uiState.value.copy(isLoading = true) }
 
-            val memeber = Member(
-                nickname = signupData.profile.nickname,
-                gender = signupData.gender.gender,
-                height = signupData.body.height ?: 0,
-                weight = signupData.body.weight ?: 0,
-            )
 
-            val pet = Pet(
-                name = signupData.petProfile.name,
-                age = signupData.petInfo.petAge ?: 0,
-                weight = signupData.petInfo.petWeight?.toDouble() ?: 0.0,
-                runStyle = signupData.petStyle.walkStyle,
-            )
+            val memeber = with(signupData) {
+                Member(
+                    nickname = profileData.nickname,
+                    gender = genderData.gender,
+                    height = bodyData.height ?: 0,
+                    weight = bodyData.weight ?: 0,
+                )
+            }
 
-            Log.i("[PetStyleViewModel]", "[Request] memeber: $memeber, pet: $pet")
+            val pet = with(signupData) {
+                Pet(
+                    name = petProfileData.name,
+                    age = petInfoData.petAge ?: 0,
+                    weight = petInfoData.petWeight?.toDouble() ?: 0.0,
+                    runStyle = petStyleData.walkStyle,
+                )
+            }
 
             setUserInfoUseCase(
                 memberDetail = memeber,
                 petDetail = pet,
-                memberImage = signupData.profile.profileFile,
-                petImage = signupData.petProfile.profileFile
+                memberImage = signupData.profileData.profileFile,
+                petImage = signupData.petProfileData.profileFile
             ).collectLatest { result ->
                 _uiState.update { _uiState.value.copy(isLoading = false) }
 

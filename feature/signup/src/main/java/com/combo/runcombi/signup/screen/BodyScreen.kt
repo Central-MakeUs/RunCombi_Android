@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -50,7 +51,8 @@ fun BodyScreen(
         signupViewModel.clearBody()
     }
 
-    val gender = signupViewModel.signupData.collectAsState().value.gender.gender
+    val signupData by signupViewModel.signupData.collectAsStateWithLifecycle()
+    val gender = signupData.genderData.gender
 
     LaunchedEffect(gender) {
         bodyViewModel.setDefaultValues(gender)

@@ -77,6 +77,7 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.ext.clickableWithoutRipple
 
@@ -91,7 +92,7 @@ fun WalkMainScreen(
 ) {
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
-    val uiState by walkMainViewModel.uiState.collectAsState()
+    val uiState by walkMainViewModel.uiState.collectAsStateWithLifecycle()
     val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     var showPermissionSettingSheet by remember { mutableStateOf(false) }
 

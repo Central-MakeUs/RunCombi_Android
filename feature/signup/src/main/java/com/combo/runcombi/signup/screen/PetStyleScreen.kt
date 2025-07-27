@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiSelectableButton
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -51,7 +52,7 @@ fun PetStyleScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val localFocusManager = LocalFocusManager.current
 
-    val uiState by petStyleViewModel.uiState.collectAsState()
+    val uiState by petStyleViewModel.uiState.collectAsStateWithLifecycle()
     val eventFlow = petStyleViewModel.eventFlow
 
     LaunchedEffect(Unit) {
@@ -68,8 +69,8 @@ fun PetStyleScreen(
                 is SignupEvent.NavigateNext -> {
                     signupViewModel.getSignupData().run {
                         onSuccess(
-                            profile.nickname,
-                            petProfile.name
+                            profileData.nickname,
+                            petProfileData.name
                         )
                     }
                 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.theme.Grey01
@@ -29,7 +30,7 @@ fun WalkTypeSelectScreen(
     onBack: () -> Unit = {},
     onTypeSelected: () -> Unit = {},
 ) {
-    val uiState by walkMainViewModel.walkData.collectAsState()
+    val uiState by walkMainViewModel.walkData.collectAsStateWithLifecycle()
     val selectedCombis = uiState.petList.joinToString { it.pet.name }
 
     Column(

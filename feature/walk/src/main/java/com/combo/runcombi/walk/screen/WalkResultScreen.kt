@@ -72,6 +72,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import java.io.File
 import android.widget.Toast
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 fun createCircleMarkerBitmap(color: Int, size: Int = 42): Bitmap {
     val bitmap = createBitmap(size, size)
@@ -98,12 +99,12 @@ fun WalkResultScreen(
 
     val showCaptureRequest = remember { mutableStateOf(false) }
 
-    val walkData = walkMainViewModel.walkData.collectAsState().value
+    val walkData by walkMainViewModel.walkData.collectAsStateWithLifecycle()
     val startRunData = walkData.runData
     val formattedTime = FormatUtils.formatMinute(walkData.time)
     val formattedDistance = FormatUtils.formatDistance(walkData.distance)
 
-    val isLoading by walkResultViewModel.isLoading.collectAsState()
+    val isLoading by walkResultViewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessageFlow = walkResultViewModel.errorMessage
 
     LaunchedEffect(Unit) {

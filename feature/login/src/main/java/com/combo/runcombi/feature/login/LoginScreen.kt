@@ -40,7 +40,7 @@ fun LoginRoute(
     loginManager: LoginManager = rememberLoginManager(),
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(true) {
+    LaunchedEffect(Unit) {
         viewModel.eventFlow.collectLatest {
             when (it) {
                 LoginEvent.Error -> Unit

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.ui.ext.clickableWithoutRipple
@@ -50,7 +51,7 @@ fun PetInfoScreen(
         signupViewModel.clearPetInfo()
     }
 
-    val uiState by petInfoViewModel.uiState.collectAsState()
+    val uiState by petInfoViewModel.uiState.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .clickableWithoutRipple {

@@ -1,10 +1,10 @@
 package com.combo.runcombi.signup.model
 
 data class SignupData(
-    val profile: ProfileData = ProfileData(),
-    val gender: GenderData = GenderData(),
-    val body: BodyData = BodyData(),
-    val petProfile: PetProfileData = PetProfileData(),
-    val petInfo: PetInfoData = PetInfoData(),
-    val petStyle: PetStyleData = PetStyleData(),
+    val profileData: ProfileData = ProfileData(),
+    val genderData: GenderData = GenderData(),
+    val bodyData: BodyData = BodyData(),
+    val petProfileData: PetProfileData = PetProfileData(),
+    val petInfoData: PetInfoData = PetInfoData(),
+    val petStyleData: PetStyleData = PetStyleData(),
 ) 
