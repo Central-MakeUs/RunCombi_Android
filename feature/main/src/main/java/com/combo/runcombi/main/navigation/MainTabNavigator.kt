@@ -25,8 +25,8 @@ class MainTabNavigator(
         navController.navigateToHistory()
     }
 
-    fun navigationToRecord(runId: Int) {
-        navController.navigateToRecord(runId = runId)
+    fun navigationToRecord(runId: Int, navOptions: NavOptions) {
+        navController.navigateToRecord(runId = runId, navOptions = navOptions)
     }
 
     fun navigationToSettingMain() {

@@ -40,7 +40,7 @@ enum class MainTab(
         defaultIconRes = R.drawable.ic_walk,
         selectedIconRes = R.drawable.ic_walk_selected
     ),
-    SETTING(
+    My(
         routeModel = MainTabRoute.SettingRouteModel.Setting,
         defaultIconRes = R.drawable.ic_setting,
         selectedIconRes = R.drawable.ic_setting_selected
@@ -55,7 +55,7 @@ enum class MainTab(
         val target = when (this) {
             WALK -> MainTabRoute.WalkRouteModel.WalkMain::class.qualifiedName
             HISTORY -> MainTabRoute.HistoryRouteModel.History::class.qualifiedName
-            SETTING -> MainTabRoute.SettingRouteModel.Setting::class.qualifiedName
+            My -> MainTabRoute.SettingRouteModel.My::class.qualifiedName
         } ?: return false
         return route == target
     }

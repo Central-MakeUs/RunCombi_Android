@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
+import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.navigation.historyNavGraph
 import com.combo.runcombi.setting.navigation.settingNavGraph
 import com.combo.runcombi.walk.navigation.walkNavGraph
@@ -45,7 +46,11 @@ fun MainTabNavHost(
                 mainTabNavigator.navController.popBackStack()
             },
             onNavigateToRecord = {
-                mainTabNavigator.navigationToRecord(it)
+                mainTabNavigator.navigationToRecord(it, androidx.navigation.navOptions {
+                    popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
+                        inclusive = false
+                    }
+                })
             }
         )
 
