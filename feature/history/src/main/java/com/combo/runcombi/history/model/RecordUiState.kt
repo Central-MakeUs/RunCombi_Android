@@ -8,6 +8,7 @@ data class PetCalUi(
 data class RecordUiState(
     val runTime: Int = 0,
     val runDistance: Double = 0.0,
+    val date: String = "",
     val memberCal: Int = 0,
     val memberImageUrl: String = "",
     val petCalList: List<PetCalUi> = emptyList(),

@@ -83,6 +83,7 @@ object RunCombiTypography {
         fontWeight = FontWeight.SemiBold
     )
 
+
     val giantsHeading1 = GiantsTextStyle.copy(
         fontSize = 70.sp,
         lineHeight = 78.sp,

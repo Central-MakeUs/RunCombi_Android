@@ -54,6 +54,7 @@ class RecordViewModel @Inject constructor(private val getRunDataUseCase: GetRunD
                             runDistance = runData.runDistance,
                             memberCal = 0,
                             memberImageUrl = "",
+                            date = runData.regDate,
                             petCalList = runData.petData.map {
                                 PetCalUi(
                                     it.petCal,

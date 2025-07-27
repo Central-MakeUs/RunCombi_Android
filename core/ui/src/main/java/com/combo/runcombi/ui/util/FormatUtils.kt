@@ -28,4 +28,13 @@ object FormatUtils {
     fun formatCalorie(calorie: Double): String {
         return calorie.toInt().toString()
     }
+
+    fun formatDateKorean(dateTimeString: String): String {
+        return try {
+            val dateTime = java.time.LocalDateTime.parse(dateTimeString)
+            "${dateTime.year}년 ${dateTime.monthValue}월 ${dateTime.dayOfMonth}일"
+        } catch (e: Exception) {
+            dateTimeString 
+        }
+    }
 }

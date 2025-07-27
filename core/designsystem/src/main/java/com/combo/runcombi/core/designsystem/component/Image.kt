@@ -29,23 +29,23 @@ fun StableImage(
 @Composable
 fun NetworkImage(
     imageUrl: String?,
-    @DrawableRes drawableResId: Int,
+    @DrawableRes drawableResId: Int? = null,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     description: String? = null,
 ) {
     val context = LocalContext.current
-    AsyncImage(
-        model = imageUrl?.let {
-            ImageRequest.Builder(context)
-                .data(it)
+    if (!imageUrl.isNullOrEmpty()) {
+        AsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(imageUrl)
                 .crossfade(true)
-                .build()
-        } ?: drawableResId,
-        contentDescription = description,
-        modifier = modifier,
-        contentScale = contentScale,
-        error = painterResource(id = drawableResId),
-        placeholder = painterResource(id = drawableResId)
-    )
+                .build(),
+            contentDescription = description,
+            modifier = modifier,
+            contentScale = contentScale,
+            error = drawableResId?.let { painterResource(id = it) },
+            placeholder = drawableResId?.let { painterResource(id = it) }
+        )
+    }
 }
