@@ -89,6 +89,9 @@ sealed interface RouteModel {
         @Serializable
         sealed interface SettingRouteModel : MainTabRoute {
             @Serializable
+            data object My: SettingRouteModel
+
+            @Serializable
             data object Setting : SettingRouteModel
         }
     }

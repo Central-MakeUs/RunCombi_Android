@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +15,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +33,7 @@ import com.combo.runcombi.feature.signup.R
 import com.combo.runcombi.signup.component.AgreementItem
 import com.combo.runcombi.signup.model.TermsEvent
 import com.combo.runcombi.signup.viewmodel.TermsViewModel
+import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.ext.screenDefaultPadding
 
 fun openUrl(context: android.content.Context, url: String) {
@@ -105,7 +104,7 @@ fun TermsScreen(
         AgreementItem(
             modifier = Modifier
                 .padding(bottom = 27.dp)
-                .clickable {
+                .clickableSingle {
                     openUrl(
                         context,
                         "https://encouraging-potential-f2d.notion.site/2366951266db80dabc10c701a65875fe?source=copy_link"
@@ -119,7 +118,7 @@ fun TermsScreen(
         AgreementItem(
             modifier = Modifier
                 .padding(bottom = 27.dp)
-                .clickable {
+                .clickableSingle {
                     openUrl(
                         context,
                         "https://encouraging-potential-f2d.notion.site/2366951266db8035ad23c11c502fd243?source=copy_link"
@@ -133,7 +132,7 @@ fun TermsScreen(
         AgreementItem(
             modifier = Modifier
                 .padding(bottom = 27.dp)
-                .clickable {
+                .clickableSingle {
                     openUrl(
                         context,
                         "https://encouraging-potential-f2d.notion.site/2366951266db80efabead10fb511a343?source=copy_link"

@@ -7,11 +7,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
-import com.combo.runcombi.setting.SettingScreen
+import com.combo.runcombi.setting.screen.MyScreen
+import com.combo.runcombi.setting.screen.SettingScreen
 
-fun NavController.navigateToSetting(
+fun NavController.navigateToSettingMain(
     navOptions: NavOptions? = androidx.navigation.navOptions {
-        popUpTo(this@navigateToSetting.graph.id) {
+        popUpTo(this@navigateToSettingMain.graph.id) {
             saveState = true
         }
         launchSingleTop = true
@@ -21,12 +22,26 @@ fun NavController.navigateToSetting(
     this.navigate(MainTabDataModel.Setting, navOptions)
 }
 
-fun NavGraphBuilder.settingNavGraph() {
+fun NavController.navigateToSetting() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.Setting)
+}
+
+fun NavGraphBuilder.settingNavGraph(
+    onClickSetting: () -> Unit = {},
+    goToLogin: () -> Unit = {},
+    onBack: () -> Unit = {},
+) {
     navigation<MainTabDataModel.Setting>(
-        startDestination = RouteModel.MainTabRoute.SettingRouteModel.Setting,
+        startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
     ) {
+        composable<RouteModel.MainTabRoute.SettingRouteModel.My> {
+            MyScreen(onClickSetting = onClickSetting)
+        }
+
         composable<RouteModel.MainTabRoute.SettingRouteModel.Setting> {
-            SettingScreen()
+            SettingScreen(
+                goToLogin = goToLogin,
+                onBack = onBack)
         }
     }
 }

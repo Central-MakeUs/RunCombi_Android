@@ -76,4 +76,5 @@ dependencies {
     implementation(project(":core:data:user"))
     implementation(project(":core:data:walk"))
     implementation(project(":core:data:history"))
+    implementation(project(":core:data:setting"))
 }

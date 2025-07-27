@@ -8,4 +8,7 @@ interface AuthDataSource {
 
     fun setAccessToken(accessToken: String): Flow<Unit>
     fun setRefreshToken(refreshToken: String): Flow<Unit>
+
+    suspend fun deleteAccessToken()
+    suspend fun deleteRefreshToken()
 }

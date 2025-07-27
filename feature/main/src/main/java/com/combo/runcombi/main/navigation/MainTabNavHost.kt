@@ -49,6 +49,16 @@ fun MainTabNavHost(
             }
         )
 
-        settingNavGraph()
+        settingNavGraph(
+            onClickSetting = {
+                mainTabNavigator.navigationToSetting()
+            },
+            goToLogin = {
+                mainNavigator.navigateToLogin()
+            },
+            onBack = {
+                mainTabNavigator.navController.popBackStack()
+            },
+        )
     }
 }

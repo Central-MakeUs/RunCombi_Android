@@ -6,10 +6,13 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     suspend fun requestKakaoLogin(token: String): DomainResult<KakaoLogin>
+    suspend fun requestWithdraw(): DomainResult<Unit>
 
     fun getAccessToken(): Flow<String?>
     fun getRefreshToken(): Flow<String?>
 
     fun setAccessToken(accessToken: String): Flow<Unit>
     fun setRefreshToken(refreshToken: String): Flow<Unit>
+
+    suspend fun requestLogout()
 }

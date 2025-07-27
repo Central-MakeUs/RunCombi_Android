@@ -34,8 +34,7 @@ fun MainTabContent(
                         when (mainTab) {
                             MainTab.WALK -> mainTabNavigator.navigationToWalkMain()
                             MainTab.HISTORY -> mainTabNavigator.navigationToHistory()
-
-                            MainTab.SETTING -> mainTabNavigator.navigationToSetting()
+                            MainTab.SETTING -> mainTabNavigator.navigationToSettingMain()
                         }
                     }
                 )

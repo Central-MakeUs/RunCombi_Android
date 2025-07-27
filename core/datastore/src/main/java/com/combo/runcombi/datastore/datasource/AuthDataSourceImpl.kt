@@ -41,4 +41,16 @@ class AuthDataSourceImpl @Inject constructor(
         }
         emit(Unit)
     }
+
+    override suspend fun deleteAccessToken() {
+        dataStore.edit { preferences ->
+            preferences.remove(PreferencesKey.ACCESS_TOKEN)
+        }
+    }
+
+    override suspend fun deleteRefreshToken() {
+        dataStore.edit { preferences ->
+            preferences.remove(PreferencesKey.REFRESH_TOKEN)
+        }
+    }
 }
