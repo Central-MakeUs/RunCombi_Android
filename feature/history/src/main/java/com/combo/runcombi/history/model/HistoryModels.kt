@@ -5,7 +5,7 @@ import java.time.YearMonth
 
 // 운동 기록 데이터 모델
 data class ExerciseRecord(
-    val id: String,
+    val id: Int,
     val time: String,
     val duration: Int,
     val distance: Double,
@@ -18,7 +18,12 @@ data class HistoryUiState(
     val selectedDate: LocalDate? = null,
     val exerciseDays: List<LocalDate> = emptyList(),
     val exerciseRecords: List<ExerciseRecord> = emptyList(),
-    val isBottomSheetVisible: Boolean = false
+    val isLoading: Boolean = false,
+    val avgTime: Int = 0,
+    val avgDistance: Double = 0.0,
+    val mostRunStyle: String = "",
+    val exerciseDayMap: Map<LocalDate, Boolean> = emptyMap(),
+    val exerciseCount: Int = 0,
 )
 
 // 이벤트 sealed class
@@ -26,5 +31,4 @@ sealed class HistoryEvent {
     object PrevMonth : HistoryEvent()
     object NextMonth : HistoryEvent()
     data class SelectDate(val date: LocalDate) : HistoryEvent()
-    object DismissBottomSheet : HistoryEvent()
 } 

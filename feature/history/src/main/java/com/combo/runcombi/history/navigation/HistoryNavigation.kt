@@ -31,12 +31,12 @@ fun NavController.navigateToRecord(
     this.navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.historyNavGraph() {
+fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit) {
     navigation<MainTabDataModel.History>(
         startDestination = RouteModel.MainTabRoute.HistoryRouteModel.History,
     ) {
         composable<RouteModel.MainTabRoute.HistoryRouteModel.History> {
-            HistoryScreen()
+            HistoryScreen(onRecordClick = onRecordClick)
         }
         composable<RouteModel.MainTabRoute.HistoryRouteModel.Record>(
         ) { backStackEntry ->

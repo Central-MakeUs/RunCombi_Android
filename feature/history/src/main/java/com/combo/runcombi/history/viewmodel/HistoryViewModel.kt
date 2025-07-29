@@ -11,10 +11,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+import java.time.LocalDateTime
+import com.combo.runcombi.history.model.ExerciseRecord
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
@@ -23,6 +31,9 @@ class HistoryViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState: StateFlow<HistoryUiState> = _uiState
+
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
     fun onEvent(event: HistoryEvent) {
         when (event) {
@@ -39,30 +50,44 @@ class HistoryViewModel @Inject constructor(
             }
 
             is HistoryEvent.SelectDate -> {
-                _uiState.update { it.copy(selectedDate = event.date, isBottomSheetVisible = true) }
+                _uiState.update { it.copy(selectedDate = event.date) }
                 fetchExerciseRecords(event.date)
-            }
-
-            is HistoryEvent.DismissBottomSheet -> {
-                _uiState.update { it.copy(isBottomSheetVisible = false) }
             }
         }
     }
 
     fun getMonthData(year: Int, month: Int) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             getMonthDataUseCase(year, month).collect { result ->
                 when (result) {
                     is DomainResult.Success -> {
-
+                        val data = result.data
+                        val exerciseDayMap = data.monthData.associate { runDate ->
+                            val localDate = LocalDate.parse(runDate.date, DateTimeFormatter.ofPattern("yyyyMMdd"))
+                            localDate to (runDate.runId != null && runDate.runId.isNotEmpty())
+                        }
+                        val exerciseDays = exerciseDayMap.filterValues { it }.keys.toList()
+                        val exerciseCount = exerciseDays.size
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                avgTime = data.avgTime,
+                                avgDistance = data.avgDistance,
+                                mostRunStyle = data.mostRunStyle,
+                                exerciseDays = exerciseDays,
+                                exerciseDayMap = exerciseDayMap,
+                                exerciseCount = exerciseCount
+                            )
+                        }
                     }
-
                     is DomainResult.Error -> {
-
+                        _uiState.update { it.copy(isLoading = false) }
+                        viewModelScope.launch { _errorMessage.emit("월 데이터 조회 실패") }
                     }
-
                     is DomainResult.Exception -> {
-
+                        _uiState.update { it.copy(isLoading = false) }
+                        viewModelScope.launch { _errorMessage.emit("예기치 못한 오류 발생") }
                     }
                 }
             }
@@ -71,18 +96,39 @@ class HistoryViewModel @Inject constructor(
 
     fun getDayData(year: Int, month: Int, day: Int) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             getDayDataUseCase(year, month, day).collect { result ->
                 when (result) {
                     is DomainResult.Success -> {
-
+                        val records = result.data.map { item ->
+                            ExerciseRecord(
+                                id = item.runId,
+                                time = try {
+                                    val utcDateTime = LocalDateTime.parse(item.regDate)
+                                    val kstDateTime = utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                                    "%02d:%02d".format(kstDateTime.hour, kstDateTime.minute)
+                                } catch (e: Exception) {
+                                    ""
+                                },
+                                duration = item.runTime,
+                                distance = item.runDistance,
+                                imageUrl = item.runImageUrl
+                            )
+                        }
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoading = false,
+                                exerciseRecords = records
+                            )
+                        }
                     }
-
                     is DomainResult.Error -> {
-
+                        _uiState.update { it.copy(isLoading = false) }
+                        viewModelScope.launch { _errorMessage.emit("일별 데이터 조회 실패") }
                     }
-
                     is DomainResult.Exception -> {
-
+                        _uiState.update { it.copy(isLoading = false) }
+                        viewModelScope.launch { _errorMessage.emit("예기치 못한 오류 발생") }
                     }
                 }
             }
