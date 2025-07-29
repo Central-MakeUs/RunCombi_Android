@@ -1,6 +1,10 @@
 package com.combo.runcombi.network.service
 
+import com.combo.runcombi.network.model.request.GetDayDataRequest
+import com.combo.runcombi.network.model.request.GetMonthDataRequest
 import com.combo.runcombi.network.model.request.GetRunDataRequest
+import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
+import com.combo.runcombi.network.model.request.SetRunMemoRequest
 import com.combo.runcombi.network.model.response.DayHistoryResponse
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.HistoryResponse
@@ -17,21 +21,23 @@ interface HistoryService {
         @Body request: GetRunDataRequest,
     ): Response<HistoryResponse>
 
-    @FormUrlEncoded
     @POST("api/calender/getMonthData")
     suspend fun getMonthData(
-        @Field("year") year: Int,
-        @Field("month") month: Int,
+        @Body request: GetMonthDataRequest,
     ): Response<MonthHistoryResponse>
 
     @POST("api/calender/getDayData")
     suspend fun getDayData(
+        @Body request: GetDayDataRequest,
     ): Response<DayHistoryResponse>
 
-    @FormUrlEncoded
     @POST("api/calender/setRunEvaluating")
     suspend fun setRunEvaluating(
-        @Field("runId") runId: Int,
-        @Field("runEvaluating") runEvaluating: String,
+        @Body request: SetRunEvaluatingRequest,
+    ): Response<DefaultResponse>
+
+    @POST("api/calender/updateMemo")
+    suspend fun setRunMemo(
+        @Body request: SetRunMemoRequest,
     ): Response<DefaultResponse>
 }

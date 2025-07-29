@@ -4,8 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MonthHistoryResult(
-    val avgCal: Int,
-    val avgDistance: Double,
-    val monthData: List<MonthData>,
-    val mostRunStyle: String
+    val avgCal: Int?,
+    val avgTime: Int?,
+    val avgDistance: Double?,
+    val monthData: List<MonthData>?,
+    val mostRunStyle: String?
 )

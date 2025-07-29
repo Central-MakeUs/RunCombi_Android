@@ -1,15 +1,26 @@
 package com.combo.runcombi.history.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.history.model.HistoryEvent
 import com.combo.runcombi.history.model.HistoryUiState
+import com.combo.runcombi.history.usecase.GetDayDataUseCase
+import com.combo.runcombi.history.usecase.GetMonthDataUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
+import javax.inject.Inject
 
-class HistoryViewModel : ViewModel() {
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
+    private val getMonthDataUseCase: GetMonthDataUseCase,
+    private val getDayDataUseCase: GetDayDataUseCase,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     val uiState: StateFlow<HistoryUiState> = _uiState
 
@@ -34,6 +45,46 @@ class HistoryViewModel : ViewModel() {
 
             is HistoryEvent.DismissBottomSheet -> {
                 _uiState.update { it.copy(isBottomSheetVisible = false) }
+            }
+        }
+    }
+
+    fun getMonthData(year: Int, month: Int) {
+        viewModelScope.launch {
+            getMonthDataUseCase(year, month).collect { result ->
+                when (result) {
+                    is DomainResult.Success -> {
+
+                    }
+
+                    is DomainResult.Error -> {
+
+                    }
+
+                    is DomainResult.Exception -> {
+
+                    }
+                }
+            }
+        }
+    }
+
+    fun getDayData(year: Int, month: Int, day: Int) {
+        viewModelScope.launch {
+            getDayDataUseCase(year, month, day).collect { result ->
+                when (result) {
+                    is DomainResult.Success -> {
+
+                    }
+
+                    is DomainResult.Error -> {
+
+                    }
+
+                    is DomainResult.Exception -> {
+
+                    }
+                }
             }
         }
     }

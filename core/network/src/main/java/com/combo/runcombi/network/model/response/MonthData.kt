@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MonthData(
-    val date: String,
-    val runId: List<Int>
+    val date: String?,
+    val runId: List<Int>?
 )
