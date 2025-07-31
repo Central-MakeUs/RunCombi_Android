@@ -68,7 +68,7 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
             val runIdPart = MultipartBody.Part.createFormData("runId", runId.toString())
 
             val runImagePart = MultipartBody.Part.createFormData(
-                "runImage", runImage.name, runImage.asRequestBody("image/*".toMediaTypeOrNull())
+                "runImage", runImage.name, runImage.asRequestBody("image/jpeg".toMediaTypeOrNull())
             )
 
             historyService.setRunImage(

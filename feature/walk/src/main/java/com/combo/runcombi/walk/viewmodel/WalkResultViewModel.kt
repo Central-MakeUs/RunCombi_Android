@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.history.usecase.SetRunImageUseCase
-import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkData
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.usecase.EndRunUseCase
@@ -92,19 +91,18 @@ class WalkResultViewModel @Inject constructor(
                     is DomainResult.Error -> {
                         Log.e("WalkResultViewModel", "운동 사진 저장 실패: $result")
                         _errorMessage.emit(result.message ?: "알 수 없는 에러가 발생했습니다.")
+                        emitEvent(WalkResultEvent.SetRunImageSuccess)
                     }
 
                     is DomainResult.Exception -> {
                         Log.e("WalkResultViewModel", "운동 사진 저장 실패: $result")
                         _errorMessage.emit(result.error.message ?: "네트워크 에러가 발생했습니다.")
+                        emitEvent(WalkResultEvent.SetRunImageSuccess)
                     }
                 }
             }
         }
     }
 
-    fun onPermissionDenied(type: PermissionType) = emitEvent(WalkResultEvent.PermissionDenied(type))
-    fun onCameraButtonClick() = emitEvent(WalkResultEvent.RequestCameraPermission)
     fun openCamera() = emitEvent(WalkResultEvent.OpenCamera)
-
 }

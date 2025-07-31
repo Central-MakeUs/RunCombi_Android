@@ -1,6 +1,7 @@
 package com.combo.runcombi.walk.screen
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -23,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,13 +39,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.LottieImage
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
-import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -61,7 +60,6 @@ import com.combo.runcombi.feature.walk.R
 import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.util.BitmapUtil
 import com.combo.runcombi.ui.util.FormatUtils
-import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkResultViewModel
@@ -72,6 +70,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -103,11 +102,8 @@ fun WalkResultScreen(
     val formattedDistance = FormatUtils.formatDistance(walkData.distance)
     val isLoading by walkResultViewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessageFlow = walkResultViewModel.errorMessage
-
     val coroutineScope = rememberCoroutineScope()
     var hasSavedRun by remember { mutableStateOf(false) }
-    var showPermissionBottomSheet by remember { mutableStateOf(false) }
-    var pendingCameraAction by remember { mutableStateOf(false) }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap: Bitmap? ->
@@ -132,19 +128,19 @@ fun WalkResultScreen(
             if (isGranted) {
                 walkResultViewModel.openCamera()
             } else {
-                val showRationale =
-                    androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale(
-                        (context as? android.app.Activity)
-                            ?: return@rememberLauncherForActivityResult,
-                        Manifest.permission.CAMERA
-                    )
-                if (!showRationale) {
-                    showPermissionBottomSheet = true
-                } else {
-                    walkResultViewModel.onPermissionDenied(PermissionType.CAMERA)
-                }
+                onNavigateToRecord(walkData.runData?.runId ?: 0)
             }
         }
+
+    fun handleCameraButtonClick() {
+        val permission = Manifest.permission.CAMERA
+        val permissionState = ContextCompat.checkSelfPermission(context, permission)
+        if (permissionState == PackageManager.PERMISSION_GRANTED) {
+            walkResultViewModel.openCamera()
+        } else {
+            cameraPermissionLauncher.launch(permission)
+        }
+    }
 
     LaunchedEffect(Unit) {
         errorMessageFlow.collect { message ->
@@ -155,16 +151,8 @@ fun WalkResultScreen(
     LaunchedEffect(Unit) {
         walkResultViewModel.eventFlow.collect { event ->
             when (event) {
-                is WalkResultEvent.RequestCameraPermission -> {
-                    cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                }
-
                 is WalkResultEvent.OpenCamera -> {
                     cameraLauncher.launch(null)
-                }
-
-                is WalkResultEvent.PermissionDenied -> {
-                    onNavigateToRecord(walkData.runData?.runId ?: 0)
                 }
 
                 is WalkResultEvent.SetRunImageSuccess -> {
@@ -181,6 +169,7 @@ fun WalkResultScreen(
     LaunchedEffect(walkData.pathPoints) {
         if (!hasSavedRun && walkData.pathPoints.isNotEmpty()) {
             hasSavedRun = true
+            delay(1000)
             showCaptureRequest.value = true
         }
     }
@@ -209,7 +198,7 @@ fun WalkResultScreen(
             }
         },
         onClickCamera = {
-            walkResultViewModel.onCameraButtonClick()
+            handleCameraButtonClick()
         }
     )
 
@@ -223,40 +212,6 @@ fun WalkResultScreen(
             CircularProgressIndicator(color = Primary02)
         }
     }
-
-    RunCombiBottomSheet(
-        show = showPermissionBottomSheet,
-        onDismiss = { showPermissionBottomSheet = false },
-        onAccept = {
-            showPermissionBottomSheet = false
-
-            val intent =
-                android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    .apply {
-                        data = ("package:" + context.packageName).toUri()
-                    }
-            context.startActivity(intent)
-            pendingCameraAction = true
-        },
-        onCancel = {
-            showPermissionBottomSheet = false
-            onNavigateToRecord(walkData.runData?.runId ?: 0)
-        },
-        title = "카메라 접근 권한 필요",
-        subtitle = "사진을 찍으려면 카메라 접근 권한이 필요해요.\n" +
-                "설정에서 권한을 허용해주세요.",
-        acceptButtonText = "설정으로 이동",
-        cancelButtonText = "취소"
-    )
-
-    LaunchedEffect(pendingCameraAction) {
-        if (pendingCameraAction) {
-            pendingCameraAction = false
-            walkResultViewModel.onCameraButtonClick()
-        }
-    }
-
-    DisposableEffect(Unit) { onDispose { walkMainViewModel.clearResultData() } }
 }
 
 @Composable

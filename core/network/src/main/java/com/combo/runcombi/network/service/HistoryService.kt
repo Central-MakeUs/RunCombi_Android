@@ -48,6 +48,6 @@ interface HistoryService {
     @POST("api/calender/setRunImage")
     suspend fun setRunImage(
         @Part runId: MultipartBody.Part?,
-        @Part routeImage: MultipartBody.Part?,
+        @Part runImage: MultipartBody.Part?,
     ): Response<DefaultResponse>
 }
