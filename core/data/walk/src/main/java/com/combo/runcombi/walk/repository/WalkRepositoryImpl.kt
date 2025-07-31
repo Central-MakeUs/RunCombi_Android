@@ -5,12 +5,11 @@ import com.combo.runcombi.common.convert
 import com.combo.runcombi.common.handleResult
 import com.combo.runcombi.network.model.request.StartRunRequest
 import com.combo.runcombi.network.model.response.MemberRunData
+import com.combo.runcombi.network.model.response.PetId
 import com.combo.runcombi.network.model.response.PetRunData
 import com.combo.runcombi.network.service.WalkService
-import com.combo.runcombi.walk.mapper.toDataModel
 import com.combo.runcombi.walk.mapper.toDomainModel
 import com.combo.runcombi.walk.model.StartRunData
-import com.combo.runcombi.walk.model.WalkPet
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -39,25 +38,18 @@ class WalkRepositoryImpl @Inject constructor(private val walkService: WalkServic
 
     override suspend fun endRun(
         runId: Int,
-        memberCal: Int,
         runTime: Int,
         runDistance: Double,
-        memo: String,
-        runEvaluating: String,
-        petList: List<WalkPet>,
+        petList: List<Int>,
         routeImage: File?,
-        runImage: File?,
     ): DomainResult<Unit> = handleResult {
         val memberRunData = MemberRunData(
             runId = runId,
-            memberCal = memberCal,
             runTime = runTime,
             runDistance = runDistance,
-            runEvaluating = runEvaluating,
-            memo = memo
         )
         val petRunData = PetRunData(
-            petCalList = petList.map { it.toDataModel() }
+            petCalList = petList.map { PetId(petId = it) }
         )
         val json = Json { ignoreUnknownKeys = true }
         val memberRunDataJsonString = json.encodeToString(memberRunData)
@@ -74,16 +66,11 @@ class WalkRepositoryImpl @Inject constructor(private val walkService: WalkServic
                 "routeImage", it.name, it.asRequestBody("image/*".toMediaTypeOrNull())
             )
         }
-        val runImagePart = runImage?.let {
-            MultipartBody.Part.createFormData(
-                "runImage", it.name, it.asRequestBody("image/*".toMediaTypeOrNull())
-            )
-        }
+
         walkService.requestEndRun(
             memberRunData = memberRunDataBody,
             petRunData = petRunDataBody,
             routeImage = routeImagePart,
-            runImage = runImagePart
         )
     }.convert {}
 }

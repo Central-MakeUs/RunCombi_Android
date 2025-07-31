@@ -14,6 +14,10 @@ import com.combo.runcombi.network.model.request.GetRunDataRequest
 import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
 import com.combo.runcombi.network.model.request.SetRunMemoRequest
 import com.combo.runcombi.network.service.HistoryService
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import javax.inject.Inject
 
 class HistoryRepositoryImpl @Inject constructor(private val historyService: HistoryService) :
@@ -46,8 +50,7 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
         handleResult {
             historyService.setRunEvaluating(
                 SetRunEvaluatingRequest(
-                    runId = runId,
-                    runEvaluating = rating.name
+                    runId = runId, runEvaluating = rating.name
                 )
             )
         }.convert {}
@@ -55,10 +58,23 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
     override suspend fun setRunMemo(runId: Int, memo: String): DomainResult<Unit> = handleResult {
         historyService.setRunMemo(
             SetRunMemoRequest(
-                runId = runId,
-                memo = memo
+                runId = runId, memo = memo
             )
         )
     }.convert {}
+
+    override suspend fun setRunImage(runId: Int, runImage: File): DomainResult<Unit> =
+        handleResult {
+            val runIdPart = MultipartBody.Part.createFormData("runId", runId.toString())
+
+            val runImagePart = MultipartBody.Part.createFormData(
+                "runImage", runImage.name, runImage.asRequestBody("image/*".toMediaTypeOrNull())
+            )
+
+            historyService.setRunImage(
+                runIdPart, runImagePart
+            )
+
+        }.convert { }
 
 }

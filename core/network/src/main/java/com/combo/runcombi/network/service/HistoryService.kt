@@ -9,11 +9,14 @@ import com.combo.runcombi.network.model.response.DayHistoryResponse
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.HistoryResponse
 import com.combo.runcombi.network.model.response.MonthHistoryResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 interface HistoryService {
     @POST("api/calender/getRunData")
@@ -39,5 +42,12 @@ interface HistoryService {
     @POST("api/calender/updateMemo")
     suspend fun setRunMemo(
         @Body request: SetRunMemoRequest,
+    ): Response<DefaultResponse>
+
+    @Multipart
+    @POST("api/calender/setRunImage")
+    suspend fun setRunImage(
+        @Part runId: MultipartBody.Part?,
+        @Part routeImage: MultipartBody.Part?,
     ): Response<DefaultResponse>
 }

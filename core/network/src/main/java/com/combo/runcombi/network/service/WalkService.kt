@@ -27,7 +27,5 @@ interface WalkService {
         @Part("memberRunData") memberRunData: RequestBody,
         @Part("petRunData") petRunData: RequestBody,
         @Part routeImage: MultipartBody.Part?,
-        @Part runImage: MultipartBody.Part?,
     ): Response<DefaultResponse>
-
 }

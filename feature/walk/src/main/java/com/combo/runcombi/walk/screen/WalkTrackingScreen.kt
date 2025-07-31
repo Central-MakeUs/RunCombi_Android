@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,7 +73,7 @@ import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
-import com.combo.runcombi.walk.viewmodel.WalkRecordViewModel
+import com.combo.runcombi.walk.viewmodel.WalkTrackingViewModel
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -89,7 +88,7 @@ fun WalkTrackingScreen(
     onFinish: () -> Unit,
     onBack: () -> Unit,
     walkMainViewModel: WalkMainViewModel = hiltViewModel(),
-    walkRecordViewModel: WalkRecordViewModel = hiltViewModel(),
+    walkRecordViewModel: WalkTrackingViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val uiState by walkRecordViewModel.uiState.collectAsStateWithLifecycle()

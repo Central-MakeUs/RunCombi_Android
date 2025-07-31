@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
-import com.combo.runcombi.history.model.ExerciseRating
+import com.combo.runcombi.history.usecase.SetRunImageUseCase
 import com.combo.runcombi.walk.model.PermissionType
 import com.combo.runcombi.walk.model.WalkData
-import com.combo.runcombi.walk.model.WalkPet
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.usecase.EndRunUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +20,10 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class WalkResultViewModel @Inject constructor(private val endRunUseCase: EndRunUseCase) :
-    ViewModel() {
+class WalkResultViewModel @Inject constructor(
+    private val endRunUseCase: EndRunUseCase,
+    private val setRunImageUseCase: SetRunImageUseCase,
+) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<WalkResultEvent>()
     val eventFlow: SharedFlow<WalkResultEvent> = _eventFlow.asSharedFlow()
 
@@ -36,38 +37,65 @@ class WalkResultViewModel @Inject constructor(private val endRunUseCase: EndRunU
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
-    fun saveRun(walkData: WalkData, routeImage: File?, runImage: File?) {
+    fun saveRun(walkData: WalkData, routeImage: File?) {
         viewModelScope.launch {
             _isLoading.value = true
             endRunUseCase(
                 runId = walkData.runData?.runId ?: 0,
-                memberCal = walkData.member?.calorie?.toInt() ?: 0,
                 runTime = walkData.time,
                 runDistance = walkData.distance,
-                memo = "",
-                runEvaluating = ExerciseRating.SO_EASY.name,
                 petList = walkData.petList.map {
-                    WalkPet(
-                        petId = it.pet.id,
-                        petCal = it.calorie.toInt()
-                    )
+                    it.pet.id
                 },
                 routeImage = routeImage,
-                runImage = runImage
             ).collect { result ->
                 _isLoading.value = false
                 when (result) {
-                    is DomainResult.Success -> {
-                        emitEvent(WalkResultEvent.Success)
-                    }
-
+                    is DomainResult.Success -> {}
                     is DomainResult.Error -> {
                         Log.e("WalkResultViewModel", "운동 기록 저장 실패: $result")
                         _errorMessage.emit(result.message ?: "알 수 없는 에러가 발생했습니다.")
+                        _eventFlow.emit(
+                            WalkResultEvent.SaveRunError(
+                                message = result.message ?: "네트워크 에러가 발생했습니다."
+                            )
+                        )
                     }
 
                     is DomainResult.Exception -> {
                         Log.e("WalkResultViewModel", "운동 기록 저장 실패: $result")
+                        _errorMessage.emit(result.error.message ?: "네트워크 에러가 발생했습니다.")
+                        _eventFlow.emit(
+                            WalkResultEvent.SaveRunError(
+                                message = result.error.message ?: "네트워크 에러가 발생했습니다."
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun setRunImage(runId: Int, runImage: File) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            setRunImageUseCase(
+                runId = runId,
+                runImage = runImage,
+            ).collect { result ->
+                _isLoading.value = false
+                when (result) {
+                    is DomainResult.Success -> {
+                        emitEvent(WalkResultEvent.SetRunImageSuccess)
+                    }
+
+                    is DomainResult.Error -> {
+                        Log.e("WalkResultViewModel", "운동 사진 저장 실패: $result")
+                        _errorMessage.emit(result.message ?: "알 수 없는 에러가 발생했습니다.")
+                    }
+
+                    is DomainResult.Exception -> {
+                        Log.e("WalkResultViewModel", "운동 사진 저장 실패: $result")
                         _errorMessage.emit(result.error.message ?: "네트워크 에러가 발생했습니다.")
                     }
                 }

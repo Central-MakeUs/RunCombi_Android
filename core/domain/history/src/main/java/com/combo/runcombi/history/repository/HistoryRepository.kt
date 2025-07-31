@@ -5,6 +5,7 @@ import com.combo.runcombi.history.model.DayHistory
 import com.combo.runcombi.history.model.ExerciseRating
 import com.combo.runcombi.history.model.MonthHistory
 import com.combo.runcombi.history.model.RunData
+import java.io.File
 
 
 interface HistoryRepository {
@@ -18,5 +19,5 @@ interface HistoryRepository {
 
     suspend fun setRunMemo(runId: Int, memo: String): DomainResult<Unit>
 
-
+    suspend fun setRunImage(runId: Int, runImage: File): DomainResult<Unit>
 }
