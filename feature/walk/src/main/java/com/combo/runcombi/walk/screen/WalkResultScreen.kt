@@ -169,7 +169,7 @@ fun WalkResultScreen(
     LaunchedEffect(walkData.pathPoints) {
         if (!hasSavedRun && walkData.pathPoints.isNotEmpty()) {
             hasSavedRun = true
-            delay(1000)
+            delay(300)
             showCaptureRequest.value = true
         }
     }

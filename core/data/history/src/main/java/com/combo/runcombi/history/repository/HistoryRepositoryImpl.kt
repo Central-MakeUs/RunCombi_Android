@@ -14,9 +14,11 @@ import com.combo.runcombi.network.model.request.GetRunDataRequest
 import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
 import com.combo.runcombi.network.model.request.SetRunMemoRequest
 import com.combo.runcombi.network.service.HistoryService
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -68,13 +70,11 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
             val runIdPart = MultipartBody.Part.createFormData("runId", runId.toString())
 
             val runImagePart = MultipartBody.Part.createFormData(
-                "runImage", runImage.name, runImage.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                "runImage", runImage.name, runImage.asRequestBody("image/*".toMediaTypeOrNull())
             )
-
             historyService.setRunImage(
                 runIdPart, runImagePart
             )
-
         }.convert { }
 
 }
