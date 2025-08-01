@@ -67,7 +67,9 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
 
     override suspend fun setRunImage(runId: Int, runImage: File): DomainResult<Unit> =
         handleResult {
-            val runIdPart = MultipartBody.Part.createFormData("runId", runId.toString())
+            val runIdPart = MultipartBody.Part.createFormData(
+                "runId", null, runId.toString().toRequestBody("application/json".toMediaType())
+            )
 
             val runImagePart = MultipartBody.Part.createFormData(
                 "runImage", runImage.name, runImage.asRequestBody("image/*".toMediaTypeOrNull())
