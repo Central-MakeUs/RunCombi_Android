@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey05
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -48,6 +49,7 @@ import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
+import com.combo.runcombi.feature.setting.R
 import com.combo.runcombi.setting.model.BottomSheetType
 import com.combo.runcombi.setting.model.SettingEvent
 import com.combo.runcombi.setting.viewmodel.SettingViewModel
@@ -74,6 +76,7 @@ fun SettingScreen(
                 is SettingEvent.LogoutSuccess, is SettingEvent.WithdrawSuccess -> {
                     goToLogin()
                 }
+
                 is SettingEvent.Error -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
@@ -99,11 +102,10 @@ fun SettingScreen(
         if (isLoading) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(Primary01),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Color.White)
+                CircularProgressIndicator(color = Primary01)
             }
         }
     }
@@ -225,7 +227,10 @@ fun SettingItem(text: String, onClick: () -> Unit) {
     ) {
         Text(text, style = body1, color = Grey09)
         Spacer(modifier = Modifier.weight(1f))
-        Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = null)
+        StableImage(
+            drawableResId = R.drawable.ic_arrow_right,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 

@@ -3,15 +3,10 @@ package com.combo.runcombi.setting.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,11 +24,11 @@ import com.combo.runcombi.domain.user.model.Gender
 import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.feature.setting.R
 import com.combo.runcombi.core.designsystem.component.NetworkImage
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey03
 import com.combo.runcombi.core.designsystem.theme.Grey05
-import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.Primary02
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
@@ -52,8 +47,7 @@ fun MyScreen(
         onClickSetting = onClickSetting,
         onEditProfile = {},
         onAddPet = {},
-        onEditPet = {}
-    )
+        onEditPet = {})
 }
 
 @Composable
@@ -73,7 +67,8 @@ fun SettingContent(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -82,18 +77,14 @@ fun SettingContent(
                     .height(56.dp)
             ) {
                 Spacer(Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = null,
-                    tint = Color.White,
+                StableImage(
+                    drawableResId = R.drawable.ic_my_setting,
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(top = 16.dp, end = 20.dp)
                         .size(24.dp)
                         .clickableSingle {
                             onClickSetting()
-                        }
-
-                )
+                        })
             }
             Spacer(Modifier.height(32.dp))
             MemberProfile(
@@ -101,9 +92,7 @@ fun SettingContent(
             )
             Spacer(modifier = Modifier.height(19.dp))
             Text(
-                text = member?.nickname ?: "",
-                color = Color.White,
-                style = title4
+                text = member?.nickname ?: "", color = Color.White, style = title4
             )
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
@@ -119,8 +108,7 @@ fun SettingContent(
                 petList = petList,
                 onEditPet = onEditPet,
                 onAddPet = onAddPet,
-                modifier = Modifier
-                    .padding(bottom = 80.dp, start = 20.dp, end = 20.dp)
+                modifier = Modifier.padding(bottom = 80.dp, start = 20.dp, end = 20.dp)
             )
         }
 
@@ -135,14 +123,13 @@ fun MemberProfile(
         modifier = Modifier
             .size(89.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(Primary01)
+            .background(Grey05)
     ) {
         NetworkImage(
             contentScale = ContentScale.Crop,
             imageUrl = member?.profileImageUrl ?: "",
             drawableResId = R.drawable.person_profile,
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -157,18 +144,12 @@ fun PetCard(
         modifier = modifier
             .size(154.dp)
             .background(Grey02, shape = RoundedCornerShape(6.dp))
-            .clickable { onEdit() }
-            .padding(8.dp)
-    ) {
+            .clickableSingle { onEdit() }
+            .padding(8.dp)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Row {
+            Row(modifier = Modifier.height(24.dp)) {
                 Spacer(Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.size(24.dp)
-                )
+                StableImage(drawableResId = R.drawable.ic_pen, modifier = Modifier.size(24.dp))
             }
             Box(
                 modifier = Modifier
@@ -185,9 +166,7 @@ fun PetCard(
             }
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = pet.name,
-                color = Color.White,
-                style = title4
+                text = pet.name, color = Color.White, style = title4
             )
         }
     }
@@ -201,14 +180,11 @@ fun PetCardList(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         petList.forEach { pet ->
             PetCard(
-                pet = pet,
-                onEdit = { onEditPet(pet) }
-            )
+                pet = pet, onEdit = { onEditPet(pet) })
         }
         if (petList.size == 1) {
             Box(
@@ -218,16 +194,30 @@ fun PetCardList(
                         border = BorderStroke(width = 1.dp, color = Grey03),
                         shape = RoundedCornerShape(6.dp)
                     )
-                    .clickable { onAddPet() }
+                    .clickableSingle { onAddPet() }
+                    .padding(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.Center)
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Row(modifier = Modifier.height(24.dp)) {
+                        Spacer(Modifier.weight(1f))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(58.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                    ) {
+                        StableImage(
+                            drawableResId = R.drawable.ic_empty_pet,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    StableImage(
+                        drawableResId = R.drawable.ic_plus,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
     }
@@ -243,8 +233,7 @@ fun SettingContentPreview() {
             height = 170,
             weight = 65,
             profileImageUrl = null
-        ),
-        petList = listOf(
+        ), petList = listOf(
             Pet(
                 id = 1,
                 name = "초코",
