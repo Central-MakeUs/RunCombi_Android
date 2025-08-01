@@ -327,7 +327,7 @@ fun TimeDisplayLarge(time: Int) {
 
 @Composable
 fun DistanceDisplayLarge(distance: Double) {
-    val formattedDistance = FormatUtils.formatDistance(distance)
+    val formattedDistance = FormatUtils.formatDistance(distance / 1000.0)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = formattedDistance,

@@ -20,9 +20,9 @@ object FormatUtils {
         return minutes.toString()
     }
 
-    fun formatDistance(distance: Double): String {
-        val distanceKm = distance / 1000.0
-        return String.format(Locale.getDefault(), "%.2f", distanceKm)
+    fun formatDistance(distance: Double, decimalPlaces: Int = 2): String {
+        val formatString = "%.${decimalPlaces}f"
+        return String.format(Locale.getDefault(), formatString, distance)
     }
 
     fun formatCalorie(calorie: Double): String {

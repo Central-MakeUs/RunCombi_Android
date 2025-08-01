@@ -99,7 +99,7 @@ fun WalkResultScreen(
     val walkData by walkMainViewModel.walkData.collectAsStateWithLifecycle()
     val startRunData = walkData.runData
     val formattedTime = FormatUtils.formatMinute(walkData.time)
-    val formattedDistance = FormatUtils.formatDistance(walkData.distance)
+    val formattedDistance = FormatUtils.formatDistance(walkData.distance / 1000.0)
     val isLoading by walkResultViewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessageFlow = walkResultViewModel.errorMessage
     val coroutineScope = rememberCoroutineScope()
