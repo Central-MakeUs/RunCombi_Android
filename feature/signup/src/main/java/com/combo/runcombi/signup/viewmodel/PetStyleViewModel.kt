@@ -92,7 +92,7 @@ class PetStyleViewModel @Inject constructor(
             _uiState.update { _uiState.value.copy(isLoading = true) }
 
 
-            val memeber = with(signupData) {
+            val member = with(signupData) {
                 Member(
                     nickname = profileData.nickname,
                     gender = genderData.gender,
@@ -105,13 +105,13 @@ class PetStyleViewModel @Inject constructor(
                 Pet(
                     name = petProfileData.name,
                     age = petInfoData.petAge ?: 0,
-                    weight = petInfoData.petWeight?.toDouble() ?: 0.0,
+                    weight = petInfoData.petWeight ?: 0.0,
                     runStyle = petStyleData.walkStyle,
                 )
             }
 
             setUserInfoUseCase(
-                memberDetail = memeber,
+                memberDetail = member,
                 petDetail = pet,
                 memberImage = signupData.profileData.profileFile,
                 petImage = signupData.petProfileData.profileFile

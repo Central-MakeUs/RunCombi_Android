@@ -115,7 +115,7 @@ fun PetInfoScreen(
                     signupViewModel.setPetInfo(
                         PetInfoData(
                             petAge = uiState.age.toIntOrNull(),
-                            petWeight = uiState.weight.toIntOrNull()
+                            petWeight = uiState.weight.toDoubleOrNull()
                         )
                     )
                     onNext()
