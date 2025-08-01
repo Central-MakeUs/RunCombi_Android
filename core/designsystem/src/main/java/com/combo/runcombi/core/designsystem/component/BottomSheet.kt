@@ -39,8 +39,7 @@ fun RunCombiBottomSheet(
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             containerColor = Grey02,
-            dragHandle = null
-            ,
+            dragHandle = null,
             shape = RoundedCornerShape(
                 topStart = 20.dp,
                 topEnd = 20.dp
