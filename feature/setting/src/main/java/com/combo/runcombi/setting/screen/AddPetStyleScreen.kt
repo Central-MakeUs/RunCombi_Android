@@ -69,53 +69,54 @@ fun AddPetStyleScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .background(Grey01)
             .clickableWithoutRipple {
                 keyboardController?.hide()
                 localFocusManager.clearFocus()
             }
-            .screenDefaultPadding()
     ) {
-        Spacer(Modifier.height(38.dp))
-        Text(
-            text = "산책스타일을 알려주세요",
-            style = title1,
-            color = WhiteFF,
-            modifier = Modifier.padding(bottom = 9.dp)
-        )
-        Text(
-            text = "더 정확한 반려견 소모 칼로리 계산을 위해 필요해요", style = body1, color = Grey06,
-        )
-        Spacer(Modifier.height(49.dp))
-        Text(
-            text = "산책스타일", style = body2, color = Grey08,
-        )
-        Spacer(Modifier.height(5.dp))
-        RunCombiSelectableButton(
-            text = "에너지가 넘쳐요!",
-            modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.RUNNING,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.RUNNING) },
-        )
-        Spacer(Modifier.height(14.dp))
-        RunCombiSelectableButton(
-            text = "여유롭게 걸어요",
-            modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.WALKING,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.WALKING) },
-        )
-        Spacer(Modifier.height(14.dp))
-        RunCombiSelectableButton(
-            text = "천천히 걸으며 자주 쉬어요",
-            modifier = Modifier.height(40.dp),
-            isSelected = uiState.selectedStyle == RunStyle.SLOW_WALKING,
-            onClick = { petStyleViewModel.selectStyle(RunStyle.SLOW_WALKING) },
-        )
+        Column(
+            modifier = Modifier.screenDefaultPadding()
+        ) {
+            Spacer(Modifier.height(38.dp))
+            Text(
+                text = "산책스타일을 알려주세요",
+                style = title1,
+                color = WhiteFF,
+                modifier = Modifier.padding(bottom = 9.dp)
+            )
+            Text(
+                text = "더 정확한 반려견 소모 칼로리 계산을 위해 필요해요", style = body1, color = Grey06,
+            )
+            Spacer(Modifier.height(49.dp))
+            Text(
+                text = "산책스타일", style = body2, color = Grey08,
+            )
+            Spacer(Modifier.height(5.dp))
+            RunCombiSelectableButton(
+                text = "에너지가 넘쳐요!",
+                modifier = Modifier.height(40.dp),
+                isSelected = uiState.selectedStyle == RunStyle.RUNNING,
+                onClick = { petStyleViewModel.selectStyle(RunStyle.RUNNING) },
+            )
+            Spacer(Modifier.height(14.dp))
+            RunCombiSelectableButton(
+                text = "여유롭게 걸어요",
+                modifier = Modifier.height(40.dp),
+                isSelected = uiState.selectedStyle == RunStyle.WALKING,
+                onClick = { petStyleViewModel.selectStyle(RunStyle.WALKING) },
+            )
+            Spacer(Modifier.height(14.dp))
+            RunCombiSelectableButton(
+                text = "천천히 걸으며 자주 쉬어요",
+                modifier = Modifier.height(40.dp),
+                isSelected = uiState.selectedStyle == RunStyle.SLOW_WALKING,
+                onClick = { petStyleViewModel.selectStyle(RunStyle.SLOW_WALKING) },
+            )
 
-        Spacer(Modifier.weight(1f))
-        Box {
+            Spacer(Modifier.weight(1f))
             RunCombiButton(
                 onClick = {
                     keyboardController?.hide()
@@ -129,16 +130,16 @@ fun AddPetStyleScreen(
                 text = "완료",
                 enabled = uiState.isButtonEnabled && !uiState.isLoading
             )
-            
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0x80000000)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Primary01)
-                }
+        }
+        
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x80000000)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary01)
             }
         }
     }
