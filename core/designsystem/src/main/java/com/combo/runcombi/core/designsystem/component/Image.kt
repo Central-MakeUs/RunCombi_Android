@@ -51,5 +51,12 @@ fun NetworkImage(
             error = drawableResId?.let { painterResource(id = it) },
             placeholder = drawableResId?.let { painterResource(id = it) }
         )
+    } else if (drawableResId != null) {
+        StableImage(
+            drawableResId = drawableResId,
+            modifier = modifier,
+            contentScale = contentScale,
+            description = description
+        )
     }
 }
