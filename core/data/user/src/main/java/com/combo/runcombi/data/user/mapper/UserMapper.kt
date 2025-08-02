@@ -47,13 +47,14 @@ fun PetModel.toDomainModel(): Pet {
         name = name ?: "",
         age = age ?: 0,
         weight = weight ?: 0.0,
-        runStyle = RunStyle.RUNNING,
+        runStyle = RunStyle.fromOrDefault(name = runStyle ?: ""),
         profileImageUrl = petImageUrl
     )
 }
 
 fun Pet.toDataModel(): PetModel {
     return PetModel(
+        petId = id,
         age = age,
         name = name,
         runStyle = runStyle.name,

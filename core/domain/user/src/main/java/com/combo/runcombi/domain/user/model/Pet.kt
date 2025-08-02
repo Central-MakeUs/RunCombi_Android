@@ -19,5 +19,15 @@ data class Pet(
 enum class RunStyle(val activityFactor: Double) {
     RUNNING(6.4),
     WALKING(4.8),
-    SLOW_WALKING(3.2)
+    SLOW_WALKING(3.2);
+
+    companion object {
+        fun fromOrDefault(name: String, default: RunStyle = RunStyle.RUNNING): RunStyle {
+            return try {
+                valueOf(name)
+            } catch (e: IllegalArgumentException) {
+                default
+            }
+        }
+    }
 }
