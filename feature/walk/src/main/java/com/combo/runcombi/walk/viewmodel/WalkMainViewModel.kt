@@ -44,7 +44,7 @@ class WalkMainViewModel @Inject constructor(
         fetchUserAndPets()
     }
 
-    private fun fetchUserAndPets() {
+    fun fetchUserAndPets() {
         viewModelScope.launch {
             getUserInfoUseCase().collectLatest { result ->
                 when (result) {

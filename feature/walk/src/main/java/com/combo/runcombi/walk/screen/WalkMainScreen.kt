@@ -97,6 +97,8 @@ fun WalkMainScreen(
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()
         }
+        // 화면 진입 시 사용자 정보 갱신
+        walkMainViewModel.fetchUserAndPets()
     }
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
