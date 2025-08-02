@@ -57,13 +57,13 @@ fun MainTabNavHost(
         )
 
         settingNavGraph(
+            navController = mainTabNavigator.navController,
             onClickSetting = {
                 mainTabNavigator.navigationToSetting()
             },
             onClickAddPet = {
                 mainTabNavigator.navigationToAddPet()
             },
-
             onClickEditPet = { petId ->
                 mainTabNavigator.navigationToEditPet(petId)
             },
@@ -76,6 +76,15 @@ fun MainTabNavHost(
             onBack = {
                 mainTabNavigator.navController.popBackStack()
             },
+            onNavigateToAddPetInfo = {
+                mainTabNavigator.navigationToAddPetInfo()
+            },
+            onNavigateToAddPetStyle = {
+                mainTabNavigator.navigationToAddPetStyle()
+            },
+            onAddPetSuccess = {
+                mainTabNavigator.navigateToMyScreen()
+            }
         )
     }
 }

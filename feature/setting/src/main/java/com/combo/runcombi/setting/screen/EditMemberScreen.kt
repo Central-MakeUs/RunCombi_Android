@@ -110,8 +110,7 @@ fun EditMemberScreen(
     if (uiState.isLoading) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x80000000)),
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = Primary01)

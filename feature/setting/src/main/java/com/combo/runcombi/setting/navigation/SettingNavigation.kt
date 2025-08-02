@@ -1,5 +1,7 @@
 package com.combo.runcombi.setting.navigation
 
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -8,10 +10,15 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.setting.component.InputStepScaffold
+import com.combo.runcombi.setting.screen.AddPetInfoScreen
+import com.combo.runcombi.setting.screen.AddPetProfileScreen
+import com.combo.runcombi.setting.screen.AddPetStyleScreen
 import com.combo.runcombi.setting.screen.EditMemberScreen
 import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
 import com.combo.runcombi.setting.screen.SettingScreen
+import com.combo.runcombi.setting.viewmodel.AddPetViewModel
 
 fun NavController.navigateToSettingMain(
     navOptions: NavOptions? = androidx.navigation.navOptions {
@@ -41,13 +48,29 @@ fun NavController.navigateToAddPet() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInput)
 }
 
+fun NavController.navigateToAddPetProfile() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetProfile)
+}
+
+fun NavController.navigateToAddPetInfo() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetInfo)
+}
+
+fun NavController.navigateToAddPetStyle() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetStyle)
+}
+
 fun NavGraphBuilder.settingNavGraph(
+    navController: NavController,
     onClickSetting: () -> Unit = {},
     onClickAddPet: () -> Unit = {},
     onClickEditMember: () -> Unit = {},
     onClickEditPet: (petId: Int) -> Unit = {},
     goToLogin: () -> Unit = {},
     onBack: () -> Unit = {},
+    onNavigateToAddPetInfo: () -> Unit = {},
+    onNavigateToAddPetStyle: () -> Unit = {},
+    onAddPetSuccess: () -> Unit = {},
 ) {
     navigation<MainTabDataModel.Setting>(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
@@ -81,6 +104,73 @@ fun NavGraphBuilder.settingNavGraph(
                 petId = route.petId,
                 onBack = onBack
             )
+        }
+
+        addPetNavGraph(
+            navController = navController,
+            onBack = onBack,
+            onSuccess = onAddPetSuccess,
+            onNavigateToAddPetInfo = onNavigateToAddPetInfo,
+            onNavigateToAddPetStyle = onNavigateToAddPetStyle
+        )
+    }
+}
+
+fun NavGraphBuilder.addPetNavGraph(
+    navController: NavController,
+    onBack: () -> Unit = {},
+    onSuccess: () -> Unit = {},
+    onNavigateToAddPetInfo: () -> Unit = {},
+    onNavigateToAddPetStyle: () -> Unit = {},
+) {
+    navigation<RouteModel.MainTabRoute.SettingRouteModel.PetInput>(
+        startDestination = RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetProfile,
+    ) {
+        composable<RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetProfile> {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.PetInput>()
+            }
+
+            val addPetViewModel = hiltViewModel<AddPetViewModel>(parentEntry)
+
+
+            InputStepScaffold(currentStep = 0, title = "반려견 정보", onBack = onBack) {
+                AddPetProfileScreen(
+                    onNext = onNavigateToAddPetInfo,
+                    addPetViewModel = addPetViewModel
+                )
+            }
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetInfo> {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.PetInput>()
+            }
+
+            val addPetViewModel = hiltViewModel<AddPetViewModel>(parentEntry)
+
+            InputStepScaffold(currentStep = 1, title = "반려견 정보", onBack = onBack) {
+                AddPetInfoScreen(
+                    onNext = onNavigateToAddPetStyle,
+                    addPetViewModel = addPetViewModel
+                )
+            }
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetStyle> {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.PetInput>()
+            }
+
+            val addPetViewModel = hiltViewModel<AddPetViewModel>(parentEntry)
+
+
+            InputStepScaffold(currentStep = 2, title = "반려견 정보", onBack = onBack) {
+                AddPetStyleScreen(
+                    onSuccess = onSuccess,
+                    addPetViewModel = addPetViewModel
+                )
+            }
         }
     }
 }

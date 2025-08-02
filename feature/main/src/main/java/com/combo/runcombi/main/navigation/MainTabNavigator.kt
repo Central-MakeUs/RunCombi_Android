@@ -6,10 +6,14 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
+import com.combo.runcombi.core.navigation.model.RouteModel
 
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.history.navigation.navigateToRecord
 import com.combo.runcombi.setting.navigation.navigateToAddPet
+import com.combo.runcombi.setting.navigation.navigateToAddPetInfo
+import com.combo.runcombi.setting.navigation.navigateToAddPetProfile
+import com.combo.runcombi.setting.navigation.navigateToAddPetStyle
 import com.combo.runcombi.setting.navigation.navigateToEditMember
 import com.combo.runcombi.setting.navigation.navigateToEditPet
 import com.combo.runcombi.setting.navigation.navigateToSetting
@@ -50,6 +54,24 @@ class MainTabNavigator(
 
     fun navigationToAddPet() {
         navController.navigateToAddPet()
+    }
+
+    fun navigationToAddPetInfo() {
+        navController.navigateToAddPetInfo()
+    }
+
+    fun navigationToAddPetStyle() {
+        navController.navigateToAddPetStyle()
+    }
+
+    fun navigateToMyScreen() {
+        navController.navigateToSettingMain(
+            navOptions = androidx.navigation.navOptions {
+                popUpTo(RouteModel.MainTabRoute.SettingRouteModel.PetInput) {
+                    inclusive = true
+                }
+            }
+        )
     }
 
     fun navigationToWalkMain() {
