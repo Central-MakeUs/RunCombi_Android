@@ -4,7 +4,7 @@ import com.combo.runcombi.domain.user.model.Gender
 
 data class EditMemberUiState(
     val name: String = "",
-    val gender: Gender = Gender.FEMALE,
+    val gender: Gender = Gender.MALE,
     val profileImageUrl: String = "",
     val height: String = "",
     val weight: String = "",

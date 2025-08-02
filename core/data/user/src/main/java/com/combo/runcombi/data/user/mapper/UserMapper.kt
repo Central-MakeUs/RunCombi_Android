@@ -25,7 +25,7 @@ fun UserInfoResponse.toDomainModel(): UserInfo {
 fun MemberModel.toDomainModel(): Member {
     return Member(
         nickname = nickname ?: "",
-        gender = if (gender == "male") Gender.MALE else Gender.FEMALE,
+        gender = if (gender == Gender.MALE.name) Gender.MALE else Gender.FEMALE,
         height = height?.toInt() ?: 0,
         weight = weight?.toInt() ?: 0,
         profileImageUrl = profileImgUrl
