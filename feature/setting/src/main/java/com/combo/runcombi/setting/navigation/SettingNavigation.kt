@@ -5,8 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.toRoute
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.setting.screen.EditMemberScreen
+import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
 import com.combo.runcombi.setting.screen.SettingScreen
 
@@ -26,8 +29,23 @@ fun NavController.navigateToSetting() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.Setting)
 }
 
+fun NavController.navigateToEditMember() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.EditMember)
+}
+
+fun NavController.navigateToEditPet(petId: Int) {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.EditPet(petId = petId))
+}
+
+fun NavController.navigateToAddPet() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInput)
+}
+
 fun NavGraphBuilder.settingNavGraph(
     onClickSetting: () -> Unit = {},
+    onClickAddPet: () -> Unit = {},
+    onClickEditMember: () -> Unit = {},
+    onClickEditPet: (petId: Int) -> Unit = {},
     goToLogin: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
@@ -35,13 +53,34 @@ fun NavGraphBuilder.settingNavGraph(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
     ) {
         composable<RouteModel.MainTabRoute.SettingRouteModel.My> {
-            MyScreen(onClickSetting = onClickSetting)
+            MyScreen(
+                onClickSetting = onClickSetting,
+                onClickAddPet = onClickAddPet,
+                onClickEditPet = onClickEditPet,
+                onClickEditMember = onClickEditMember,
+            )
         }
 
         composable<RouteModel.MainTabRoute.SettingRouteModel.Setting> {
             SettingScreen(
                 goToLogin = goToLogin,
-                onBack = onBack)
+                onBack = onBack
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.EditMember> {
+            EditMemberScreen(
+                onBack = onBack
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.EditPet> { backStackEntry ->
+            val route = backStackEntry.toRoute<RouteModel.MainTabRoute.SettingRouteModel.EditPet>()
+
+            EditPetScreen(
+                petId = route.petId,
+                onBack = onBack
+            )
         }
     }
 }

@@ -17,4 +17,12 @@ interface UserRepository {
         memberImage: File?,
         petImage: File?,
     ): DomainResult<Unit>
+
+    suspend fun updateMemberDetail(memberDetail: Member, memberImage: File?): DomainResult<Unit>
+
+    suspend fun updatePet(petDetail: Pet, petImage: File?): DomainResult<Unit>
+
+    suspend fun addPet(petDetail: Pet, petImage: File?): DomainResult<Unit>
+
+    suspend fun deletePet(petId: Int): DomainResult<Unit>
 }

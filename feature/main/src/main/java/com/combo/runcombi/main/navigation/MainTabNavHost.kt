@@ -60,6 +60,16 @@ fun MainTabNavHost(
             onClickSetting = {
                 mainTabNavigator.navigationToSetting()
             },
+            onClickAddPet = {
+                mainTabNavigator.navigationToAddPet()
+            },
+
+            onClickEditPet = { petId ->
+                mainTabNavigator.navigationToEditPet(petId)
+            },
+            onClickEditMember = {
+                mainTabNavigator.navigationToEditMember()
+            },
             goToLogin = {
                 mainNavigator.navigateToLogin()
             },

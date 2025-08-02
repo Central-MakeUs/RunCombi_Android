@@ -58,7 +58,7 @@ sealed interface RouteModel {
             data object WalkCountdown : WalkRouteModel
 
             @Serializable
-            data object WalkTypeSelct : WalkRouteModel
+            data object WalkTypeSelect : WalkRouteModel
 
             @Serializable
             data object WalkReady : WalkRouteModel
@@ -93,6 +93,28 @@ sealed interface RouteModel {
 
             @Serializable
             data object Setting : SettingRouteModel
+
+            @Serializable
+            data object EditMember : SettingRouteModel
+
+            @Serializable
+            data class EditPet(val petId: Int) : SettingRouteModel
+
+            @Serializable
+            data object PetInput : SettingRouteModel
+
+            @Serializable
+            sealed interface PetInputRoute : SettingRouteModel {
+
+                @Serializable
+                data object PetProfile : PetInputRoute
+
+                @Serializable
+                data object PetInfo : PetInputRoute
+
+                @Serializable
+                data object PetStyle : PetInputRoute
+            }
         }
     }
 }

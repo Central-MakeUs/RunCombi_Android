@@ -1,5 +1,6 @@
 package com.combo.runcombi.network.service
 
+import com.combo.runcombi.network.model.request.DeletePetRequest
 import com.combo.runcombi.network.model.request.TermsRequest
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.UserInfoResponse
@@ -27,4 +28,27 @@ interface UserService {
         @Part petImage: MultipartBody.Part?,
     ): Response<DefaultResponse>
 
+    @Multipart
+    @POST("api/member/updateMemberDetail")
+    suspend fun updateMemberDetail(
+        @Part("updateMemberDetail") updateMemberDetail: RequestBody,
+        @Part memberImage: MultipartBody.Part?,
+    ): Response<DefaultResponse>
+
+    @Multipart
+    @POST("api/pet/updatePetDetail")
+    suspend fun updatePetDetail(
+        @Part("updatePetDetail") updatePetDetail: RequestBody,
+        @Part petImage: MultipartBody.Part?,
+    ): Response<DefaultResponse>
+
+    @Multipart
+    @POST("api/pet/addPet")
+    suspend fun addPet(
+        @Part("pet") pet: RequestBody,
+        @Part petImage: MultipartBody.Part?,
+    ): Response<DefaultResponse>
+
+    @POST("api/pet/deletePet")
+    suspend fun deletePet(@Body request: DeletePetRequest): Response<DefaultResponse>
 }

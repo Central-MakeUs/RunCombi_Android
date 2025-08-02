@@ -9,6 +9,9 @@ import androidx.navigation.compose.rememberNavController
 
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.history.navigation.navigateToRecord
+import com.combo.runcombi.setting.navigation.navigateToAddPet
+import com.combo.runcombi.setting.navigation.navigateToEditMember
+import com.combo.runcombi.setting.navigation.navigateToEditPet
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.setting.navigation.navigateToSettingMain
 import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
@@ -35,6 +38,18 @@ class MainTabNavigator(
 
     fun navigationToSetting() {
         navController.navigateToSetting()
+    }
+
+    fun navigationToEditMember() {
+        navController.navigateToEditMember()
+    }
+
+    fun navigationToEditPet(petId: Int) {
+        navController.navigateToEditPet(petId)
+    }
+
+    fun navigationToAddPet() {
+        navController.navigateToAddPet()
     }
 
     fun navigationToWalkMain() {

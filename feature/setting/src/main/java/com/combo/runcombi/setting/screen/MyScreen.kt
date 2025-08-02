@@ -38,6 +38,9 @@ import com.combo.runcombi.ui.ext.clickableSingle
 @Composable
 fun MyScreen(
     onClickSetting: () -> Unit = {},
+    onClickAddPet: () -> Unit = {},
+    onClickEditMember: () -> Unit = {},
+    onClickEditPet: (petId: Int) -> Unit = {},
     viewModel: MyViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -45,9 +48,10 @@ fun MyScreen(
         member = uiState.member,
         petList = uiState.petList,
         onClickSetting = onClickSetting,
-        onEditProfile = {},
-        onAddPet = {},
-        onEditPet = {})
+        onEditProfile = onClickEditMember,
+        onAddPet = onClickAddPet,
+        onEditPet = onClickEditPet
+    )
 }
 
 @Composable
@@ -58,7 +62,7 @@ fun SettingContent(
     onClickSetting: () -> Unit = {},
     onEditProfile: () -> Unit = {},
     onAddPet: () -> Unit = {},
-    onEditPet: (Pet) -> Unit = {},
+    onEditPet: (Int) -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -175,7 +179,7 @@ fun PetCard(
 @Composable
 fun PetCardList(
     petList: List<Pet>,
-    onEditPet: (Pet) -> Unit,
+    onEditPet: (Int) -> Unit,
     onAddPet: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -184,7 +188,7 @@ fun PetCardList(
     ) {
         petList.forEach { pet ->
             PetCard(
-                pet = pet, onEdit = { onEditPet(pet) })
+                pet = pet, onEdit = { onEditPet(pet.id) })
         }
         if (petList.size == 1) {
             Box(

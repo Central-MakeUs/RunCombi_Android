@@ -30,7 +30,7 @@ fun NavController.navigateToWalkMain(
 }
 
 fun NavController.navigateToWalkTypeSelect() {
-    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct)
+    this.navigate(RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelect)
 }
 
 fun NavController.navigateToWalkReady() {
@@ -79,7 +79,7 @@ fun NavGraphBuilder.walkNavGraph(
             )
         }
 
-        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelct> { backStackEntry ->
+        composable<RouteModel.MainTabRoute.WalkRouteModel.WalkTypeSelect> { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(MainTabDataModel.Walk)
             }
