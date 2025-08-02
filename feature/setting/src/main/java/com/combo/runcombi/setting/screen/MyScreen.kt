@@ -44,6 +44,11 @@ fun MyScreen(
     viewModel: MyViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    LaunchedEffect(Unit) {
+        viewModel.refreshUserInfo()
+    }
+    
     SettingContent(
         member = uiState.member,
         petList = uiState.petList,

@@ -23,6 +23,10 @@ class MyViewModel @Inject constructor(
         fetchUserInfo()
     }
 
+    fun refreshUserInfo() {
+        fetchUserInfo()
+    }
+
     private fun fetchUserInfo() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
