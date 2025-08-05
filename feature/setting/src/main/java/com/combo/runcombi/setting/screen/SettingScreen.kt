@@ -201,8 +201,8 @@ fun SettingContent(
         Spacer(Modifier.height(40.dp))
         SectionTitle("고객")
         Spacer(Modifier.height(16.dp))
-        SettingItem("런콤비 개선 제안", onClick = { /* TODO */ })
-        Spacer(Modifier.height(20.dp))
+        // SettingItem("런콤비 개선 제안", onClick = { /* TODO */ })
+        //Spacer(Modifier.height(20.dp))
         AppVersionRow(onUpdateClick = { /* TODO */ })
     }
 }

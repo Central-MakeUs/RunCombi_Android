@@ -499,13 +499,13 @@ fun ExerciseRecordContent(
                 color = Color.White
             )
             Spacer(Modifier.weight(1f))
-            StableImage(
+     /*       StableImage(
                 drawableResId = R.drawable.ic_plus,
                 modifier = Modifier
                     .size(24.dp)
                     .clickableSingle {
 
-                    })
+                    })*/
         }
         Spacer(Modifier.height(18.dp))
         LazyColumn {

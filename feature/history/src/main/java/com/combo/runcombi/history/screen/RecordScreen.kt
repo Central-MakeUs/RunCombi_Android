@@ -207,7 +207,7 @@ fun RecordContent(
                 }
             }
         }
-        item { Spacer(modifier = Modifier.height(32.dp)) }
+/*        item { Spacer(modifier = Modifier.height(32.dp)) }
         item {
             CalorieProfileCard(
                 profileUrl = uiState.memberImageUrl,
@@ -216,8 +216,8 @@ fun RecordContent(
                 description = getCalorieDescription(uiState.memberCal)
             )
         }
-        item { Spacer(modifier = Modifier.height(12.dp)) }
-        items(uiState.petCalList) { petCalUi ->
+        item { Spacer(modifier = Modifier.height(12.dp)) }*/
+   /*     items(uiState.petCalList) { petCalUi ->
             CalorieProfileCard(
                 profileUrl = petCalUi.petImageUrl,
                 name = "펫",
@@ -226,20 +226,20 @@ fun RecordContent(
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
-        item { Spacer(modifier = Modifier.height(24.dp)) }
-        item {
+        item { Spacer(modifier = Modifier.height(24.dp)) }*/
+        /*item {
             RecordRatingSection(
                 selectedRating = uiState.selectedRating,
                 onRatingSelected = onRatingSelected
             )
         }
-        item { Spacer(modifier = Modifier.height(24.dp)) }
-        item {
+        item { Spacer(modifier = Modifier.height(24.dp)) }*/
+        /*item {
             RecordMemoSection(
                 memo = uiState.memo,
                 onMemoChanged = onMemoChanged
             )
-        }
+        }*/
         item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }
@@ -291,7 +291,7 @@ fun RecordImagePager(
                 .background(Grey01),
             contentAlignment = Alignment.Center
         ) {
-            Column(
+      /*      Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -312,7 +312,7 @@ fun RecordImagePager(
                 }
                 Spacer(Modifier.height(20.dp))
 
-            }
+            }*/
         }
     }
 }
@@ -343,7 +343,7 @@ fun RecordAppBar(
             color = Color.White,
             style = body2,
         )
-        Box {
+/*        Box {
             IconButton(onClick = { menuExpanded = true }) {
                 Icon(Icons.Default.Menu, contentDescription = "더보기", tint = Color.White)
             }
@@ -404,7 +404,7 @@ fun RecordAppBar(
                 }
             }
 
-        }
+        }*/
     }
 }
 
