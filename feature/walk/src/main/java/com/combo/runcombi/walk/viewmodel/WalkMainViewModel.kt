@@ -49,22 +49,34 @@ class WalkMainViewModel @Inject constructor(
             getUserInfoUseCase().collectLatest { result ->
                 when (result) {
                     is DomainResult.Success -> handleUserInfoSuccess(result.data)
-                    is DomainResult.Error -> handleUserInfoError()
-                    is DomainResult.Exception -> handleUserInfoException()
+                    else -> {}
                 }
             }
+        }
+    }
+
+    fun checkWithInitWalkData(): Boolean {
+        val member = _uiState.value.member
+        val petList = _uiState.value.petUiList.filter { it.isSelected }
+            .map { it -> WalkPetUIModel(pet = it.pet) }
+
+        if (member != null && petList.isNotEmpty()) {
+            _walkData.update {
+                it.copy(
+                    member = WalkMemberUiModel(member = member),
+                    petList = petList
+                )
+            }
+
+            return true
+        } else {
+            return false
         }
     }
 
     private fun handleUserInfoSuccess(userInfo: com.combo.runcombi.domain.user.model.UserInfo) {
         val member = userInfo.member
         val petList = userInfo.petList
-        _walkData.update {
-            it.copy(
-                member = WalkMemberUiModel(member = member),
-                petList = petList.map { pet -> WalkPetUIModel(pet = pet) }
-            )
-        }
         _uiState.update {
             it.copy(
                 member = member,
@@ -77,14 +89,6 @@ class WalkMainViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    private fun handleUserInfoError() {
-        // TODO: 에러 처리 로직 추가
-    }
-
-    private fun handleUserInfoException() {
-        // TODO: 예외 처리 로직 추가
     }
 
     fun togglePetSelect(pet: Pet) {

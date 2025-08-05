@@ -166,10 +166,10 @@ fun WalkMainScreen(
                 } else {
                     walkMainViewModel.onStartWalkClicked(false)
                 }
-            } else if (uiState.petUiList.none { it.isSelected }) {
-                Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
-            } else {
+            } else if (walkMainViewModel.checkWithInitWalkData()) {
                 onStartWalk()
+            } else {
+                Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
     )
