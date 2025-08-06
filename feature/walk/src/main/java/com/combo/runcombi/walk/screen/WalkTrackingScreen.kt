@@ -447,9 +447,8 @@ private fun PetCalorieContent(
 @Composable
 fun CalorieContent(
     modifier: Modifier = Modifier,
-    name: String, imageUrl: String, drawableResId: Int, calorie: Double, size: Int,
+    name: String, imageUrl: String, drawableResId: Int, calorie: Int, size: Int,
 ) {
-    val formattedCalorie = FormatUtils.formatCalorie(calorie)
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
@@ -477,7 +476,7 @@ fun CalorieContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = formattedCalorie,
+                text = calorie.toString(),
                 color = Grey07,
                 style = if (size == 1) giantsTitle2 else giantsTitle4,
                 modifier = Modifier.alignByBaseline()
@@ -521,7 +520,7 @@ fun WalkTrackingContentPreview() {
                 weight = 8.5,
                 runStyle = RunStyle.WALKING,
                 profileImageUrl = null
-            ), calorie = 56.7
+            ), calorie = 56
         ), WalkPetUIModel(
             pet = Pet(
                 id = 1,
@@ -530,14 +529,14 @@ fun WalkTrackingContentPreview() {
                 weight = 4.2,
                 runStyle = RunStyle.SLOW_WALKING,
                 profileImageUrl = null
-            ), calorie = 78.9
+            ), calorie = 78
         )
     )
 
     WalkTrackingContent(
         uiState = WalkUiState(
             time = 1234, distance = 2.5, isPaused = false, walkMemberUiModel = WalkMemberUiModel(
-                member = member, calorie = 123.4
+                member = member, calorie = 123
             ), walkPetUIModelList = petList
         ), onPauseToggle = {}, onCancelClick = {}, onFinishClick = {})
 }
@@ -552,7 +551,7 @@ fun CombiCalorieListPreview() {
             height = 175,
             weight = 70,
             profileImageUrl = null
-        ), calorie = 123.4
+        ), calorie = 123
     )
     val petList = listOf(
         WalkPetUIModel(
@@ -563,7 +562,7 @@ fun CombiCalorieListPreview() {
                 weight = 4.2,
                 runStyle = RunStyle.SLOW_WALKING,
                 profileImageUrl = null
-            ), calorie = 78.9
+            ), calorie = 78
         )
     )
     CombiCalorieList(member = member, petUiList = petList)
