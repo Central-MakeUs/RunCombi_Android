@@ -8,18 +8,16 @@ class CalculateMemberCalorieUseCase @Inject constructor() {
      * @param exerciseType 운동 종류
      * @param gender 성별 (MALE, FEMALE)
      * @param weightKg 체중(kg)
-     * @param exerciseHour 운동 시간(h)
-     * @param minutes 운동 시간(분)
-     * @param seconds 운동 시간(초)
+     * @param distance 거리(km)
      * @return 칼로리(Double)
      */
     operator fun invoke(
         exerciseType: ExerciseType,
         gender: String,
         weightKg: Double,
-        exerciseHour: Double,
+        distance: Double
     ): Double {
-        val met = exerciseType.getMet(gender)
-        return met * weightKg * exerciseHour
+        val activityFactor = exerciseType.getActivityFactor(gender)
+        return activityFactor * weightKg * distance
     }
 } 

@@ -5,9 +5,9 @@ enum class ExerciseType {
     WALKING,
     SLOW_WALKING;
 
-    fun getMet(gender: String): Double = when (this) {
-        RUNNING -> if (gender == "MALE") 7.5 else 7.0
-        WALKING -> if (gender == "MALE") 4.8 else 4.2
-        SLOW_WALKING -> if (gender == "MALE") 3.5 else 3.0
+    fun getActivityFactor(gender: String): Double = when (this) {
+        RUNNING -> if (gender == "MALE") 1.09 else 0.70
+        WALKING -> if (gender == "MALE") 0.88 else 0.77
+        SLOW_WALKING -> if (gender == "MALE") 0.82 else 0.70
     }
 }

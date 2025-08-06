@@ -14,5 +14,5 @@ data class WalkUiState(
     val exerciseType: ExerciseType = ExerciseType.WALKING
 )
 
-data class WalkMemberUiModel(val member: Member, val calorie: Double = 0.0)
-data class WalkPetUIModel(val pet: Pet, val calorie: Double = 0.0)
+data class WalkMemberUiModel(val member: Member, val calorie: Int = 0)
+data class WalkPetUIModel(val pet: Pet, val calorie: Int = 0)

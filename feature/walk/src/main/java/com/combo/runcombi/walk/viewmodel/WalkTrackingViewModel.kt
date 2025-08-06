@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class WalkTrackingViewModel @Inject constructor(
@@ -64,17 +65,17 @@ class WalkTrackingViewModel @Inject constructor(
                         exerciseType,
                         member.gender.name,
                         member.weight.toDouble(),
-                        newTimeHour
-                    )
-                } ?: 0.0
+                        newDistance
+                    ).roundToInt()
+                } ?: 0
 
                 val newPetUiModelList = _uiState.value.walkPetUIModelList?.map { petUiModel ->
                     val pet = petUiModel.pet
                     val petCalorie = calculatePetCalorieUseCase(
                         pet.weight,
-                        newTimeHour,
+                        newDistance,
                         pet.runStyle.activityFactor
-                    )
+                    ).roundToInt()
                     petUiModel.copy(calorie = petCalorie)
                 }
 
