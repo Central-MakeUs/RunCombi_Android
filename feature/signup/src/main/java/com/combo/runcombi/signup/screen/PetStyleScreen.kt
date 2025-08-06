@@ -140,10 +140,12 @@ fun PetStyleScreen(
                 keyboardController?.hide()
                 localFocusManager.clearFocus()
 
-                signupViewModel.setPetStyle(PetStyleData(walkStyle = uiState.selectedStyle))
+                uiState.selectedStyle?.let { selectedStyle ->
+                    signupViewModel.setPetStyle(PetStyleData(walkStyle = selectedStyle))
 
-                val signupData = signupViewModel.getSignupData()
-                petStyleViewModel.signup(signupData)
+                    val signupData = signupViewModel.getSignupData()
+                    petStyleViewModel.signup(signupData)
+                }
             },
             text = "완료",
             enabled = uiState.isButtonEnabled

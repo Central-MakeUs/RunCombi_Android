@@ -76,7 +76,7 @@ import java.util.Locale
 
 private fun String.toKoreanStyle(): String = when (this) {
     "SLOW_WALKING" -> "걷기"
-    "WALKING" -> "빠르게 걷기"
+    "WALKING" -> "빠른 걷기"
     "RUNNING" -> "조깅"
     else -> "---"
 }
@@ -156,6 +156,7 @@ fun HistoryContent(
                 onNextMonth = onNextMonth,
                 onDateSelected = onDateSelected
             )
+            Spacer(modifier = Modifier.height(100.dp))
         }
         if (showBottomSheet && uiState.selectedDate != null) {
             ExerciseRecordBottomSheet(

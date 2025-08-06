@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,41 +36,51 @@ fun CompleteScreen(
     onDone: (Boolean) -> Unit,
 ) {
     val showSheet = remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
+    val topSpacerHeight = if (screenHeight < 600.dp) 40.dp else 95.dp
+    val middleSpacerHeight = if (screenHeight < 600.dp) 80.dp else 157.dp
+    val horizontalPadding = if (screenHeight < 600.dp) 40.dp else 80.dp
+    
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .screenDefaultPadding()
+                .verticalScroll(scrollState)
         ) {
-            Spacer(Modifier.height(95.dp))
+            Spacer(Modifier.height(topSpacerHeight))
             Text(
                 text = "$userName 님, 가입을 축하합니다!",
                 textAlign = TextAlign.Center,
                 style = heading1,
                 color = WhiteFF,
-                modifier = Modifier.padding(horizontal = 80.dp)
+                modifier = Modifier.padding(horizontal = horizontalPadding)
             )
-            Spacer(Modifier.height(157.dp))
+            Spacer(Modifier.height(middleSpacerHeight))
             StableImage(
                 drawableResId = R.drawable.complete_dog,
                 modifier = Modifier
                     .height(90.dp)
                     .width(151.02.dp)
             )
-            Spacer(Modifier.height(157.dp))
+            Spacer(Modifier.height(middleSpacerHeight))
             Text(
                 text = "이제 ${petName}와 함께 건강한 일상을 채워나가 볼까요?",
                 textAlign = TextAlign.Center,
                 style = body1,
                 color = WhiteFF,
-                modifier = Modifier.padding(horizontal = 80.dp)
+                modifier = Modifier.padding(horizontal = horizontalPadding)
             )
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(32.dp))
             RunCombiButton(
                 onClick = { showSheet.value = true },
                 text = "좋아요",
             )
+            Spacer(Modifier.height(32.dp))
         }
         LottieImage(
             modifier = Modifier.fillMaxSize(), lottieRes = R.raw.animation_celebration
