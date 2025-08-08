@@ -307,7 +307,7 @@ fun RecordImagePager(
                 Box(
                     modifier = Modifier
                         .background(
-                            Grey03.copy(alpha = 0.2f), RoundedCornerShape(2.dp)
+                            Grey03.copy(alpha = 0.8f), RoundedCornerShape(2.dp)
                         )
                         .padding(horizontal = 6.5.dp, vertical = 2.dp)
                 ) {
