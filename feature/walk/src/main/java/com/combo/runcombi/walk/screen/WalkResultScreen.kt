@@ -49,6 +49,7 @@ import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey07
+import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.Primary02
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle1
@@ -209,7 +210,7 @@ fun WalkResultScreen(
                 .background(Color(0x80000000)),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = Primary02)
+            CircularProgressIndicator(color = Primary01)
         }
     }
 }

@@ -129,7 +129,7 @@ fun HistoryContent(
     onRecordClick: (Int) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -500,13 +500,13 @@ fun ExerciseRecordContent(
                 color = Color.White
             )
             Spacer(Modifier.weight(1f))
-     /*       StableImage(
+            StableImage(
                 drawableResId = R.drawable.ic_plus,
                 modifier = Modifier
                     .size(24.dp)
                     .clickableSingle {
 
-                    })*/
+                    })
         }
         Spacer(Modifier.height(18.dp))
         LazyColumn {
@@ -538,9 +538,13 @@ fun ExerciseRecordContent(
                                         "${record.duration}",
                                         style = giantsTitle5,
                                         color = Color.White,
-                                        fontStyle = FontStyle.Italic
+                                        fontStyle = FontStyle.Italic,
+                                        modifier = Modifier.alignByBaseline()
                                     )
-                                    Text(" min", style = body3, color = Grey06)
+                                    Text(
+                                        " min", style = body3, color = Grey06,
+                                        modifier = Modifier.alignByBaseline()
+                                    )
                                 }
                             }
                             Spacer(Modifier.width(32.dp))
@@ -554,9 +558,13 @@ fun ExerciseRecordContent(
                                         ),
                                         style = giantsTitle5,
                                         color = Color.White,
-                                        fontStyle = FontStyle.Italic
+                                        fontStyle = FontStyle.Italic,
+                                        modifier = Modifier.alignByBaseline()
                                     )
-                                    Text(" km", style = body3, color = Grey06)
+                                    Text(
+                                        " km", style = body3, color = Grey06,
+                                        modifier = Modifier.alignByBaseline()
+                                    )
                                 }
                             }
 

@@ -136,7 +136,7 @@ fun AddPetStyleScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0x80000000)),
+                    .background(Color(0xC2212121)),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Primary01)

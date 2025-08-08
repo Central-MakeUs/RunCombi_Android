@@ -1,7 +1,12 @@
 package com.combo.runcombi.history.screen
 
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,13 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,8 +32,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,12 +48,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey03
@@ -75,38 +73,73 @@ import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle5
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle6
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
+import com.combo.runcombi.feature.history.R
 import com.combo.runcombi.history.model.ExerciseRating
 import com.combo.runcombi.history.model.PetCalUi
+import com.combo.runcombi.history.model.RecordEvent
 import com.combo.runcombi.history.model.RecordUiState
 import com.combo.runcombi.history.viewmodel.RecordViewModel
 import com.combo.runcombi.ui.ext.clickableSingle
+import com.combo.runcombi.ui.util.BitmapUtil
+import com.combo.runcombi.ui.util.BitmapUtil.resizeBitmap
 import com.combo.runcombi.ui.util.FormatUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RecordScreen(
     runId: Int,
+    onBack: () -> Unit,
     viewModel: RecordViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val albumLauncher = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        uri?.let {
+            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            }
+            val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+            val runImageFile = BitmapUtil.bitmapToFile(
+                context, resizedBitmap, "run.jpg"
+            )
+
+            viewModel.setRunImage(runId, runImageFile)
+
+        }
+    }
+
     LaunchedEffect(runId) {
         viewModel.fetchRecord(runId)
     }
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
-        viewModel.errorMessage.collectLatest { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        viewModel.eventFlow.collectLatest { event  ->
+            when(event) {
+                is RecordEvent.DeleteSuccess -> {
+                    onBack()
+                }
+                is RecordEvent.Error -> {
+                    Toast.makeText(context, event.errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
+
     RecordContent(
         uiState = uiState,
-        onBack = { viewModel.onBack() },
-        onEdit = { viewModel.onEdit() },
-        onAddPhoto = { viewModel.onAddPhoto() },
-        onDelete = { viewModel.onDelete() },
-        onRatingSelected = { rating -> viewModel.onRatingSelected(rating) },
-        onMemoChanged = { memo -> viewModel.onMemoChanged(memo) }
-    )
+        onBack = onBack,
+        onEdit = { },
+        onAddPhoto = { albumLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
+        onDelete = { viewModel.deleteRunData(runId) },
+        onRatingSelected = { rating -> viewModel.onRatingSelected(runId, rating) },
+        onMemoChanged = { },
+        onAddMemo = {
+
+        })
 }
 
 @Composable
@@ -117,130 +150,131 @@ fun RecordContent(
     onAddPhoto: () -> Unit = {},
     onDelete: () -> Unit = {},
     onRatingSelected: (ExerciseRating) -> Unit = {},
-    onMemoChanged: (String) -> Unit = {},
+    onMemoChanged: () -> Unit = {},
+    onAddMemo: () -> Unit = {},
 ) {
-    if (uiState.isLoading) {
-        Box(
+    Box {
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Grey01),
-            contentAlignment = Alignment.Center
+                .background(Grey01)
         ) {
-            CircularProgressIndicator()
-        }
-        return
-    }
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Grey01)
-    ) {
-        item {
-            Box(
-                modifier = Modifier
-                    .height(264.dp)
-                    .fillMaxWidth()
-            ) {
-                RecordImagePager(imagePaths = uiState.imagePaths, onAddPhoto = onAddPhoto)
-                RecordAppBar(
-                    date = uiState.date,
-                    onBack = onBack,
-                    onEdit = onEdit,
-                    onAddPhoto = onAddPhoto,
-                    onDelete = onDelete,
+            item {
+                Box(
                     modifier = Modifier
+                        .height(264.dp)
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .zIndex(1f)
-                )
-            }
-        }
-        item { Spacer(modifier = Modifier.height(40.dp)) }
-        item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 20.dp)
                 ) {
-                    Text("함께 운동한 시간", style = body2, color = Grey07)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(
-                        verticalAlignment = Alignment.Bottom
+                    RecordImagePager(imagePaths = uiState.imagePaths, onAddPhoto = onAddPhoto)
+                    RecordAppBar(
+                        date = uiState.date,
+                        onBack = onBack,
+                        onEdit = onEdit,
+                        onAddPhoto = onAddPhoto,
+                        onDelete = onDelete,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                            .zIndex(1f)
+                    )
+                }
+            }
+            item { Spacer(modifier = Modifier.height(40.dp)) }
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 20.dp)
                     ) {
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text(
-                                FormatUtils.formatMinute(uiState.runTime),
-                                style = giantsTitle1,
-                                color = Color.White,
-                                fontStyle = FontStyle.Italic,
-                                modifier = Modifier.alignByBaseline()
-                            )
-                            Spacer(modifier = Modifier.width(1.64.dp))
-                            Text(
-                                "min",
-                                style = giantsTitle4,
-                                color = Color.White,
-                                fontStyle = FontStyle.Italic,
-                                modifier = Modifier.alignByBaseline()
-                            )
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text(
-                                FormatUtils.formatDistance(uiState.runDistance),
-                                style = giantsTitle3,
-                                color = Grey07,
-                                fontStyle = FontStyle.Italic,
-                                modifier = Modifier.alignByBaseline()
-                            )
-                            Spacer(modifier = Modifier.width(1.64.dp))
-                            Text(
-                                "km",
-                                style = giantsTitle5,
-                                color = Grey06,
-                                fontStyle = FontStyle.Italic,
-                                modifier = Modifier.alignByBaseline()
-                            )
+                        Text("함께 운동한 시간", style = body2, color = Grey07)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(
+                                    FormatUtils.formatMinute(uiState.runTime),
+                                    style = giantsTitle1,
+                                    color = Color.White,
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier.alignByBaseline()
+                                )
+                                Spacer(modifier = Modifier.width(1.64.dp))
+                                Text(
+                                    " min",
+                                    style = giantsTitle4,
+                                    color = Color.White,
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier.alignByBaseline()
+                                )
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(
+                                    FormatUtils.formatDistance(uiState.runDistance),
+                                    style = giantsTitle3,
+                                    color = Grey07,
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier.alignByBaseline()
+                                )
+                                Spacer(modifier = Modifier.width(1.64.dp))
+                                Text(
+                                    " km",
+                                    style = giantsTitle5,
+                                    color = Grey06,
+                                    fontStyle = FontStyle.Italic,
+                                    modifier = Modifier.alignByBaseline()
+                                )
+                            }
                         }
                     }
                 }
             }
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+            item {
+                CalorieProfileCard(
+                    profileUrl = uiState.memberImageUrl,
+                    name = uiState.nickname,
+                    cal = uiState.memberCal,
+                    description = getCalorieDescription(uiState.memberCal)
+                )
+            }
+            item { Spacer(modifier = Modifier.height(12.dp)) }
+            items(uiState.petCalList) { petCalUi ->
+                CalorieProfileCard(
+                    profileUrl = petCalUi.petImageUrl,
+                    name = petCalUi.petName,
+                    cal = petCalUi.petCal,
+                    description = getCalorieDescription(petCalUi.petCal)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+            item {
+                RecordRatingSection(
+                    selectedRating = uiState.selectedRating, onRatingSelected = onRatingSelected
+                )
+            }
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+            item {
+                RecordMemoSection(
+                    memo = uiState.memo, onMemoChanged = onMemoChanged, onAddMemo = onAddMemo
+                )
+            }
+            item { Spacer(modifier = Modifier.height(32.dp)) }
         }
-/*        item { Spacer(modifier = Modifier.height(32.dp)) }
-        item {
-            CalorieProfileCard(
-                profileUrl = uiState.memberImageUrl,
-                name = "나(멤버)",
-                cal = uiState.memberCal,
-                description = getCalorieDescription(uiState.memberCal)
-            )
+
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x80000000)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary01)
+            }
         }
-        item { Spacer(modifier = Modifier.height(12.dp)) }*/
-   /*     items(uiState.petCalList) { petCalUi ->
-            CalorieProfileCard(
-                profileUrl = petCalUi.petImageUrl,
-                name = "펫",
-                cal = petCalUi.petCal,
-                description = getCalorieDescription(petCalUi.petCal)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-        item { Spacer(modifier = Modifier.height(24.dp)) }*/
-        /*item {
-            RecordRatingSection(
-                selectedRating = uiState.selectedRating,
-                onRatingSelected = onRatingSelected
-            )
-        }
-        item { Spacer(modifier = Modifier.height(24.dp)) }*/
-        /*item {
-            RecordMemoSection(
-                memo = uiState.memo,
-                onMemoChanged = onMemoChanged
-            )
-        }*/
-        item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }
 
@@ -252,8 +286,7 @@ fun RecordImagePager(
     if (imagePaths.isNotEmpty()) {
         val pagerState = rememberPagerState(pageCount = { imagePaths.size })
         HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            state = pagerState, modifier = Modifier.fillMaxSize()
         ) { page ->
             val imageUrl = imagePaths[page]
             if (imageUrl.isNotEmpty()) {
@@ -273,7 +306,9 @@ fun RecordImagePager(
             ) {
                 Box(
                     modifier = Modifier
-                        .background(Grey03, RoundedCornerShape(2.dp))
+                        .background(
+                            Grey03.copy(alpha = 0.2f), RoundedCornerShape(2.dp)
+                        )
                         .padding(horizontal = 6.5.dp, vertical = 2.dp)
                 ) {
                     Text(
@@ -291,7 +326,7 @@ fun RecordImagePager(
                 .background(Grey01),
             contentAlignment = Alignment.Center
         ) {
-      /*      Column(
+            Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -300,7 +335,9 @@ fun RecordImagePager(
                 Spacer(Modifier.height(52.dp))
                 Button(
                     onClick = { onAddPhoto?.invoke() },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
                     shape = RoundedCornerShape(6.dp),
                     contentPadding = PaddingValues(horizontal = 13.5.dp, vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -308,11 +345,15 @@ fun RecordImagePager(
                         contentColor = Grey06,
                     )
                 ) {
+                    StableImage(
+                        drawableResId = R.drawable.ic_photo, modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text("사진 추가하기", color = Grey06, style = title4)
                 }
                 Spacer(Modifier.height(20.dp))
 
-            }*/
+            }
         }
     }
 }
@@ -333,9 +374,12 @@ fun RecordAppBar(
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBack) {
-            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "뒤로가기", tint = Color.White)
-        }
+        StableImage(
+            drawableResId = R.drawable.ic_back, modifier = Modifier
+                .size(24.dp)
+                .clickableSingle {
+                    onBack()
+                })
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             modifier = Modifier.weight(1f),
@@ -343,10 +387,14 @@ fun RecordAppBar(
             color = Color.White,
             style = body2,
         )
-/*        Box {
-            IconButton(onClick = { menuExpanded = true }) {
-                Icon(Icons.Default.Menu, contentDescription = "더보기", tint = Color.White)
-            }
+        Box {
+            StableImage(
+                drawableResId = R.drawable.ic_menu,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickableSingle {
+                        menuExpanded = true
+                    })
             MaterialTheme(
                 shapes = MaterialTheme.shapes.copy(
                     extraSmall = RoundedCornerShape(6.dp)
@@ -363,48 +411,63 @@ fun RecordAppBar(
                     val itemPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 
                     DropdownMenuItem(
-                        text = { Text("기록 편집", style = body3, color = Grey08) },
+                        text = {
+                            Text(
+                                "기록 편집", style = body3, color = Grey08, textAlign = TextAlign.Start
+                            )
+                        },
                         onClick = {
                             menuExpanded = false
                             onEdit()
                         },
                         leadingIcon = {
-                            Icon(Icons.Default.Edit, contentDescription = null, tint = Grey08)
+                            StableImage(
+                                drawableResId = R.drawable.ic_pen,
+                                modifier = Modifier.size(16.dp),
+                                tint = Grey08
+                            )
                         },
                         contentPadding = itemPadding,
                     )
 
                     DropdownMenuItem(
-                        text = { Text("사진 추가", style = body3, color = Grey08) },
-                        onClick = {
+                        text = {
+                            Text(
+                                "사진 추가", style = body3, color = Grey08, textAlign = TextAlign.Start
+                            )
+                        }, onClick = {
                             menuExpanded = false
                             onAddPhoto()
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.AccountBox, contentDescription = null, tint = Grey08)
-                        },
-                        contentPadding = itemPadding
+                        }, leadingIcon = {
+                            StableImage(
+                                drawableResId = R.drawable.ic_photo_menu,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }, contentPadding = itemPadding
                     )
 
                     DropdownMenuItem(
-                        text = { Text("기록 삭제", style = body3, color = Color(0xFFB04A4A)) },
-                        onClick = {
+                        text = {
+                            Text(
+                                "기록 삭제",
+                                style = body3,
+                                color = Color(0xFFB04A4A),
+                                textAlign = TextAlign.Start
+                            )
+                        }, onClick = {
                             menuExpanded = false
                             onDelete()
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = Color(0xFFB04A4A)
+                        }, leadingIcon = {
+                            StableImage(
+                                drawableResId = R.drawable.ic_trash,
+                                modifier = Modifier.size(16.dp),
                             )
-                        },
-                        contentPadding = itemPadding
+                        }, contentPadding = itemPadding
                     )
                 }
             }
 
-        }*/
+        }
     }
 }
 
@@ -431,8 +494,7 @@ fun CalorieProfileCard(
                     modifier = Modifier
                         .size(53.dp)
                         .background(Primary01, RoundedCornerShape(2.dp))
-                        .padding(3.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(3.dp), contentAlignment = Alignment.Center
                 ) {
                     NetworkImage(
                         imageUrl = profileUrl,
@@ -456,7 +518,14 @@ fun CalorieProfileCard(
                     fontStyle = FontStyle.Italic,
                 )
                 Spacer(modifier = Modifier.height(6.55.dp))
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    StableImage(
+                        drawableResId = R.drawable.ic_fire,
+                        modifier = Modifier
+                            .width(12.dp)
+                            .height(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         "$cal",
                         color = Grey07,
@@ -466,7 +535,7 @@ fun CalorieProfileCard(
                     )
                     Spacer(modifier = Modifier.width(3.25.dp))
                     Text(
-                        "kcal",
+                        " kcal",
                         color = Grey06,
                         style = giantsTitle6,
                         fontStyle = FontStyle.Italic,
@@ -492,10 +561,23 @@ fun RecordRatingSection(
         ExerciseRating.VERY_HARD
     )
     val labels = listOf("쏘이지", "이지", "보통", "숨참", "힘듦")
+    val petImages = listOf(
+        R.drawable.ic_pet1,
+        R.drawable.ic_pet2,
+        R.drawable.ic_pet3,
+        R.drawable.ic_pet4,
+        R.drawable.ic_pet5
+    )
+
+    val petSelectedImages = listOf(
+        R.drawable.ic_selected_pet1,
+        R.drawable.ic_selected_pet2,
+        R.drawable.ic_selected_pet3,
+        R.drawable.ic_selected_pet4,
+        R.drawable.ic_selected_pet5
+    )
     Text(
-        "이번 운동 평가",
-        style = body2, color = Grey07,
-        modifier = Modifier.padding(horizontal = 20.dp)
+        "이번 운동 평가", style = body2, color = Grey07, modifier = Modifier.padding(horizontal = 20.dp)
     )
     Spacer(modifier = Modifier.height(16.dp))
     Row(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -507,11 +589,15 @@ fun RecordRatingSection(
                     .clickableSingle {
                         onRatingSelected(rating)
                     }) {
-                Spacer(modifier = Modifier.height(5.dp))
+                StableImage(
+                    drawableResId = if (rating == selectedRating) petSelectedImages[idx] else petImages[idx],
+                    modifier = Modifier
+                        .width(62.dp)
+                        .height(37.dp),
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    labels[idx],
-                    color = Grey07,
-                    style = body3
+                    labels[idx], color = Grey07, style = body3
                 )
             }
             if (idx != ratings.lastIndex) Spacer(modifier = Modifier.width(2.5.dp))
@@ -520,33 +606,36 @@ fun RecordRatingSection(
 }
 
 @Composable
-fun RecordMemoSection(memo: String, onMemoChanged: (String) -> Unit) {
-    Row {
-        Text(
-            "메모", style = body2, color = Grey07,
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
-        Spacer(modifier = Modifier.weight(1f))
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    BasicTextField(
-        value = memo,
-        onValueChange = onMemoChanged,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
-        textStyle = body3.copy(color = Grey07),
-        decorationBox = { innerTextField ->
-            if (memo.isEmpty()) {
-                Text(
-                    "오늘의 운동을 기록해보세요",
-                    style = body3,
-                    color = Grey07
-                )
-            }
-            innerTextField()
+fun RecordMemoSection(memo: String, onMemoChanged: () -> Unit, onAddMemo: () -> Unit) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                "메모", style = body2, color = Grey07,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (memo.isNotEmpty()) StableImage(
+                drawableResId = R.drawable.ic_pen, modifier = Modifier
+                    .size(24.dp)
+                    .clickableSingle {
+                        onMemoChanged()
+                    })
+            else StableImage(
+                drawableResId = R.drawable.ic_plus,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickableSingle {
+                        onAddMemo()
+                    }
+
+            )
         }
-    )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            memo, style = body3, color = Grey07
+        )
+    }
 
 }
 
@@ -588,8 +677,8 @@ fun PreviewRecordContent() {
             petCalList = listOf(
                 PetCalUi(petCal = 11, petImageUrl = "")
             ),
-            imagePaths = listOf("", ""),
-            selectedRating = ExerciseRating.NORMAL,
+            imagePaths = listOf(),
+            selectedRating = null,
             memo = "오늘 운동 최고!"
         ),
         onBack = {},
@@ -597,6 +686,5 @@ fun PreviewRecordContent() {
         onAddPhoto = {},
         onDelete = {},
         onRatingSelected = {},
-        onMemoChanged = {}
-    )
+        onMemoChanged = {})
 } 

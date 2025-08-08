@@ -31,7 +31,7 @@ fun NavController.navigateToRecord(
     this.navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit) {
+fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit, onBack: () -> Unit) {
     navigation<MainTabDataModel.History>(
         startDestination = RouteModel.MainTabRoute.HistoryRouteModel.History,
     ) {
@@ -41,7 +41,10 @@ fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit) {
         composable<RouteModel.MainTabRoute.HistoryRouteModel.Record>(
         ) { backStackEntry ->
             val route = backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.Record>()
-            RecordScreen(runId = route.runId)
+            RecordScreen(
+                runId = route.runId,
+                onBack = onBack
+            )
         }
     }
 }

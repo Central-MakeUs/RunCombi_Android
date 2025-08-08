@@ -102,7 +102,8 @@ fun SettingScreen(
         if (isLoading) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .background(Color(0x80000000)),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Primary01)

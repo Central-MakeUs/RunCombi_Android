@@ -4,6 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class HistoryResult(
+    val nickname: String?,
+    val profileImgUrl: String?,
+    val memberRunStyle: String?,
+    val memberCal: Int?,
     val memo: String?,
     val petData: List<PetData>?,
     val regDate: String?,

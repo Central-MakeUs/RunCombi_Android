@@ -20,4 +20,22 @@ interface HistoryRepository {
     suspend fun setRunMemo(runId: Int, memo: String): DomainResult<Unit>
 
     suspend fun setRunImage(runId: Int, runImage: File): DomainResult<Unit>
+
+    suspend fun deleteRunData(runId: Int): DomainResult<Unit>
+
+    suspend fun updateRunDetail(
+        runId: Int,
+        regDate: String,
+        memberRunStyle: String,
+        runTime: Int,
+        runDistance: Double,
+    ): DomainResult<Unit>
+
+    suspend fun addRunData(
+        regDate: String,
+        memberRunStyle: String,
+        runTime: Int,
+        runDistance: Double,
+        petCalList: List<Int>,
+    ): DomainResult<Unit>
 }

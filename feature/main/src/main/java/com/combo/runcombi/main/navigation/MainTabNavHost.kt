@@ -23,9 +23,13 @@ fun MainTabNavHost(
         navController = mainTabNavigator.navController,
         startDestination = mainTabDataModel
     ) {
-        historyNavGraph(onRecordClick = {
-            mainTabNavigator.navigationToRecord(runId = it, navOptions = null)
-        })
+        historyNavGraph(
+            onRecordClick = {
+                mainTabNavigator.navigationToRecord(runId = it, navOptions = null)
+            },
+            onBack = {
+                mainTabNavigator.navController.popBackStack()
+            })
 
         walkNavGraph(
             navController = mainTabNavigator.navController,

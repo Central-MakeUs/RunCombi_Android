@@ -1,10 +1,13 @@
 package com.combo.runcombi.network.service
 
+import com.combo.runcombi.network.model.request.AddRunRequest
+import com.combo.runcombi.network.model.request.DeleteRunRequest
 import com.combo.runcombi.network.model.request.GetDayDataRequest
 import com.combo.runcombi.network.model.request.GetMonthDataRequest
 import com.combo.runcombi.network.model.request.GetRunDataRequest
 import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
 import com.combo.runcombi.network.model.request.SetRunMemoRequest
+import com.combo.runcombi.network.model.request.UpdateRunDetailRequest
 import com.combo.runcombi.network.model.response.DayHistoryResponse
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.HistoryResponse
@@ -49,5 +52,20 @@ interface HistoryService {
     suspend fun setRunImage(
         @Part runId: MultipartBody.Part?,
         @Part runImage: MultipartBody.Part?,
+    ): Response<DefaultResponse>
+
+    @POST("api/calender/deleteRun")
+    suspend fun deleteRun(
+        @Body request: DeleteRunRequest,
+    ): Response<DefaultResponse>
+
+    @POST("api/calender/addRun")
+    suspend fun addRun(
+        @Body request: AddRunRequest,
+    ): Response<DefaultResponse>
+
+    @POST("api/calender/updateRunDetail")
+    suspend fun updateRunDetail(
+        @Body request: UpdateRunDetailRequest,
     ): Response<DefaultResponse>
 }

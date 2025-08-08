@@ -8,11 +8,15 @@ import com.combo.runcombi.history.model.DayHistory
 import com.combo.runcombi.history.model.ExerciseRating
 import com.combo.runcombi.history.model.MonthHistory
 import com.combo.runcombi.history.model.RunData
+import com.combo.runcombi.network.model.request.AddRunRequest
+import com.combo.runcombi.network.model.request.DeleteRunRequest
 import com.combo.runcombi.network.model.request.GetDayDataRequest
 import com.combo.runcombi.network.model.request.GetMonthDataRequest
 import com.combo.runcombi.network.model.request.GetRunDataRequest
 import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
 import com.combo.runcombi.network.model.request.SetRunMemoRequest
+import com.combo.runcombi.network.model.request.UpdateRunDetailRequest
+import com.combo.runcombi.network.model.response.PetId
 import com.combo.runcombi.network.service.HistoryService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -78,5 +82,48 @@ class HistoryRepositoryImpl @Inject constructor(private val historyService: Hist
                 runIdPart, runImagePart
             )
         }.convert { }
+
+    override suspend fun deleteRunData(runId: Int): DomainResult<Unit> =
+        handleResult {
+            historyService.deleteRun(DeleteRunRequest(runId = runId))
+        }.convert { }
+
+    override suspend fun updateRunDetail(
+        runId: Int,
+        regDate: String,
+        memberRunStyle: String,
+        runTime: Int,
+        runDistance: Double,
+    ): DomainResult<Unit> = handleResult {
+        historyService.updateRunDetail(
+            UpdateRunDetailRequest(
+                memberRunStyle = memberRunStyle,
+                runTime = runTime,
+                runDistance = runDistance,
+                regDate = regDate,
+                runId = runId
+            )
+        )
+    }.convert { }
+
+    override suspend fun addRunData(
+        regDate: String,
+        memberRunStyle: String,
+        runTime: Int,
+        runDistance: Double,
+        petCalList: List<Int>,
+    ): DomainResult<Unit> = handleResult {
+        historyService.addRun(
+            AddRunRequest(
+                memberRunStyle = memberRunStyle,
+                runTime = runTime,
+                runDistance = runDistance,
+                regDate = regDate,
+                petCalList = petCalList.map {
+                    PetId(petId = it)
+                },
+            )
+        )
+    }.convert { }
 
 }

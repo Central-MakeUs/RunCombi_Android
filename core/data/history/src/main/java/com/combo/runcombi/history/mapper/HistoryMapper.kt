@@ -24,7 +24,10 @@ fun HistoryResponse.toDomainModel(): RunData {
             runEvaluating = runEvaluating.toExerciseRatingOrDefault(),
             runId = runId ?: 0,
             runImageUrl = runImageUrl ?: "",
-            runTime = runTime ?: 0
+            runTime = runTime ?: 0,
+            nickname = nickname ?: "",
+            profileImgUrl = profileImgUrl ?: "",
+            memberCal = memberCal ?: 0
         )
     }
 }
