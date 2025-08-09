@@ -160,7 +160,7 @@ fun EditMemberContent(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+            val resizedBitmap = resizeBitmap(bitmap, 720, 720)
             onProfileImageSelect(resizedBitmap)
         }
     }

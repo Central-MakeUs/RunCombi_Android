@@ -42,10 +42,16 @@ object BitmapUtil {
         return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, filter)
     }
 
-    fun bitmapToFile(context: Context, bitmap: Bitmap, fileName: String): File {
+    fun bitmapToFile(
+        context: Context,
+        bitmap: Bitmap,
+        fileName: String,
+        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+        quality: Int = 90,
+    ): File {
         val file = File(context.cacheDir, fileName)
         FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            bitmap.compress(format, quality.coerceIn(0, 100), out)
         }
         return file
     }

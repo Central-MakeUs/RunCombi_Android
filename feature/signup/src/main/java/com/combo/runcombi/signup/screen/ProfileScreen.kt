@@ -88,7 +88,7 @@ fun ProfileScreen(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+            val resizedBitmap = resizeBitmap(bitmap, 720, 720)
             profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }
@@ -97,7 +97,7 @@ fun ProfileScreen(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
         bitmap?.let {
-            val resizedBitmap = resizeBitmap(it, 300, 300)
+            val resizedBitmap = resizeBitmap(it, 720, 720)
             profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }

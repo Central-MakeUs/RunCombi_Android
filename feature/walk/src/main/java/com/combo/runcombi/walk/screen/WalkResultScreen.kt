@@ -111,8 +111,9 @@ fun WalkResultScreen(
             if (bitmap != null) {
                 val file = BitmapUtil.bitmapToFile(
                     context,
-                    bitmap,
-                    "camera_${System.currentTimeMillis()}.jpg"
+                    BitmapUtil.resizeBitmap(bitmap, 720, 720),
+                    "camera_${System.currentTimeMillis()}.jpg",
+                    quality = 92
                 )
                 cameraImageFile = file
                 walkData.runData?.runId?.let { runId ->
@@ -186,8 +187,9 @@ fun WalkResultScreen(
         onCaptured = { bitmap ->
             val file = BitmapUtil.bitmapToFile(
                 context,
-                bitmap,
-                "walk_map_${System.currentTimeMillis()}.jpg"
+                BitmapUtil.resizeBitmap(bitmap, 720, 720),
+                "walk_map_${System.currentTimeMillis()}.jpg",
+                quality = 92
             )
             captureImageFile = file
             showCaptureRequest.value = false

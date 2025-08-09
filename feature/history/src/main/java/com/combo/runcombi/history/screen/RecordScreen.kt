@@ -105,9 +105,12 @@ fun RecordScreen(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            val resizedBitmap = resizeBitmap(bitmap, 300, 300)
+            val resizedBitmap = resizeBitmap(bitmap, 720, 720)
             val runImageFile = BitmapUtil.bitmapToFile(
-                context, resizedBitmap, "run.jpg"
+                context,
+                resizedBitmap,
+                "run.jpg",
+                quality = 92
             )
 
             viewModel.setRunImage(runId, runImageFile)

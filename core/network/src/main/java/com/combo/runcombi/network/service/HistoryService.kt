@@ -8,6 +8,7 @@ import com.combo.runcombi.network.model.request.GetRunDataRequest
 import com.combo.runcombi.network.model.request.SetRunEvaluatingRequest
 import com.combo.runcombi.network.model.request.SetRunMemoRequest
 import com.combo.runcombi.network.model.request.UpdateRunDetailRequest
+import com.combo.runcombi.network.model.response.BaseResponse
 import com.combo.runcombi.network.model.response.DayHistoryResponse
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.HistoryResponse
@@ -62,7 +63,7 @@ interface HistoryService {
     @POST("api/calender/addRun")
     suspend fun addRun(
         @Body request: AddRunRequest,
-    ): Response<DefaultResponse>
+    ): Response<BaseResponse>
 
     @POST("api/calender/updateRunDetail")
     suspend fun updateRunDetail(

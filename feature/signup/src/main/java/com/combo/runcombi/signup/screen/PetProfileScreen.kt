@@ -88,7 +88,7 @@ fun PetProfileScreen(
             } else {
                 MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
-            val resizedBitmap = BitmapUtil.resizeBitmap(bitmap, 300, 300)
+            val resizedBitmap = BitmapUtil.resizeBitmap(bitmap, 720, 720)
             profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }
@@ -97,7 +97,7 @@ fun PetProfileScreen(
         ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
         bitmap?.let {
-            val resizedBitmap = BitmapUtil.resizeBitmap(it, 300, 300)
+            val resizedBitmap = BitmapUtil.resizeBitmap(it, 720, 720)
             profileViewModel.setProfileBitmap(resizedBitmap)
         }
     }
