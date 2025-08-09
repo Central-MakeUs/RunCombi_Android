@@ -8,7 +8,9 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.history.screen.EditRecordScreen
 import com.combo.runcombi.history.screen.HistoryScreen
+import com.combo.runcombi.history.screen.MemoScreen
 import com.combo.runcombi.history.screen.RecordScreen
 
 fun NavController.navigateToHistory(
@@ -31,7 +33,29 @@ fun NavController.navigateToRecord(
     this.navigate(route, navOptions)
 }
 
-fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit, onBack: () -> Unit) {
+fun NavController.navigateToEditRecord(
+    runId: Int,
+    navOptions: NavOptions? = null,
+) {
+    val route = RouteModel.MainTabRoute.HistoryRouteModel.EditRecord(runId = runId)
+    this.navigate(route, navOptions)
+}
+
+fun NavController.navigateToMemo(
+    runId: Int,
+    memo: String,
+    navOptions: NavOptions? = null,
+) {
+    val route = RouteModel.MainTabRoute.HistoryRouteModel.Memo(runId = runId, memo = memo)
+    this.navigate(route, navOptions)
+}
+
+fun NavGraphBuilder.historyNavGraph(
+    onRecordClick: (Int) -> Unit,
+    onMemo: (Int, String) -> Unit,
+    onEditRecord: (Int) -> Unit,
+    onBack: () -> Unit,
+) {
     navigation<MainTabDataModel.History>(
         startDestination = RouteModel.MainTabRoute.HistoryRouteModel.History,
     ) {
@@ -43,6 +67,28 @@ fun NavGraphBuilder.historyNavGraph(onRecordClick: (Int) -> Unit, onBack: () -> 
             val route = backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.Record>()
             RecordScreen(
                 runId = route.runId,
+                onMemo = onMemo,
+                onEditRecord = onEditRecord,
+                onBack = onBack
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.HistoryRouteModel.EditRecord>(
+        ) { backStackEntry ->
+            val route =
+                backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.EditRecord>()
+            EditRecordScreen(
+                runId = route.runId,
+                onBack = onBack
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.HistoryRouteModel.Memo>(
+        ) { backStackEntry ->
+            val route = backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.Memo>()
+            MemoScreen(
+                runId = route.runId,
+                memo = route.memo,
                 onBack = onBack
             )
         }

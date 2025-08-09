@@ -89,6 +89,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun RecordScreen(
     runId: Int,
     onBack: () -> Unit,
+    onMemo: (Int, String) -> Unit,
+    onEditRecord: (Int) -> Unit,
     viewModel: RecordViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -117,11 +119,12 @@ fun RecordScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.eventFlow.collectLatest { event  ->
-            when(event) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
                 is RecordEvent.DeleteSuccess -> {
                     onBack()
                 }
+
                 is RecordEvent.Error -> {
                     Toast.makeText(context, event.errorMessage, Toast.LENGTH_SHORT).show()
                 }
@@ -132,13 +135,17 @@ fun RecordScreen(
     RecordContent(
         uiState = uiState,
         onBack = onBack,
-        onEdit = { },
+        onEdit = {
+            onEditRecord(runId)
+        },
         onAddPhoto = { albumLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
         onDelete = { viewModel.deleteRunData(runId) },
         onRatingSelected = { rating -> viewModel.onRatingSelected(runId, rating) },
-        onMemoChanged = { },
+        onMemoChanged = {
+            onMemo(runId, uiState.memo)
+        },
         onAddMemo = {
-
+            onMemo(runId, uiState.memo)
         })
 }
 
@@ -168,6 +175,7 @@ fun RecordContent(
                     RecordImagePager(imagePaths = uiState.imagePaths, onAddPhoto = onAddPhoto)
                     RecordAppBar(
                         date = uiState.date,
+                        hasRunImage = uiState.imagePaths.size == 2,
                         onBack = onBack,
                         onEdit = onEdit,
                         onAddPhoto = onAddPhoto,
@@ -361,6 +369,7 @@ fun RecordImagePager(
 @Composable
 fun RecordAppBar(
     date: String,
+    hasRunImage: Boolean,
     onBack: () -> Unit,
     onEdit: () -> Unit,
     onAddPhoto: () -> Unit,
@@ -433,7 +442,10 @@ fun RecordAppBar(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                "사진 추가", style = body3, color = Grey08, textAlign = TextAlign.Start
+                                if (hasRunImage) "사진 변경" else "사진 추가",
+                                style = body3,
+                                color = Grey08,
+                                textAlign = TextAlign.Start
                             )
                         }, onClick = {
                             menuExpanded = false

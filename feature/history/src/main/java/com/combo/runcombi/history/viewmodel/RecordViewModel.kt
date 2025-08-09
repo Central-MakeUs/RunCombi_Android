@@ -110,10 +110,6 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun onMemoChanged(memo: String) {
-
-    }
-
     fun fetchRecord(runId: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }

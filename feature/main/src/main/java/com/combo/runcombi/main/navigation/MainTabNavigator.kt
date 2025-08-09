@@ -7,8 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.history.navigation.navigateToEditRecord
 
 import com.combo.runcombi.history.navigation.navigateToHistory
+import com.combo.runcombi.history.navigation.navigateToMemo
 import com.combo.runcombi.history.navigation.navigateToRecord
 import com.combo.runcombi.setting.navigation.navigateToAddPet
 import com.combo.runcombi.setting.navigation.navigateToAddPetInfo
@@ -34,6 +36,14 @@ class MainTabNavigator(
 
     fun navigationToRecord(runId: Int, navOptions: NavOptions?) {
         navController.navigateToRecord(runId = runId, navOptions = navOptions)
+    }
+
+    fun navigationToEditRecord(runId: Int) {
+        navController.navigateToEditRecord(runId = runId)
+    }
+
+    fun navigationToMemo(runId: Int, memo: String) {
+        navController.navigateToMemo(runId = runId, memo = memo)
     }
 
     fun navigationToSettingMain() {

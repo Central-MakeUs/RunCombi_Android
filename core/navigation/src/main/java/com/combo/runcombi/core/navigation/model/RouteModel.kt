@@ -84,12 +84,18 @@ sealed interface RouteModel {
 
             @Serializable
             data class Record(val runId: Int) : HistoryRouteModel
+
+            @Serializable
+            data class EditRecord(val runId: Int) : HistoryRouteModel
+
+            @Serializable
+            data class Memo(val runId: Int, val memo: String) : HistoryRouteModel
         }
 
         @Serializable
         sealed interface SettingRouteModel : MainTabRoute {
             @Serializable
-            data object My: SettingRouteModel
+            data object My : SettingRouteModel
 
             @Serializable
             data object Setting : SettingRouteModel

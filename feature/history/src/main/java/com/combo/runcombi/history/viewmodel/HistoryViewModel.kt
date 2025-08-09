@@ -40,18 +40,15 @@ class HistoryViewModel @Inject constructor(
             is HistoryEvent.PrevMonth -> {
                 val prev = _uiState.value.currentYearMonth.minusMonths(1)
                 _uiState.update { it.copy(currentYearMonth = prev) }
-                fetchExerciseDays(prev)
             }
 
             is HistoryEvent.NextMonth -> {
                 val next = _uiState.value.currentYearMonth.plusMonths(1)
                 _uiState.update { it.copy(currentYearMonth = next) }
-                fetchExerciseDays(next)
             }
 
             is HistoryEvent.SelectDate -> {
                 _uiState.update { it.copy(selectedDate = event.date) }
-                fetchExerciseRecords(event.date)
             }
         }
     }
@@ -135,13 +132,4 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    private fun fetchExerciseDays(yearMonth: YearMonth) {
-        // TODO: API 연동 후 exerciseDays 업데이트
-        // 예시: _uiState.update { it.copy(exerciseDays = listOf(LocalDate.of(2025, 7, 1), ...)) }
-    }
-
-    private fun fetchExerciseRecords(date: LocalDate) {
-        // TODO: API 연동 후 exerciseRecords 업데이트
-        // 예시: _uiState.update { it.copy(exerciseRecords = listOf(...)) }
-    }
 } 
