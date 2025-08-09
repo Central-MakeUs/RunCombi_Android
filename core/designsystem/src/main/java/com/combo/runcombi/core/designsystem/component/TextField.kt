@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +28,7 @@ import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
+import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,6 +45,8 @@ fun RunCombiTextField(
     maxLength: Int = Int.MAX_VALUE,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     contentPadding: PaddingValues = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+    leadingText: String? = null,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
     val textFieldColors = TextFieldDefaults.colors(
         focusedContainerColor = Grey04,
@@ -74,7 +78,7 @@ fun RunCombiTextField(
         singleLine = singleLine,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
-        textStyle = body1.copy(color = if (isError) Color(0xFFFC5555) else Grey08),
+        textStyle = body1.copy(color = if (isError) Color(0xFFFC5555) else Grey08, textAlign = textAlign),
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(6.dp))
@@ -101,6 +105,16 @@ fun RunCombiTextField(
                 interactionSource = remember { MutableInteractionSource() },
                 contentPadding = contentPadding,
                 colors = textFieldColors,
+                leadingIcon = leadingText?.let {
+                    {
+                        Text(
+                            text = it,
+                            color = Grey06,
+                            style = body1,
+                            modifier = Modifier.padding(start = 12.dp, end = 8.dp)
+                        )
+                    }
+                },
                 trailingIcon = trailingText?.let {
                     {
                         Text(
@@ -120,8 +134,11 @@ fun RunCombiTextField(
 @Composable
 fun PreviewRunCombiTextField() {
     RunCombiTextField(
-        value = "",
+        value = "2025.07.24  20:24",
         onValueChange = {},
+        leadingText = "시작 일시",
+        trailingText = null,
+        textAlign = TextAlign.End,
         placeholder = "이름을 입력하세요"
     )
 } 

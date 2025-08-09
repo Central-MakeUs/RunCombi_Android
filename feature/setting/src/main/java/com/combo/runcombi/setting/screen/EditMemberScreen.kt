@@ -107,16 +107,6 @@ fun EditMemberScreen(
         }
     }
 
-    if (uiState.isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Primary01)
-        }
-    }
-
     EditMemberContent(
         uiState = uiState,
         profileBitmap = profileBitmap,
@@ -133,6 +123,17 @@ fun EditMemberScreen(
             editMemberViewModel.saveMemberInfo(file)
         }
     )
+
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Primary01)
+        }
+    }
+
 }
 
 @Composable

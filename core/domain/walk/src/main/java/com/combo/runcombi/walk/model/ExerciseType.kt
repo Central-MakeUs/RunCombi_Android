@@ -10,4 +10,17 @@ enum class ExerciseType {
         WALKING -> if (gender == "MALE") 0.88 else 0.77
         SLOW_WALKING -> if (gender == "MALE") 0.82 else 0.70
     }
+
+    companion object {
+        fun fromOrDefault(
+            name: String,
+            default: ExerciseType = ExerciseType.RUNNING,
+        ): ExerciseType {
+            return try {
+                valueOf(name)
+            } catch (e: IllegalArgumentException) {
+                default
+            }
+        }
+    }
 }

@@ -3,7 +3,6 @@ package com.combo.runcombi.history.model
 import java.time.LocalDate
 import java.time.YearMonth
 
-// 운동 기록 데이터 모델
 data class ExerciseRecord(
     val id: Int,
     val time: String,
@@ -12,7 +11,6 @@ data class ExerciseRecord(
     val imageUrl: String?
 )
 
-// UI 상태 데이터 클래스
 data class HistoryUiState(
     val currentYearMonth: YearMonth = YearMonth.now(),
     val selectedDate: LocalDate? = null,
@@ -26,7 +24,7 @@ data class HistoryUiState(
     val exerciseCount: Int = 0,
 )
 
-// 이벤트 sealed class
+
 sealed class HistoryEvent {
     object PrevMonth : HistoryEvent()
     object NextMonth : HistoryEvent()

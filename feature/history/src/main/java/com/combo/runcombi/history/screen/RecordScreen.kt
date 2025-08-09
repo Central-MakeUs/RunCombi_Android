@@ -56,6 +56,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.StableImage
+import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey03
@@ -160,6 +161,7 @@ fun RecordContent(
     onMemoChanged: () -> Unit = {},
     onAddMemo: () -> Unit = {},
 ) {
+    var showDeleteBottomSheet by remember { mutableStateOf(false) }
     Box {
         LazyColumn(
             modifier = Modifier
@@ -179,7 +181,7 @@ fun RecordContent(
                         onBack = onBack,
                         onEdit = onEdit,
                         onAddPhoto = onAddPhoto,
-                        onDelete = onDelete,
+                        onDelete = { showDeleteBottomSheet = true },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
@@ -284,6 +286,20 @@ fun RecordContent(
             }
         }
     }
+
+    RunCombiBottomSheet(
+        show = showDeleteBottomSheet,
+        onDismiss = { showDeleteBottomSheet = false },
+        onAccept = {
+            showDeleteBottomSheet = false
+            onDelete()
+        },
+        onCancel = { showDeleteBottomSheet = false },
+        title = "운동 기록을 삭제할까요?",
+        subtitle = "삭제된 기록은 다시 복구할 수 없어요!",
+        acceptButtonText = "삭제",
+        cancelButtonText = "아니요",
+    )
 }
 
 @Composable

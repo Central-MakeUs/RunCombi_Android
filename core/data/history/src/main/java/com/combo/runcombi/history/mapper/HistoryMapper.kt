@@ -17,6 +17,7 @@ fun HistoryResponse.toDomainModel(): RunData {
     return with(result) {
         RunData(
             memo = memo ?: "",
+            memberRunStyle = memberRunStyle ?: "",
             petData = petData?.map { it.toDomainModel() } ?: emptyList(),
             regDate = regDate ?: "",
             routeImageUrl = routeImageUrl ?: "",
@@ -35,6 +36,7 @@ fun HistoryResponse.toDomainModel(): RunData {
 fun String?.toExerciseRatingOrDefault(default: ExerciseRating = ExerciseRating.NORMAL): ExerciseRating {
     return ExerciseRating.entries.firstOrNull { it.name == this } ?: default
 }
+
 
 fun PetData.toDomainModel(): PetRunData {
     return PetRunData(name ?: "", petCal ?: 0, petId ?: 0, petImageUrl ?: "")

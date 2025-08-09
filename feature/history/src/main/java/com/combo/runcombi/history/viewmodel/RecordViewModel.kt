@@ -31,9 +31,7 @@ class RecordViewModel @Inject constructor(
     private val getRunDataUseCase: GetRunDataUseCase,
     private val setRunImageUseCase: SetRunImageUseCase,
     private val setRunEvaluatingUseCase: SetRunEvaluatingUseCase,
-    private val setRunMemoUseCase: SetRunMemoUseCase,
     private val deleteRunDataUseCase: DeleteRunDataUseCase,
-    private val updateRunDataUseCase: UpdateRunDataUseCase,
 ) :
     ViewModel() {
     private val _uiState = MutableStateFlow(RecordUiState())
