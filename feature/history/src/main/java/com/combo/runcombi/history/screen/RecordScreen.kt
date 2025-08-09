@@ -204,7 +204,7 @@ fun RecordContent(
                         ) {
                             Row(verticalAlignment = Alignment.Bottom) {
                                 Text(
-                                    FormatUtils.formatMinute(uiState.runTime),
+                                    uiState.runTime.toString(),
                                     style = giantsTitle1,
                                     color = Color.White,
                                     fontStyle = FontStyle.Italic,
