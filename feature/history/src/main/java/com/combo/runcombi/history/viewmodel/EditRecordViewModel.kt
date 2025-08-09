@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,19 +38,24 @@ class EditRecordViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<EditRecordEvent>()
     val eventFlow: SharedFlow<EditRecordEvent> = _eventFlow.asSharedFlow()
-
-    private val serverFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    
+    private val serverFormatter: DateTimeFormatter = DateTimeFormatterBuilder()
+        .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+        .optionalStart()
+        .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+        .optionalEnd()
+        .toFormatter()
     private val displayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd  HH:mm")
 
     fun updateStartDateTime(startDateTime: String) {
         _uiState.update { it.copy(startDateTime = startDateTime) }
     }
 
-    fun updateTime(time: Int) {
+    fun updateTime(time: Int?) {
         _uiState.update { it.copy(time = time) }
     }
 
-    fun updateDistance(distance: Double) {
+    fun updateDistance(distance: Double?) {
         _uiState.update { it.copy(distance = distance) }
     }
 
@@ -66,8 +73,8 @@ class EditRecordViewModel @Inject constructor(
                     runId = runId,
                     regDate = regDateServer,
                     memberRunStyle = (exerciseType ?: ExerciseType.WALKING).name,
-                    runTime = time,
-                    runDistance = distance,
+                    runTime = time ?: 0,
+                    runDistance = distance ?: 0.0,
                 ).collect { result ->
                     when (result) {
                         is DomainResult.Success -> {
@@ -129,7 +136,6 @@ class EditRecordViewModel @Inject constructor(
         return try {
             LocalDateTime.parse(serverDateTime, serverFormatter).format(displayFormatter)
         } catch (e: Exception) {
-            // 서버 포맷이 다르거나 파싱 실패 시 원문 반환
             serverDateTime
         }
     }
@@ -139,7 +145,6 @@ class EditRecordViewModel @Inject constructor(
         return try {
             LocalDateTime.parse(displayDateTime, displayFormatter).format(serverFormatter)
         } catch (e: Exception) {
-            // 사용자 입력이 포맷과 다르면 그대로 전송
             displayDateTime
         }
     }

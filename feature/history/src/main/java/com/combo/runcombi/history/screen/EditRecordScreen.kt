@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
@@ -111,13 +113,15 @@ fun EditRecordScreen(
             editRecordViewModel.updateExerciseType(it)
         },
         updateDistance = {
-            editRecordViewModel.updateDistance(it.toDoubleOrNull() ?: 0.0)
+            val parsed = it.replace(",", ".").toDoubleOrNull()
+            editRecordViewModel.updateDistance(parsed)
         },
         updateStartDateTime = {
             editRecordViewModel.updateStartDateTime(it)
         },
         updateTime = {
-            editRecordViewModel.updateTime(it.toIntOrNull() ?: 0)
+            val parsed = it.toIntOrNull()
+            editRecordViewModel.updateTime(parsed)
         },
     )
 
@@ -146,8 +150,8 @@ fun EditRecordScreen(
 @Composable
 fun EditRecordContent(
     startDateTime: String = "",
-    distance: Double = 0.0,
-    time: Int = 0,
+    distance: Double? = null,
+    time: Int? = null,
     exerciseType: ExerciseType? = null,
     onCancel: () -> Unit = {},
     onSave: () -> Unit = {},
@@ -202,10 +206,41 @@ fun EditRecordContent(
 
                 Spacer(Modifier.height(12.dp))
                 Row {
+                    // 로컬 입력 상태(빈 값 허용). 포커스 아웃 시 포맷팅 적용
+                    var distanceText by remember { mutableStateOf(distance?.let { String.format("%.2f", it) } ?: "") }
+                    var timeText by remember { mutableStateOf(time?.toString() ?: "") }
+                    var isDistanceFocused by remember { mutableStateOf(false) }
+                    var isTimeFocused by remember { mutableStateOf(false) }
+
+                    LaunchedEffect(distance, isDistanceFocused) {
+                        if (!isDistanceFocused) {
+                            distanceText = distance?.let { String.format("%.2f", it) } ?: ""
+                        }
+                    }
+                    LaunchedEffect(time, isTimeFocused) {
+                        if (!isTimeFocused) {
+                            timeText = time?.toString() ?: ""
+                        }
+                    }
+
                     RunCombiTextField(
-                        modifier = Modifier.weight(1f),
-                        value = String.format("%.2f", distance),
+                        modifier = Modifier
+                            .weight(1f)
+                            .onFocusChanged { focusState ->
+                                isDistanceFocused = focusState.isFocused
+                                if (!focusState.isFocused) {
+                                    if (distanceText.isBlank()) {
+                                        updateDistance("")
+                                    } else {
+                                        val parsed = distanceText.replace(",", ".").toDoubleOrNull()
+                                        distanceText = parsed?.let { String.format("%.2f", it) } ?: ""
+                                        updateDistance(distanceText)
+                                    }
+                                }
+                            },
+                        value = distanceText,
                         onValueChange = {
+                            distanceText = it
                             updateDistance(it)
                         },
                         placeholder = "",
@@ -218,9 +253,23 @@ fun EditRecordContent(
                     )
                     Spacer(Modifier.width(12.dp))
                     RunCombiTextField(
-                        modifier = Modifier.weight(1f),
-                        value = time.toString(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .onFocusChanged { focusState ->
+                                isTimeFocused = focusState.isFocused
+                                if (!focusState.isFocused) {
+                                    if (timeText.isBlank()) {
+                                        updateTime("")
+                                    } else {
+                                        val parsed = timeText.toIntOrNull()
+                                        timeText = parsed?.toString() ?: ""
+                                        updateTime(timeText)
+                                    }
+                                }
+                            },
+                        value = timeText,
                         onValueChange = {
+                            timeText = it
                             updateTime(it)
                         },
                         placeholder = "",
@@ -288,16 +337,17 @@ private fun DateTimeBottomSheet(
     }
 
     var dateIndex by remember {
-        mutableStateOf(dates.indexOfFirst { it == initialDateTime.toLocalDate() }.coerceAtLeast(0))
+        mutableIntStateOf(dates.indexOfFirst { it == initialDateTime.toLocalDate() }
+            .coerceAtLeast(0))
     }
 
     val isPmInit = initialDateTime.hour >= 12
-    var ampmIndex by remember { mutableStateOf(if (isPmInit) 1 else 0) } // 0=오전, 1=오후
+    var ampmIndex by remember { mutableIntStateOf(if (isPmInit) 1 else 0) } // 0=오전, 1=오후
 
     val hour12Init = ((initialDateTime.hour % 12).let { if (it == 0) 12 else it })
-    var hourIndex by remember { mutableStateOf(hour12Init - 1) } // 0..11
+    var hourIndex by remember { mutableIntStateOf(hour12Init - 1) } // 0..11
 
-    var minuteIndex by remember { mutableStateOf(initialDateTime.minute) } // 0..59
+    var minuteIndex by remember { mutableIntStateOf(initialDateTime.minute) } // 0..59
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
