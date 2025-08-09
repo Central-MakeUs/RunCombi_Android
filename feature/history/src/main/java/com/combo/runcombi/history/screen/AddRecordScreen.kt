@@ -31,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -40,24 +42,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
+import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey04
 import com.combo.runcombi.core.designsystem.theme.Grey05
+import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Primary01
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
+import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.giantsTitle4
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title4
 import com.combo.runcombi.core.designsystem.theme.WhiteFF
-import com.combo.runcombi.history.model.EditRecordEvent
-import com.combo.runcombi.history.viewmodel.EditRecordViewModel
+import com.combo.runcombi.domain.user.model.Member
+import com.combo.runcombi.domain.user.model.Pet
+import com.combo.runcombi.feature.history.R
+import com.combo.runcombi.history.model.AddRecordEvent
+import com.combo.runcombi.history.model.PetUiModel
+import com.combo.runcombi.history.viewmodel.AddRecordViewModel
 import com.combo.runcombi.ui.ext.clickableWithoutRipple
+import com.combo.runcombi.ui.ext.customPolygonClip
 import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.ui.util.FormatUtils
 import com.combo.runcombi.walk.model.ExerciseType
@@ -67,28 +78,28 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun EditRecordScreen(
-    runId: Int,
+fun AddRecordScreen(
+    date: String,
     onBack: () -> Unit = {},
-    editRecordViewModel: EditRecordViewModel = hiltViewModel(),
+    addRecordViewModel: AddRecordViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
 
-    val uiState by editRecordViewModel.uiState.collectAsStateWithLifecycle()
-    val eventFlow = editRecordViewModel.eventFlow
+    val uiState by addRecordViewModel.uiState.collectAsStateWithLifecycle()
+    val eventFlow = addRecordViewModel.eventFlow
 
-    LaunchedEffect(runId) {
-        editRecordViewModel.fetchRecord(runId)
+    LaunchedEffect(Unit) {
+        addRecordViewModel.initStartDateTime(date)
     }
 
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
             when (event) {
-                is EditRecordEvent.EditSuccess -> {
+                is AddRecordEvent.AddSuccess -> {
                     onBack()
                 }
 
-                is EditRecordEvent.Error -> {
+                is AddRecordEvent.Error -> {
                     Toast.makeText(context, event.errorMessage, Toast.LENGTH_SHORT).show()
                 }
 
@@ -98,7 +109,9 @@ fun EditRecordScreen(
 
     var showDateTimeSheet by remember { mutableStateOf(false) }
 
-    EditRecordContent(
+    AddRecordContent(
+        member = uiState.member,
+        petUiList = uiState.petList,
         startDateTime = uiState.startDateTime,
         distance = uiState.distance,
         time = uiState.time,
@@ -107,22 +120,25 @@ fun EditRecordScreen(
             onBack()
         },
         onSave = {
-            editRecordViewModel.updateRunData(runId)
+            addRecordViewModel.saveRunData()
         },
         onClickStartDateTime = { showDateTimeSheet = true },
         updateExerciseType = {
-            editRecordViewModel.updateExerciseType(it)
+            addRecordViewModel.updateExerciseType(it)
         },
         updateDistance = {
             val parsed = it.replace(",", ".").toDoubleOrNull()
-            editRecordViewModel.updateDistance(parsed)
+            addRecordViewModel.updateDistance(parsed)
         },
         updateStartDateTime = {
-            editRecordViewModel.updateStartDateTime(it)
+            addRecordViewModel.updateStartDateTime(it)
         },
         updateTime = {
             val parsed = it.toIntOrNull()
-            editRecordViewModel.updateTime(parsed)
+            addRecordViewModel.updateTime(parsed)
+        },
+        onPetClick = {
+            addRecordViewModel.togglePetSelect(it)
         },
     )
 
@@ -131,7 +147,7 @@ fun EditRecordScreen(
             initial = uiState.startDateTime,
             onDismiss = { showDateTimeSheet = false },
             onConfirm = { formatted ->
-                editRecordViewModel.updateStartDateTime(formatted)
+                addRecordViewModel.updateStartDateTime(formatted)
                 showDateTimeSheet = false
             }
         )
@@ -149,8 +165,10 @@ fun EditRecordScreen(
 }
 
 @Composable
-fun EditRecordContent(
+fun AddRecordContent(
     startDateTime: String = "",
+    member: Member? = null,
+    petUiList: List<PetUiModel>,
     distance: Double? = null,
     time: Int? = null,
     exerciseType: ExerciseType? = null,
@@ -160,7 +178,7 @@ fun EditRecordContent(
     updateExerciseType: (ExerciseType) -> Unit = {},
     updateDistance: (String) -> Unit = {},
     updateStartDateTime: (String) -> Unit = {},
-    updateTime: (String) -> Unit = {},
+    updateTime: (String) -> Unit = {}, onPetClick: (Pet) -> Unit = {},
 
     ) {
     val context = LocalContext.current
@@ -173,9 +191,10 @@ fun EditRecordContent(
             .background(Grey01)
     ) {
         Column {
-            EditRecordAppBar(
+            AddRecordAppBar(
                 onCancel = onCancel,
-                onSave = onSave
+                onSave = onSave,
+                isSaveEnabled = petUiList.any { it.isSelected } && distance != null && time != null && exerciseType != null
             )
 
             Column(
@@ -209,9 +228,7 @@ fun EditRecordContent(
                 Row {
                     var distanceText by remember {
                         mutableStateOf(distance?.let {
-                            FormatUtils.formatDistance(
-                                it
-                            )
+                            FormatUtils.formatDistance(it)
                         } ?: "")
                     }
                     var timeText by remember { mutableStateOf(time?.toString() ?: "") }
@@ -288,6 +305,14 @@ fun EditRecordContent(
                         textAlign = TextAlign.End,
                     )
                 }
+                Spacer(Modifier.height(24.dp))
+                Text("함께한 콤비는", color = Color.White, style = title3)
+                Spacer(Modifier.height(20.dp))
+                CombiList(
+                    member = member,
+                    petUiList = petUiList,
+                    onPetClick = onPetClick
+                )
                 Spacer(Modifier.height(24.dp))
                 Text("이번 운동은", color = Color.White, style = title3)
                 Spacer(Modifier.height(20.dp))
@@ -476,9 +501,10 @@ private fun DateTimeBottomSheet(
 }
 
 @Composable
-fun EditRecordAppBar(
+fun AddRecordAppBar(
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    isSaveEnabled: Boolean = true,
 ) {
     Box(
         modifier = Modifier
@@ -500,7 +526,7 @@ fun EditRecordAppBar(
             )
 
             Text(
-                text = "기록 편집",
+                text = "기록 추가",
                 style = title2,
                 color = WhiteFF,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -509,8 +535,148 @@ fun EditRecordAppBar(
             Text(
                 text = "저장",
                 style = title4,
+                color = if (isSaveEnabled) Primary01 else Grey05,
+                modifier = if (isSaveEnabled) {
+                    Modifier.clickableWithoutRipple { onSave() }
+                } else {
+                    Modifier
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun MemberProfile(member: Member) {
+    Box(
+        modifier = Modifier
+            .height(77.dp)
+            .width(84.dp), contentAlignment = Alignment.Center
+    ) {
+        StableImage(
+            drawableResId = R.drawable.ic_user_box,
+            modifier = Modifier
+                .height(77.dp)
+                .width(84.dp),
+        )
+
+        NetworkImage(
+            contentScale = ContentScale.Crop,
+            imageUrl = member.profileImageUrl,
+            drawableResId = R.drawable.person_profile,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(6.dp)
+                .padding(end = 12.dp)
+                .customPolygonClip(
+                    bottomLeft = true,
+                    topRight = true,
+                    polygonSize = 16.dp,
+                    bottomLeftAngle = 62.0
+                )
+        )
+    }
+}
+
+@Composable
+private fun PetProfile(
+    pet: Pet,
+    isSelected: Boolean,
+    isCenter: Boolean = false,
+    onClick: (() -> Unit)? = null,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        val boxImage = when {
+            isCenter && isSelected -> R.drawable.ic_pet_box_center_selected
+            isCenter && !isSelected -> R.drawable.ic_pet_box_center
+            isSelected -> R.drawable.ic_pet_box_selected
+            else -> R.drawable.ic_pet_box
+        }
+
+        val boxHeight = if (isCenter) 77.dp else 77.dp
+        val boxWidth = if (isCenter) 99.dp else 85.dp
+        val startPadding = 12.dp
+        val endPadding = if (isCenter) 12.dp else 0.dp
+
+        Box(
+            modifier = Modifier
+                .height(boxHeight)
+                .width(boxWidth)
+                .clickableWithoutRipple { onClick?.invoke() },
+            contentAlignment = Alignment.Center
+        ) {
+            StableImage(
+                drawableResId = boxImage,
+                modifier = Modifier
+                    .height(boxHeight)
+                    .width(boxWidth),
+            )
+            NetworkImage(
+                contentScale = ContentScale.Crop,
+                imageUrl = pet.profileImageUrl,
+                drawableResId = R.drawable.ic_pet_defalut,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = startPadding, end = endPadding)
+                    .padding(6.dp)
+                    .customPolygonClip(
+                        bottomLeft = true,
+                        topRight = true,
+                        polygonSize = 16.dp,
+                        bottomLeftAngle = 58.0,
+                        topRightAngle = 63.0
+                    )
+            )
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            pet.name,
+            style = body1,
+            color = Grey06,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = startPadding),
+        )
+    }
+}
+
+@Composable
+private fun CombiList(
+    member: Member?,
+    petUiList: List<PetUiModel>,
+    onPetClick: (Pet) -> Unit,
+) {
+    val selected = petUiList.filter { it.isSelected }.sortedBy { it.selectedOrder ?: Int.MAX_VALUE }
+    val unselected = petUiList.filter { !it.isSelected }.sortedBy { it.originIndex }
+    val allPets = selected + unselected
+
+    Column(
+        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("함께 운동할 콤비", style = giantsTitle4, color = Grey08)
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ) {
+            member?.let {
+                MemberProfile(member = it)
+            }
+            allPets.forEachIndexed { index, petUi ->
+                PetProfile(
+                    pet = petUi.pet,
+                    isSelected = petUi.isSelected,
+                    isCenter = allPets.size > 1 && index == 0,
+                    onClick = { onPetClick(petUi.pet) }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        if (selected.isNotEmpty()) {
+            val selectedCombis = selected.map { it.pet.name }.joinToString()
+            Text(
+                "${selectedCombis}와 함께!",
+                style = body1,
                 color = Primary01,
-                modifier = Modifier.clickableWithoutRipple { onSave() }
+                textAlign = TextAlign.Center
             )
         }
     }

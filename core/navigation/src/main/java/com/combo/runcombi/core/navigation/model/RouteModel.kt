@@ -86,6 +86,9 @@ sealed interface RouteModel {
             data class Record(val runId: Int) : HistoryRouteModel
 
             @Serializable
+            data class AddRecord(val date: String) : HistoryRouteModel
+
+            @Serializable
             data class EditRecord(val runId: Int) : HistoryRouteModel
 
             @Serializable

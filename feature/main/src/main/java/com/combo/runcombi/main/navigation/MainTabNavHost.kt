@@ -24,17 +24,22 @@ fun MainTabNavHost(
         navController = mainTabNavigator.navController,
         startDestination = mainTabDataModel
     ) {
-        historyNavGraph(onRecordClick = {
-            mainTabNavigator.navigationToRecord(runId = it, navOptions = null)
-        }, onBack = {
-            mainTabNavigator.navController.popBackStack()
-        }, onMemo = { runId, memo ->
-            mainTabNavigator.navigationToMemo(
-                runId = runId, memo = memo
-            )
-        }, onEditRecord = { runId ->
-            mainTabNavigator.navigationToEditRecord(runId = runId)
-        })
+        historyNavGraph(
+            onRecordClick = {
+                mainTabNavigator.navigationToRecord(runId = it, navOptions = null)
+            }, onBack = {
+                mainTabNavigator.navController.popBackStack()
+            }, onMemo = { runId, memo ->
+                mainTabNavigator.navigationToMemo(
+                    runId = runId, memo = memo
+                )
+            }, onEditRecord = { runId ->
+                mainTabNavigator.navigationToEditRecord(runId = runId)
+            },
+            onAddClick = {
+                mainTabNavigator.navigationToAddRecord(date = it)
+            }
+        )
 
         walkNavGraph(navController = mainTabNavigator.navController, onStartWalk = {
             mainTabNavigator.navigationToWalkTypeSelect()

@@ -8,6 +8,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.history.screen.AddRecordScreen
 import com.combo.runcombi.history.screen.EditRecordScreen
 import com.combo.runcombi.history.screen.HistoryScreen
 import com.combo.runcombi.history.screen.MemoScreen
@@ -33,6 +34,15 @@ fun NavController.navigateToRecord(
     this.navigate(route, navOptions)
 }
 
+fun NavController.navigateToAddRecord(
+    date: String,
+    navOptions: NavOptions? = null,
+) {
+    val route = RouteModel.MainTabRoute.HistoryRouteModel.AddRecord(date = date)
+    this.navigate(route, navOptions)
+}
+
+
 fun NavController.navigateToEditRecord(
     runId: Int,
     navOptions: NavOptions? = null,
@@ -52,6 +62,7 @@ fun NavController.navigateToMemo(
 
 fun NavGraphBuilder.historyNavGraph(
     onRecordClick: (Int) -> Unit,
+    onAddClick: (String) -> Unit,
     onMemo: (Int, String) -> Unit,
     onEditRecord: (Int) -> Unit,
     onBack: () -> Unit,
@@ -60,7 +71,7 @@ fun NavGraphBuilder.historyNavGraph(
         startDestination = RouteModel.MainTabRoute.HistoryRouteModel.History,
     ) {
         composable<RouteModel.MainTabRoute.HistoryRouteModel.History> {
-            HistoryScreen(onRecordClick = onRecordClick)
+            HistoryScreen(onRecordClick = onRecordClick, onAddClick = onAddClick)
         }
         composable<RouteModel.MainTabRoute.HistoryRouteModel.Record>(
         ) { backStackEntry ->
@@ -69,6 +80,15 @@ fun NavGraphBuilder.historyNavGraph(
                 runId = route.runId,
                 onMemo = onMemo,
                 onEditRecord = onEditRecord,
+                onBack = onBack
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.HistoryRouteModel.AddRecord>(
+        ) { backStackEntry ->
+            val route = backStackEntry.toRoute<RouteModel.MainTabRoute.HistoryRouteModel.AddRecord>()
+            AddRecordScreen(
+                date =  route.date,
                 onBack = onBack
             )
         }

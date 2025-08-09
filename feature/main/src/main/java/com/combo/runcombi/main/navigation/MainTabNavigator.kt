@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
 import com.combo.runcombi.core.navigation.model.RouteModel
+import com.combo.runcombi.history.navigation.navigateToAddRecord
 import com.combo.runcombi.history.navigation.navigateToEditRecord
 
 import com.combo.runcombi.history.navigation.navigateToHistory
@@ -40,6 +41,10 @@ class MainTabNavigator(
 
     fun navigationToEditRecord(runId: Int) {
         navController.navigateToEditRecord(runId = runId)
+    }
+
+    fun navigationToAddRecord(date: String) {
+        navController.navigateToAddRecord(date = date)
     }
 
     fun navigationToMemo(runId: Int, memo: String) {

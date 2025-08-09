@@ -70,7 +70,9 @@ import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.util.FormatUtils
 import kotlinx.coroutines.flow.collectLatest
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -85,6 +87,7 @@ private fun String.toKoreanStyle(): String = when (this) {
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel(),
     onRecordClick: (Int) -> Unit = {},
+    onAddClick: (String) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -115,7 +118,7 @@ fun HistoryScreen(
     }, onDismissBottomSheet = { showBottomSheet.value = false }, onRecordClick = {
         showBottomSheet.value = false
         onRecordClick(it)
-    })
+    }, onAddClick = onAddClick)
 }
 
 @Composable
@@ -127,6 +130,7 @@ fun HistoryContent(
     onDateSelected: (LocalDate) -> Unit = {},
     onDismissBottomSheet: () -> Unit = {},
     onRecordClick: (Int) -> Unit = {},
+    onAddClick: (String) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -163,7 +167,8 @@ fun HistoryContent(
                 date = uiState.selectedDate,
                 records = uiState.exerciseRecords,
                 onDismiss = onDismissBottomSheet,
-                onRecordClick = onRecordClick
+                onRecordClick = onRecordClick,
+                onAddClick = onAddClick
             )
         }
     }
@@ -487,6 +492,7 @@ fun ExerciseRecordContent(
     date: LocalDate,
     records: List<ExerciseRecord>,
     onRecordClick: (Int) -> Unit = {},
+    onAddClick: (String) -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -505,7 +511,10 @@ fun ExerciseRecordContent(
                 modifier = Modifier
                     .size(24.dp)
                     .clickableSingle {
-
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                        val dateTime = date.atTime(LocalTime.now())
+                        val formatted = dateTime.format(formatter)
+                        onAddClick(formatted)
                     })
         }
         Spacer(Modifier.height(18.dp))
@@ -542,7 +551,9 @@ fun ExerciseRecordContent(
                                         modifier = Modifier.alignByBaseline()
                                     )
                                     Text(
-                                        " min", style = body3, color = Grey06,
+                                        " min",
+                                        style = body3,
+                                        color = Grey06,
                                         modifier = Modifier.alignByBaseline()
                                     )
                                 }
@@ -562,7 +573,9 @@ fun ExerciseRecordContent(
                                         modifier = Modifier.alignByBaseline()
                                     )
                                     Text(
-                                        " km", style = body3, color = Grey06,
+                                        " km",
+                                        style = body3,
+                                        color = Grey06,
                                         modifier = Modifier.alignByBaseline()
                                     )
                                 }
@@ -592,6 +605,7 @@ fun ExerciseRecordBottomSheet(
     records: List<ExerciseRecord>,
     onDismiss: () -> Unit,
     onRecordClick: (Int) -> Unit = {},
+    onAddClick: (String) -> Unit = {},
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -603,7 +617,10 @@ fun ExerciseRecordBottomSheet(
         )
     ) {
         ExerciseRecordContent(
-            date = date, records = records, onRecordClick = onRecordClick
+            date = date,
+            records = records,
+            onRecordClick = onRecordClick,
+            onAddClick = onAddClick
         )
     }
 }
