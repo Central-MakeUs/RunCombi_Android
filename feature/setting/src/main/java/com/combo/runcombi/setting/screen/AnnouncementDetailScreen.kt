@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,7 +44,6 @@ import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
-import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey03
 import com.combo.runcombi.core.designsystem.theme.Grey05
 import com.combo.runcombi.core.designsystem.theme.Grey06
@@ -54,11 +52,11 @@ import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
-import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title3
 import com.combo.runcombi.feature.setting.R
 import com.combo.runcombi.setting.model.AnnouncementDetailEvent
 import com.combo.runcombi.setting.model.AnnouncementDetailUiState
 import com.combo.runcombi.setting.viewmodel.AnnouncementDetailViewModel
+import com.combo.runcombi.ui.ext.clickableSingle
 import com.combo.runcombi.ui.util.FormatUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -140,7 +138,7 @@ fun AnnouncementDetailContent(
         ) {
             // 상단 고정 영역
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             TitleSection(
                 title = detail.title,
                 startDate = detail.startDate,
@@ -171,7 +169,7 @@ fun AnnouncementDetailContent(
                     EventCodeSection(eventCode = detail.code)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                
+
                 if (detail.eventApplyUrl.isNotEmpty()) {
                     RunCombiButton(
                         text = "응모하기",
@@ -268,15 +266,13 @@ fun EventCodeSection(
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
+                modifier = Modifier.clickableSingle {
                     val clipboardManager =
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clipData = ClipData.newPlainText("이벤트 코드", eventCode)
                     clipboardManager.setPrimaryClip(clipData)
 
                     isCopied = true
-
-                    Toast.makeText(context, "이벤트 코드가 복사되었습니다", Toast.LENGTH_SHORT).show()
                 }
             ) {
                 StableImage(
