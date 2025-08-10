@@ -41,7 +41,7 @@ class WalkResultViewModel @Inject constructor(
             _isLoading.value = true
             endRunUseCase(
                 runId = walkData.runData?.runId ?: 0,
-                runTime = walkData.time,
+                runTime = walkData.time / 60,
                 runDistance = walkData.distance,
                 petList = walkData.petList.map {
                     it.pet.id

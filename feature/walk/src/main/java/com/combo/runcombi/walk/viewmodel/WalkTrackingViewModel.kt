@@ -54,8 +54,6 @@ class WalkTrackingViewModel @Inject constructor(
             is DomainResult.Success -> {
                 val data = result.data
                 val newDistance = _uiState.value.distance + data.distance
-                val newTimeSec = _uiState.value.time
-                val newTimeHour = newTimeSec / 3600.0
                 val exerciseType = _uiState.value.exerciseType
 
                 val memberUiModel = _uiState.value.walkMemberUiModel
