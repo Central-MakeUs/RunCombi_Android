@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.history.usecase.SetRunImageUseCase
+import com.combo.runcombi.ui.util.FormatUtils
 import com.combo.runcombi.walk.model.WalkData
 import com.combo.runcombi.walk.model.WalkResultEvent
 import com.combo.runcombi.walk.usecase.EndRunUseCase
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,12 +40,15 @@ class WalkResultViewModel @Inject constructor(
     val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
     fun saveRun(walkData: WalkData, routeImage: File?) {
+        val km = walkData.distance / 1000.0
+        val rounded = BigDecimal(km).setScale(2, RoundingMode.HALF_UP).toDouble()
+
         viewModelScope.launch {
             _isLoading.value = true
             endRunUseCase(
                 runId = walkData.runData?.runId ?: 0,
                 runTime = walkData.time / 60,
-                runDistance = walkData.distance,
+                runDistance = rounded,
                 petList = walkData.petList.map {
                     it.pet.id
                 },
