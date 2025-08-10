@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -33,12 +34,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
+import com.combo.runcombi.core.designsystem.component.RunCombiButton
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
@@ -55,6 +59,7 @@ import com.combo.runcombi.feature.setting.R
 import com.combo.runcombi.setting.model.AnnouncementDetailEvent
 import com.combo.runcombi.setting.model.AnnouncementDetailUiState
 import com.combo.runcombi.setting.viewmodel.AnnouncementDetailViewModel
+import com.combo.runcombi.ui.util.FormatUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
@@ -125,51 +130,57 @@ fun AnnouncementDetailContent(
     uiState: AnnouncementDetailUiState,
     onApplyClick: (String) -> Unit,
 ) {
-    val detail = uiState.detail
+    val detail = uiState.detail ?: return
 
-    if (detail == null) {
-        return
-    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp)
+        ) {
+            // 상단 고정 영역
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            TitleSection(
+                title = detail.title,
+                startDate = detail.startDate,
+                endDate = detail.endDate
+            )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-
-        TitleSection(
-            title = detail.title,
-            startDate = detail.startDate,
-            endDate = detail.endDate
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (detail.content.isNotEmpty()) {
-            ContentSection(content = detail.content)
             Spacer(modifier = Modifier.height(16.dp))
+
+            // 스크롤 가능한 콘텐츠 영역
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                if (detail.content.isNotEmpty()) {
+                    ContentSection(content = detail.content)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+
+                if (detail.announcementImageUrl.isNotEmpty()) {
+                    ImageSection(imageUrl = detail.announcementImageUrl)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            if (detail.announcementType == "EVENT") {
+                if (detail.code.isNotEmpty()) {
+                    EventCodeSection(eventCode = detail.code)
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                
+                if (detail.eventApplyUrl.isNotEmpty()) {
+                    RunCombiButton(
+                        text = "응모하기",
+                        onClick = { onApplyClick(detail.eventApplyUrl) }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+            }
         }
-
-        if (detail.announcementImageUrl.isNotEmpty()) {
-            ImageSection(imageUrl = detail.announcementImageUrl)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        if (detail.announcementType == "EVENT" && detail.code.isNotEmpty()) {
-            EventCodeSection(eventCode = detail.code)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        Spacer(modifier = Modifier.height(100.dp))
-    }
-
-    if (detail.announcementType == "EVENT" && detail.eventApplyUrl.isNotEmpty()) {
-        BottomApplyButton(
-            eventApplyUrl = detail.eventApplyUrl,
-            onApplyClick = onApplyClick
-        )
     }
 }
 
@@ -189,7 +200,7 @@ fun TitleSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "기간: $startDate ~ $endDate",
+            text = "기간: ${FormatUtils.formatDate(startDate)} ~ ${FormatUtils.formatDate(endDate)}",
             style = body3,
             color = Grey06
         )
@@ -244,8 +255,8 @@ fun EventCodeSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)
-                .background(Grey03)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .background(Grey03, RoundedCornerShape(6.dp))
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -277,8 +288,11 @@ fun EventCodeSection(
 
                 Text(
                     text = if (isCopied) "복사완료" else "복사하기",
-                    style = body3,
-                    color = if (isCopied) Grey06 else Color(0xFF398AEC)
+                    style = body3.copy(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = Color(0xFF398AEC)
                 )
             }
         }
@@ -292,36 +306,7 @@ fun EventCodeSection(
     }
 }
 
-@Composable
-fun BottomApplyButton(
-    eventApplyUrl: String,
-    onApplyClick: (String) -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Grey01)
-            .padding(horizontal = 14.dp, vertical = 16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(Primary01)
-                .clickable { onApplyClick(eventApplyUrl) }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "응모하기",
-                style = title3,
-                color = Grey02
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF171717)
 @Composable
 fun PreviewAnnouncementDetailContent() {
     val mockDetail = com.combo.runcombi.setting.model.AnnouncementDetail(

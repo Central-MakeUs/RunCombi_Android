@@ -37,4 +37,16 @@ object FormatUtils {
             dateTimeString 
         }
     }
+
+    fun formatDate(dateString: String): String {
+        return try {
+            if (dateString.contains("-")) {
+                dateString.replace("-", ".")
+            } else {
+                dateString
+            }
+        } catch (e: Exception) {
+            dateString
+        }
+    }
 }

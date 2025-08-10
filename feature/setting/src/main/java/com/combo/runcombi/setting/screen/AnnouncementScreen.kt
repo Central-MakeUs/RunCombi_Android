@@ -47,6 +47,7 @@ import com.combo.runcombi.setting.model.Announcement
 import com.combo.runcombi.setting.model.AnnouncementEvent
 import com.combo.runcombi.setting.model.AnnouncementUiState
 import com.combo.runcombi.setting.viewmodel.AnnouncementViewModel
+import com.combo.runcombi.ui.util.FormatUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -183,14 +184,14 @@ fun TabItem(
             if (isSelected) {
                 Box(
                     modifier = Modifier
-                        .width(40.dp)
+                        .fillMaxWidth()
                         .height(2.dp)
                         .background(Primary01)
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .width(40.dp)
+                        .fillMaxWidth()
                         .height(1.dp)
                         .background(Grey03)
                 )
@@ -262,7 +263,7 @@ fun AnnouncementItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = announcement.regDate,
+                text = FormatUtils.formatDate(announcement.regDate),
                 style = body3,
                 color = Grey06
             )
