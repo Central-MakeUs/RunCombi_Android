@@ -1,8 +1,7 @@
-package com.combo.runcombi.setting.di
+package com.combo.runcombi.data.setting.di
 
-
+import com.combo.runcombi.data.setting.repository.MockSettingRepositoryImpl
 import com.combo.runcombi.setting.repository.SettingRepository
-import com.combo.runcombi.setting.repository.SettingRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,5 +11,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 internal abstract class SettingDataModule {
     @Binds
-    abstract fun bindSettingRepository(impl: SettingRepositoryImpl): SettingRepository
-} 
+    abstract fun bindSettingRepository(impl: MockSettingRepositoryImpl): SettingRepository
+}

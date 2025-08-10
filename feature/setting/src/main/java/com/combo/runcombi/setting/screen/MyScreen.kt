@@ -57,7 +57,8 @@ fun MyScreen(
         onClickSetting = onClickSetting,
         onEditProfile = onClickEditMember,
         onAddPet = onClickAddPet,
-        onEditPet = onClickEditPet
+        onEditPet = onClickEditPet,
+        onClickAnnouncement = onClickAnnouncement
     )
 }
 

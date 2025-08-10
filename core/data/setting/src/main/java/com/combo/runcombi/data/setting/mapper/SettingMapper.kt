@@ -1,4 +1,4 @@
-package com.combo.runcombi.setting.mapper
+package com.combo.runcombi.data.setting.mapper
 
 import com.combo.runcombi.network.model.response.AnnouncementDetailResponse
 import com.combo.runcombi.network.model.response.AnnouncementResponse
@@ -61,6 +61,3 @@ fun AnnouncementResult.toDomainModel(): Announcement {
         title = title ?: ""
     )
 }
-
-
-

@@ -2,4 +2,5 @@ package com.combo.runcombi.setting.model
 
 sealed class AnnouncementDetailEvent {
     data class Error(val errorMessage: String) : AnnouncementDetailEvent()
+    data class OpenEventApplyUrl(val url: String) : AnnouncementDetailEvent()
 } 

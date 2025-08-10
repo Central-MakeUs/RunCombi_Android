@@ -66,4 +66,7 @@ class AnnouncementDetailViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = false) }
     }
 
+    fun openEventApplyUrl(url: String) {
+        emitEvent(AnnouncementDetailEvent.OpenEventApplyUrl(url))
+    }
 }

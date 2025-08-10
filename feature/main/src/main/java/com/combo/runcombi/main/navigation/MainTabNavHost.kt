@@ -90,11 +90,11 @@ fun MainTabNavHost(
             }, onSuggestion = {
                 mainTabNavigator.navigateToSuggestion()
             },
-            onNavigateToAnnouncement = {
+            onClickAnnouncement = {
                 mainTabNavigator.navigateToAnnouncement()
             },
-            onNavigateToAnnouncementDetail = { id ->
-                mainTabNavigator.navigateToAnnouncementDetail(id)
+            onNavigateToAnnouncementDetail = {
+                mainTabNavigator.navigateToAnnouncementDetail(it)
             })
     }
 }
