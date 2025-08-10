@@ -8,6 +8,7 @@ import androidx.navigation.navOptions
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.navigation.historyNavGraph
+import com.combo.runcombi.setting.navigation.navigateToSuggestion
 import com.combo.runcombi.setting.navigation.settingNavGraph
 import com.combo.runcombi.walk.navigation.walkNavGraph
 
@@ -53,7 +54,8 @@ fun MainTabNavHost(
                 mainTabNavigator.navigationToWalkResult()
             }, onBack = {
                 mainTabNavigator.navController.popBackStack()
-            }, onNavigateToRecord = {
+            },
+            onNavigateToRecord = {
                 mainTabNavigator.navigationToRecord(it, navOptions {
                     popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
                         inclusive = false
@@ -85,6 +87,8 @@ fun MainTabNavHost(
                 mainTabNavigator.navigationToAccountDeletion()
             }, onNavigateToSurvey = {
                 mainTabNavigator.navigationToAccountDeletionSurvey()
+            }, onSuggestion = {
+                mainTabNavigator.navigateToSuggestion()
             })
     }
 }

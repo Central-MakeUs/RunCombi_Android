@@ -18,6 +18,7 @@ import com.combo.runcombi.setting.screen.EditMemberScreen
 import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
 import com.combo.runcombi.setting.screen.SettingScreen
+import com.combo.runcombi.setting.screen.SuggestionScreen
 import com.combo.runcombi.setting.screen.UserWithdrawalInfoScreen
 import com.combo.runcombi.setting.screen.UserWithdrawalSurveyScreen
 import com.combo.runcombi.setting.viewmodel.AddPetViewModel
@@ -66,6 +67,10 @@ fun NavController.navigateToAccountDeletionSurvey() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionSurvey)
 }
 
+fun NavController.navigateToSuggestion() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.Suggestion)
+}
+
 fun NavGraphBuilder.settingNavGraph(
     navController: NavController,
     onClickSetting: () -> Unit = {},
@@ -79,6 +84,7 @@ fun NavGraphBuilder.settingNavGraph(
     onAddPetSuccess: () -> Unit = {},
     onClickAccountDeletion: () -> Unit = {},
     onNavigateToSurvey: () -> Unit = {},
+    onSuggestion: () -> Unit = {}
 ) {
     navigation<MainTabDataModel.Setting>(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
@@ -96,7 +102,14 @@ fun NavGraphBuilder.settingNavGraph(
             SettingScreen(
                 goToLogin = goToLogin,
                 onBack = onBack,
-                onClickAccountDeletion = onClickAccountDeletion
+                onClickAccountDeletion = onClickAccountDeletion,
+                onSuggestion = onSuggestion
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.Suggestion> {
+            SuggestionScreen(
+                onBack = onBack
             )
         }
 

@@ -2,6 +2,7 @@ package com.combo.runcombi.setting.screen
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView.OnSuggestionListener
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,6 +68,7 @@ fun SettingScreen(
     onBack: () -> Unit = {},
     viewModel: SettingViewModel = hiltViewModel(),
     onClickAccountDeletion: () -> Unit,
+    onSuggestion: () -> Unit,
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val eventFlow = viewModel.eventFlow
@@ -92,14 +94,15 @@ fun SettingScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             RunCombiAppTopBar(
-                onBack = onBack,
-                title = "설정",
-                padding = PaddingValues(8.dp)
+                onBack = onBack, title = "설정", padding = PaddingValues(8.dp)
             )
-            SettingContent(onLogout = {
+            SettingContent(
+                onLogout = {
                 viewModel.tryLogout()
             }, onWithdraw = {
                 onClickAccountDeletion()
+            }, onSuggestion = {
+                onSuggestion()
             })
         }
         if (isLoading) {
@@ -119,6 +122,7 @@ fun SettingScreen(
 fun SettingContent(
     onLogout: () -> Unit = {},
     onWithdraw: () -> Unit = {},
+    onSuggestion: () -> Unit = {},
 ) {
     val context = LocalContext.current
 
@@ -133,8 +137,7 @@ fun SettingContent(
         },
         onCancel = { showLogoutBottomSheet = false },
         title = "정말 로그아웃 하실 거예요…?",
-        subtitle = "콤비가 기다릴지도 몰라요!\n" +
-                "쉬고 싶다면, 살짝 쉬었다가 다시 만나요.",
+        subtitle = "콤비가 기다릴지도 몰라요!\n" + "쉬고 싶다면, 살짝 쉬었다가 다시 만나요.",
         acceptButtonTextColor = Grey02,
         acceptButtonBackgroundColor = Grey08,
         acceptButtonText = "로그아웃",
@@ -182,8 +185,8 @@ fun SettingContent(
         Spacer(Modifier.height(40.dp))
         SectionTitle("고객")
         Spacer(Modifier.height(16.dp))
-        // SettingItem("런콤비 개선 제안", onClick = { /* TODO */ })
-        //Spacer(Modifier.height(20.dp))
+        SettingItem("런콤비 개선 제안", onClick = { onSuggestion() })
+        Spacer(Modifier.height(20.dp))
         AppVersionRow(onUpdateClick = { /* TODO */ })
     }
 }
@@ -209,19 +212,17 @@ fun SettingItem(text: String, onClick: () -> Unit) {
         Text(text, style = body1, color = Grey09)
         Spacer(modifier = Modifier.weight(1f))
         StableImage(
-            drawableResId = R.drawable.ic_arrow_right,
-            modifier = Modifier.size(24.dp)
+            drawableResId = R.drawable.ic_arrow_right, modifier = Modifier.size(24.dp)
         )
     }
 }
 
 @Composable
 fun SettingItemWithIcon(text: String, iconRes: Int, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Text(text)
         Spacer(modifier = Modifier.weight(1f))

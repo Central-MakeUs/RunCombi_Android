@@ -107,6 +107,9 @@ sealed interface RouteModel {
             data object EditMember : SettingRouteModel
 
             @Serializable
+            data object Suggestion : SettingRouteModel
+
+            @Serializable
             data class EditPet(val petId: Int) : SettingRouteModel
 
             @Serializable

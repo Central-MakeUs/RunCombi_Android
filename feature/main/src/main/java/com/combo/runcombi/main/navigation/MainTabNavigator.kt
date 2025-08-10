@@ -20,6 +20,7 @@ import com.combo.runcombi.setting.navigation.navigateToEditMember
 import com.combo.runcombi.setting.navigation.navigateToEditPet
 import com.combo.runcombi.setting.navigation.navigateToSetting
 import com.combo.runcombi.setting.navigation.navigateToSettingMain
+import com.combo.runcombi.setting.navigation.navigateToSuggestion
 import com.combo.runcombi.walk.navigation.navigateToWalkCountDown
 import com.combo.runcombi.walk.navigation.navigateToWalkMain
 import com.combo.runcombi.walk.navigation.navigateToWalkReady
@@ -81,6 +82,11 @@ class MainTabNavigator(
     fun navigationToAccountDeletionSurvey() {
         navController.navigateToAccountDeletionSurvey()
     }
+
+    fun navigateToSuggestion() {
+        navController.navigateToSuggestion()
+    }
+
 
     fun navigationToAddPetStyle() {
         navController.navigateToAddPetStyle()
