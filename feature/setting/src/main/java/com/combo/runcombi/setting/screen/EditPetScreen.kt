@@ -31,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
+import com.combo.runcombi.core.designsystem.component.RunCombiDeleteBottomSheet
 import com.combo.runcombi.core.designsystem.component.RunCombiSelectableButton
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.core.designsystem.component.StableImage
@@ -169,6 +173,8 @@ fun EditPetContent(
     val localFocusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
+    var showDeleteBottomSheet by remember { mutableStateOf(false) }
+
     val albumLauncher = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
         uri?.let {
             val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -182,6 +188,19 @@ fun EditPetContent(
         }
     }
 
+    RunCombiDeleteBottomSheet(
+        show = showDeleteBottomSheet,
+        onDismiss = { showDeleteBottomSheet = false },
+        onAccept = {
+            showDeleteBottomSheet = false
+            onDelete()
+        },
+        onCancel = { showDeleteBottomSheet = false },
+        title = "정말 ${uiState.name}을(를) 삭제하시겠어요?",
+        subtitle = "콤비의 기록과 추억도 함께 사라져요...\n기록은 복구할 수 없으니 신중히 결정해주세요.",
+        acceptButtonText = "삭제",
+        cancelButtonText = "아니요"
+    )
 
     Column(
         modifier = Modifier
@@ -339,7 +358,7 @@ fun EditPetContent(
                     color = Grey06, 
                     style = body3.copy(textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline), 
                     modifier = Modifier.clickableSingle {
-                        onDelete()
+                        showDeleteBottomSheet = true
                     }
                 )
             Spacer(modifier = Modifier.weight(1f))

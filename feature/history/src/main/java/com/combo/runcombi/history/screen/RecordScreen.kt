@@ -57,6 +57,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
+import com.combo.runcombi.core.designsystem.component.RunCombiDeleteBottomSheet
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey03
@@ -290,7 +291,7 @@ fun RecordContent(
         }
     }
 
-    RunCombiBottomSheet(
+    RunCombiDeleteBottomSheet(
         show = showDeleteBottomSheet,
         onDismiss = { showDeleteBottomSheet = false },
         onAccept = {

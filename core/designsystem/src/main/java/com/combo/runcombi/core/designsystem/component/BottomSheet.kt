@@ -77,4 +77,60 @@ fun RunCombiBottomSheet(
             }
         }
     }
-} 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RunCombiDeleteBottomSheet(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onAccept: () -> Unit,
+    onCancel: () -> Unit,
+    title: String,
+    subtitle: String,
+    acceptButtonText: String,
+    cancelButtonText: String,
+) {
+    if (show) {
+        ModalBottomSheet(
+            onDismissRequest = onDismiss,
+            containerColor = Grey02,
+            dragHandle = null,
+            shape = RoundedCornerShape(
+                topStart = 20.dp,
+                topEnd = 20.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(Color(0xFF232323))
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(title, color = Color.White, style = title2)
+                Spacer(Modifier.height(10.dp))
+                Text(subtitle, color = Grey07, style = body1)
+                Spacer(Modifier.height(32.dp))
+                Row {
+                    RunCombiButton(
+                        text = acceptButtonText,
+                        onClick = onAccept,
+                        modifier = Modifier.weight(1f),
+                        enabledColor = Color(0xFFFC5555),
+                        textColor = Color.White,
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    RunCombiButton(
+                        text = cancelButtonText,
+                        onClick = onCancel,
+                        modifier = Modifier.weight(1f),
+                        enabledColor = Grey04,
+                        textColor = Grey08,
+                    )
+                }
+            }
+        }
+    }
+}

@@ -40,6 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
+import com.combo.runcombi.core.designsystem.component.RunCombiDeleteBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.designsystem.theme.Grey05
@@ -121,7 +122,7 @@ fun SettingContent(
 
     var bottomSheetType by remember { mutableStateOf<BottomSheetType?>(null) }
 
-    RunCombiBottomSheet(
+    RunCombiDeleteBottomSheet(
         show = bottomSheetType != null,
         onDismiss = { bottomSheetType = null },
         onAccept = {

@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
+import com.combo.runcombi.core.designsystem.component.RunCombiDeleteBottomSheet
 import com.combo.runcombi.core.designsystem.component.RunCombiTextField
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
@@ -108,6 +109,7 @@ fun AddRecordScreen(
     }
 
     var showDateTimeSheet by remember { mutableStateOf(false) }
+    var showCancelBottomSheet by remember { mutableStateOf(false) }
 
     AddRecordContent(
         member = uiState.member,
@@ -117,7 +119,7 @@ fun AddRecordScreen(
         time = uiState.time,
         exerciseType = uiState.exerciseType,
         onCancel = {
-            onBack()
+            showCancelBottomSheet = true
         },
         onSave = {
             addRecordViewModel.saveRunData()
@@ -140,6 +142,21 @@ fun AddRecordScreen(
         onPetClick = {
             addRecordViewModel.togglePetSelect(it)
         },
+    )
+
+
+    RunCombiDeleteBottomSheet(
+        show = showCancelBottomSheet,
+        onDismiss = { showCancelBottomSheet = false },
+        onAccept = {
+            showCancelBottomSheet = false
+            onBack()
+        },
+        onCancel = { showCancelBottomSheet = false },
+        title = "기록 작성을 그만두시겠어요?",
+        subtitle = "지금까지 입력한 내용은 저장되지 않아요.",
+        acceptButtonText = "취소",
+        cancelButtonText = "아니요"
     )
 
     if (showDateTimeSheet) {
