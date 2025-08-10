@@ -3,7 +3,7 @@
 
     <style name="Theme.RunCombi.Splash" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/Theme.RunCombi</item>
-        <item name="windowSplashScreenBackground">@color/grey01</item>
+        <item name="windowSplashScreenBackground">@color/splash</item>
     </style>
 
 </resources>
