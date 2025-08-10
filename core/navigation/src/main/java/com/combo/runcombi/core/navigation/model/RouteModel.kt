@@ -124,6 +124,20 @@ sealed interface RouteModel {
                 @Serializable
                 data object PetStyle : PetInputRoute
             }
+
+            @Serializable
+            data object AccountDeletion : SettingRouteModel
+
+            @Serializable
+            sealed interface AccountDeletionRoute : SettingRouteModel {
+
+                @Serializable
+                data object AccountDeletionInfo : AccountDeletionRoute
+
+                @Serializable
+                data object AccountDeletionSurvey : AccountDeletionRoute
+
+            }
         }
     }
 }

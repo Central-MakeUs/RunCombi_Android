@@ -4,6 +4,7 @@ import com.combo.runcombi.network.di.TokenReissueRetrofit
 import com.combo.runcombi.network.di.TokenRetrofit
 import com.combo.runcombi.network.service.HistoryService
 import com.combo.runcombi.network.service.AuthService
+import com.combo.runcombi.network.service.SettingService
 import com.combo.runcombi.network.service.TokenService
 import com.combo.runcombi.network.service.UserService
 import com.combo.runcombi.network.service.WalkService
@@ -57,6 +58,14 @@ object ServiceModule {
         @TokenRetrofit retrofit: Retrofit,
     ): HistoryService {
         return retrofit.create(HistoryService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingService(
+        @TokenRetrofit retrofit: Retrofit,
+    ): SettingService {
+        return retrofit.create(SettingService::class.java)
     }
 
 }

@@ -18,6 +18,9 @@ import com.combo.runcombi.setting.screen.EditMemberScreen
 import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
 import com.combo.runcombi.setting.screen.SettingScreen
+import com.combo.runcombi.setting.screen.UserWithdrawalInfo
+import com.combo.runcombi.setting.screen.UserWithdrawalSurvey
+import com.combo.runcombi.setting.viewmodel.AccountDeletionViewModel
 import com.combo.runcombi.setting.viewmodel.AddPetViewModel
 
 fun NavController.navigateToSettingMain(
@@ -48,16 +51,20 @@ fun NavController.navigateToAddPet() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInput)
 }
 
-fun NavController.navigateToAddPetProfile() {
-    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetProfile)
-}
-
 fun NavController.navigateToAddPetInfo() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetInfo)
 }
 
 fun NavController.navigateToAddPetStyle() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.PetInputRoute.PetStyle)
+}
+
+fun NavController.navigateToAccountDeletion() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion)
+}
+
+fun NavController.navigateToAccountDeletionSurvey() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionSurvey)
 }
 
 fun NavGraphBuilder.settingNavGraph(
@@ -71,6 +78,8 @@ fun NavGraphBuilder.settingNavGraph(
     onNavigateToAddPetInfo: () -> Unit = {},
     onNavigateToAddPetStyle: () -> Unit = {},
     onAddPetSuccess: () -> Unit = {},
+    onClickAccountDeletion: () -> Unit = {},
+    onNavigateToSurvey: () -> Unit = {},
 ) {
     navigation<MainTabDataModel.Setting>(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
@@ -87,7 +96,8 @@ fun NavGraphBuilder.settingNavGraph(
         composable<RouteModel.MainTabRoute.SettingRouteModel.Setting> {
             SettingScreen(
                 goToLogin = goToLogin,
-                onBack = onBack
+                onBack = onBack,
+                onClickAccountDeletion = onClickAccountDeletion
             )
         }
 
@@ -112,6 +122,13 @@ fun NavGraphBuilder.settingNavGraph(
             onSuccess = onAddPetSuccess,
             onNavigateToAddPetInfo = onNavigateToAddPetInfo,
             onNavigateToAddPetStyle = onNavigateToAddPetStyle
+        )
+
+        accountDeletionNavGraph(
+            navController = navController,
+            onBack = onBack,
+            onNavigateToSurvey = onNavigateToSurvey,
+            onSuccess = goToLogin
         )
     }
 }
@@ -172,5 +189,45 @@ fun NavGraphBuilder.addPetNavGraph(
                 )
             }
         }
+    }
+}
+
+fun NavGraphBuilder.accountDeletionNavGraph(
+    navController: NavController,
+    onBack: () -> Unit = {},
+    onNavigateToSurvey: () -> Unit = {},
+    onSuccess: () -> Unit = {},
+) {
+    navigation<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion>(
+        startDestination = RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionInfo,
+    ) {
+        composable<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionInfo> {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion>()
+            }
+
+            val accountDeletionViewModel = hiltViewModel<AccountDeletionViewModel>(parentEntry)
+
+            UserWithdrawalInfo(
+                onBack = onBack,
+                onClickNext = onNavigateToSurvey,
+                accountDeletionViewModel = accountDeletionViewModel
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionSurvey> {
+            val parentEntry = remember(it) {
+                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion>()
+            }
+
+            val accountDeletionViewModel = hiltViewModel<AccountDeletionViewModel>(parentEntry)
+
+            UserWithdrawalSurvey(
+                onBack = onBack,
+                onComplete = onSuccess,
+                accountDeletionViewModel = accountDeletionViewModel
+            )
+        }
+
     }
 }

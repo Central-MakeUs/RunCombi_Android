@@ -89,6 +89,8 @@ fun RunCombiDeleteBottomSheet(
     title: String,
     subtitle: String,
     acceptButtonText: String,
+    acceptButtonTextColor: Color = Color.White,
+    acceptButtonBackgroundColor: Color = Color(0xFFFC5555),
     cancelButtonText: String,
 ) {
     if (show) {
@@ -118,8 +120,8 @@ fun RunCombiDeleteBottomSheet(
                         text = acceptButtonText,
                         onClick = onAccept,
                         modifier = Modifier.weight(1f),
-                        enabledColor = Color(0xFFFC5555),
-                        textColor = Color.White,
+                        enabledColor = acceptButtonBackgroundColor,
+                        textColor = acceptButtonTextColor,
                     )
                     Spacer(Modifier.width(10.dp))
                     RunCombiButton(

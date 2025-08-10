@@ -2,20 +2,19 @@ package com.combo.runcombi.main.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.rememberNavController
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.navigation.navigateToAddRecord
 import com.combo.runcombi.history.navigation.navigateToEditRecord
-
 import com.combo.runcombi.history.navigation.navigateToHistory
 import com.combo.runcombi.history.navigation.navigateToMemo
 import com.combo.runcombi.history.navigation.navigateToRecord
+import com.combo.runcombi.setting.navigation.navigateToAccountDeletion
+import com.combo.runcombi.setting.navigation.navigateToAccountDeletionSurvey
 import com.combo.runcombi.setting.navigation.navigateToAddPet
 import com.combo.runcombi.setting.navigation.navigateToAddPetInfo
-import com.combo.runcombi.setting.navigation.navigateToAddPetProfile
 import com.combo.runcombi.setting.navigation.navigateToAddPetStyle
 import com.combo.runcombi.setting.navigation.navigateToEditMember
 import com.combo.runcombi.setting.navigation.navigateToEditPet
@@ -73,6 +72,14 @@ class MainTabNavigator(
 
     fun navigationToAddPetInfo() {
         navController.navigateToAddPetInfo()
+    }
+
+    fun navigationToAccountDeletion() {
+        navController.navigateToAccountDeletion()
+    }
+
+    fun navigationToAccountDeletionSurvey() {
+        navController.navigateToAccountDeletionSurvey()
     }
 
     fun navigationToAddPetStyle() {

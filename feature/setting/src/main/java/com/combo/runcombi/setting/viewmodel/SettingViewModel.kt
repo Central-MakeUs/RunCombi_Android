@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
-    private val withdrawUseCase: WithdrawUseCase,
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<SettingEvent>()
     val eventFlow: SharedFlow<SettingEvent> = _eventFlow.asSharedFlow()
@@ -30,26 +29,6 @@ class SettingViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
-
-    fun tryWithDraw() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            withdrawUseCase().collect { result ->
-                when(result) {
-                    is DomainResult.Success -> {
-                        emitEvent(SettingEvent.WithdrawSuccess)
-                    }
-                    is DomainResult.Exception -> {
-                        emitEvent(SettingEvent.Error("알 수 없는 오류가 발생했습니다."))
-                    }
-                    is DomainResult.Error -> {
-                        emitEvent(SettingEvent.Error(result.message ?: "오류가 발생했습니다."))
-                    }
-                }
-                _isLoading.value = false
-            }
-        }
-    }
 
     fun tryLogout() {
         viewModelScope.launch {

@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,12 +36,13 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
-import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.RunCombiDeleteBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
 import com.combo.runcombi.core.designsystem.theme.Grey01
+import com.combo.runcombi.core.designsystem.theme.Grey02
 import com.combo.runcombi.core.designsystem.theme.Grey05
 import com.combo.runcombi.core.designsystem.theme.Grey06
+import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Grey09
 import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
@@ -67,6 +65,7 @@ fun SettingScreen(
     goToLogin: () -> Unit = {},
     onBack: () -> Unit = {},
     viewModel: SettingViewModel = hiltViewModel(),
+    onClickAccountDeletion: () -> Unit,
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val eventFlow = viewModel.eventFlow
@@ -74,7 +73,7 @@ fun SettingScreen(
     LaunchedEffect(Unit) {
         eventFlow.collect { event ->
             when (event) {
-                is SettingEvent.LogoutSuccess, is SettingEvent.WithdrawSuccess -> {
+                is SettingEvent.LogoutSuccess -> {
                     goToLogin()
                 }
 
@@ -97,7 +96,7 @@ fun SettingScreen(
             SettingContent(onLogout = {
                 viewModel.tryLogout()
             }, onWithdraw = {
-                viewModel.tryWithDraw()
+                onClickAccountDeletion()
             })
         }
         if (isLoading) {
@@ -120,46 +119,23 @@ fun SettingContent(
 ) {
     val context = LocalContext.current
 
-    var bottomSheetType by remember { mutableStateOf<BottomSheetType?>(null) }
+    var showLogoutBottomSheet by remember { mutableStateOf(false) }
 
     RunCombiDeleteBottomSheet(
-        show = bottomSheetType != null,
-        onDismiss = { bottomSheetType = null },
+        show = showLogoutBottomSheet,
+        onDismiss = { showLogoutBottomSheet = false },
         onAccept = {
-            when (bottomSheetType) {
-                BottomSheetType.Logout -> {
-                    bottomSheetType = null
-                    onLogout()
-                }
-
-                BottomSheetType.Withdraw -> {
-                    bottomSheetType = null
-                    onWithdraw()
-                }
-
-                else -> {
-                    bottomSheetType = null
-                }
-            }
-            bottomSheetType = null
+            showLogoutBottomSheet = false
+            onLogout()
         },
-        onCancel = { bottomSheetType = null },
-        title = when (bottomSheetType) {
-            BottomSheetType.Logout -> "로그아웃"
-            BottomSheetType.Withdraw -> "회원 탈퇴"
-            else -> ""
-        },
-        subtitle = when (bottomSheetType) {
-            BottomSheetType.Logout -> "정말 로그아웃 하시겠습니까?"
-            BottomSheetType.Withdraw -> "정말 회원 탈퇴 하시겠습니까"
-            else -> ""
-        },
-        acceptButtonText = when (bottomSheetType) {
-            BottomSheetType.Logout -> "로그아웃"
-            BottomSheetType.Withdraw -> "탈퇴"
-            else -> ""
-        },
-        cancelButtonText = "취소"
+        onCancel = { showLogoutBottomSheet = false },
+        title = "정말 로그아웃 하실 거예요…?",
+        subtitle = "콤비가 기다릴지도 몰라요!\n" +
+                "쉬고 싶다면, 살짝 쉬었다가 다시 만나요.",
+        acceptButtonTextColor = Grey02,
+        acceptButtonBackgroundColor = Grey08,
+        acceptButtonText = "로그아웃",
+        cancelButtonText = "아니요"
     )
 
     Column(
@@ -196,9 +172,9 @@ fun SettingContent(
         Spacer(Modifier.height(40.dp))
         SectionTitle("계정")
         Spacer(Modifier.height(16.dp))
-        SettingItem("로그아웃", onClick = { bottomSheetType = BottomSheetType.Logout })
+        SettingItem("로그아웃", onClick = { showLogoutBottomSheet = true })
         Spacer(Modifier.height(20.dp))
-        SettingItem("회원 탈퇴", onClick = { bottomSheetType = BottomSheetType.Withdraw })
+        SettingItem("회원 탈퇴", onClick = { onWithdraw() })
 
         Spacer(Modifier.height(40.dp))
         SectionTitle("고객")

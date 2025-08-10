@@ -35,50 +35,56 @@ fun MainTabNavHost(
                 )
             }, onEditRecord = { runId ->
                 mainTabNavigator.navigationToEditRecord(runId = runId)
-            },
-            onAddClick = {
+            }, onAddClick = {
                 mainTabNavigator.navigationToAddRecord(date = it)
-            }
-        )
-
-        walkNavGraph(navController = mainTabNavigator.navController, onStartWalk = {
-            mainTabNavigator.navigationToWalkTypeSelect()
-        }, onTypeSelected = {
-            mainTabNavigator.navigationToWalkReady()
-        }, onCompleteReady = {
-            mainTabNavigator.navigationToWalkCountdown()
-        }, onCountdownFinished = {
-            mainTabNavigator.navigationToWalkTracking()
-        }, onFinish = {
-            mainTabNavigator.navigationToWalkResult()
-        }, onBack = {
-            mainTabNavigator.navController.popBackStack()
-        }, onNavigateToRecord = {
-            mainTabNavigator.navigationToRecord(it, navOptions {
-                popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
-                    inclusive = false
-                }
             })
-        })
 
-        settingNavGraph(navController = mainTabNavigator.navController, onClickSetting = {
-            mainTabNavigator.navigationToSetting()
-        }, onClickAddPet = {
-            mainTabNavigator.navigationToAddPet()
-        }, onClickEditPet = { petId ->
-            mainTabNavigator.navigationToEditPet(petId)
-        }, onClickEditMember = {
-            mainTabNavigator.navigationToEditMember()
-        }, goToLogin = {
-            mainNavigator.navigateToLogin()
-        }, onBack = {
-            mainTabNavigator.navController.popBackStack()
-        }, onNavigateToAddPetInfo = {
-            mainTabNavigator.navigationToAddPetInfo()
-        }, onNavigateToAddPetStyle = {
-            mainTabNavigator.navigationToAddPetStyle()
-        }, onAddPetSuccess = {
-            mainTabNavigator.navigateToMyScreen()
-        })
+        walkNavGraph(
+            navController = mainTabNavigator.navController,
+            onStartWalk = {
+                mainTabNavigator.navigationToWalkTypeSelect()
+            }, onTypeSelected = {
+                mainTabNavigator.navigationToWalkReady()
+            }, onCompleteReady = {
+                mainTabNavigator.navigationToWalkCountdown()
+            }, onCountdownFinished = {
+                mainTabNavigator.navigationToWalkTracking()
+            }, onFinish = {
+                mainTabNavigator.navigationToWalkResult()
+            }, onBack = {
+                mainTabNavigator.navController.popBackStack()
+            }, onNavigateToRecord = {
+                mainTabNavigator.navigationToRecord(it, navOptions {
+                    popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
+                        inclusive = false
+                    }
+                })
+            })
+
+        settingNavGraph(
+            navController = mainTabNavigator.navController,
+            onClickSetting = {
+                mainTabNavigator.navigationToSetting()
+            }, onClickAddPet = {
+                mainTabNavigator.navigationToAddPet()
+            }, onClickEditPet = { petId ->
+                mainTabNavigator.navigationToEditPet(petId)
+            }, onClickEditMember = {
+                mainTabNavigator.navigationToEditMember()
+            }, goToLogin = {
+                mainNavigator.navigateToLogin()
+            }, onBack = {
+                mainTabNavigator.navController.popBackStack()
+            }, onNavigateToAddPetInfo = {
+                mainTabNavigator.navigationToAddPetInfo()
+            }, onNavigateToAddPetStyle = {
+                mainTabNavigator.navigationToAddPetStyle()
+            }, onAddPetSuccess = {
+                mainTabNavigator.navigateToMyScreen()
+            }, onClickAccountDeletion = {
+                mainTabNavigator.navigationToAccountDeletion()
+            }, onNavigateToSurvey = {
+                mainTabNavigator.navigationToAccountDeletionSurvey()
+            })
     }
 }
