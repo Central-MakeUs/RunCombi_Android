@@ -18,9 +18,8 @@ import com.combo.runcombi.setting.screen.EditMemberScreen
 import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
 import com.combo.runcombi.setting.screen.SettingScreen
-import com.combo.runcombi.setting.screen.UserWithdrawalInfo
-import com.combo.runcombi.setting.screen.UserWithdrawalSurvey
-import com.combo.runcombi.setting.viewmodel.AccountDeletionViewModel
+import com.combo.runcombi.setting.screen.UserWithdrawalInfoScreen
+import com.combo.runcombi.setting.screen.UserWithdrawalSurveyScreen
 import com.combo.runcombi.setting.viewmodel.AddPetViewModel
 
 fun NavController.navigateToSettingMain(
@@ -202,30 +201,16 @@ fun NavGraphBuilder.accountDeletionNavGraph(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionInfo,
     ) {
         composable<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionInfo> {
-            val parentEntry = remember(it) {
-                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion>()
-            }
-
-            val accountDeletionViewModel = hiltViewModel<AccountDeletionViewModel>(parentEntry)
-
-            UserWithdrawalInfo(
+            UserWithdrawalInfoScreen(
                 onBack = onBack,
                 onClickNext = onNavigateToSurvey,
-                accountDeletionViewModel = accountDeletionViewModel
             )
         }
 
         composable<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletionRoute.AccountDeletionSurvey> {
-            val parentEntry = remember(it) {
-                navController.getBackStackEntry<RouteModel.MainTabRoute.SettingRouteModel.AccountDeletion>()
-            }
-
-            val accountDeletionViewModel = hiltViewModel<AccountDeletionViewModel>(parentEntry)
-
-            UserWithdrawalSurvey(
+            UserWithdrawalSurveyScreen(
                 onBack = onBack,
                 onComplete = onSuccess,
-                accountDeletionViewModel = accountDeletionViewModel
             )
         }
 

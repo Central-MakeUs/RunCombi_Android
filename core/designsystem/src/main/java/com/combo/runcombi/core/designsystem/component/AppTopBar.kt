@@ -1,5 +1,6 @@
 package com.combo.runcombi.core.designsystem.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,11 +27,12 @@ fun RunCombiAppTopBar(
     onClose: () -> Unit = {},
     isVisibleBackBtn: Boolean = true,
     isVisibleCloseBtn: Boolean = false,
+    padding: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(padding),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (isVisibleBackBtn) {
