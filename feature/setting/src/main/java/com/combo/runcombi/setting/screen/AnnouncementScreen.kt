@@ -3,6 +3,7 @@ package com.combo.runcombi.setting.screen
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,13 +78,10 @@ fun AnnouncementScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             RunCombiAppTopBar(
-                onBack = onBack,
-                title = "알림",
-                padding = PaddingValues(8.dp)
+                onBack = onBack, title = "알림", padding = PaddingValues(8.dp)
             )
             AnnouncementContent(
-                uiState = uiState,
-                onNavigateToDetail = onNavigateToDetail
+                uiState = uiState, onNavigateToDetail = onNavigateToDetail
             )
         }
 
@@ -112,19 +111,15 @@ fun AnnouncementContent(
             .background(Grey01)
     ) {
         TabRow(
-            selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
-        )
+            selectedTab = selectedTab, onTabSelected = { selectedTab = it })
 
         when (selectedTab) {
             0 -> NoticeList(
-                noticeList = uiState.noticeList,
-                onNavigateToDetail = onNavigateToDetail
+                noticeList = uiState.noticeList, onNavigateToDetail = onNavigateToDetail
             )
 
             1 -> EventList(
-                eventList = uiState.eventList,
-                onNavigateToDetail = onNavigateToDetail
+                eventList = uiState.eventList, onNavigateToDetail = onNavigateToDetail
             )
         }
     }
@@ -163,20 +158,16 @@ fun TabItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .height(48.dp)
-            .clickable { onClick() }
-            .background(Grey01),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = modifier
+        .height(48.dp)
+        .clickable { onClick() }
+        .background(Grey01),
+        contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = title,
-                style = body1,
-                color = if (isSelected) Grey08 else Grey07
+                text = title, style = body1, color = if (isSelected) Grey08 else Grey07
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -212,9 +203,7 @@ fun NoticeList(
     ) {
         noticeList.forEach { notice ->
             AnnouncementItem(
-                announcement = notice,
-                onClick = { onNavigateToDetail(notice.announcementId) }
-            )
+                announcement = notice, onClick = { onNavigateToDetail(notice.announcementId) })
         }
     }
 }
@@ -231,9 +220,7 @@ fun EventList(
     ) {
         eventList.forEach { event ->
             AnnouncementItem(
-                announcement = event,
-                onClick = { onNavigateToDetail(event.announcementId) }
-            )
+                announcement = event, onClick = { onNavigateToDetail(event.announcementId) })
         }
     }
 }
@@ -243,38 +230,37 @@ fun AnnouncementItem(
     announcement: com.combo.runcombi.setting.model.Announcement,
     onClick: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(88.dp)
-            .clickable { onClick() }
-            .padding(horizontal = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(88.dp)
+        .clickable { onClick() }
+        .padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(
-                text = announcement.title,
-                style = body1,
-                color = Grey08
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    text = announcement.title, style = body1, color = Grey08
+                )
+                StableImage(
+                    drawableResId = R.drawable.ic_arrow_right2,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(start = 8.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = FormatUtils.formatDate(announcement.regDate),
-                style = body3,
-                color = Grey06
+                text = FormatUtils.formatDate(announcement.regDate), style = body3, color = Grey06
             )
         }
-
-        StableImage(
-            drawableResId = R.drawable.ic_arrow_right2,
-            modifier = Modifier
-                .size(18.dp)
-                .padding(start = 8.dp)
-        )
     }
 
     Box(
@@ -299,8 +285,7 @@ fun PreviewAnnouncementContent() {
                 endDate = "2024.04.05",
                 isRead = "N"
             )
-        ),
-        noticeList = listOf(
+        ), noticeList = listOf(
             com.combo.runcombi.setting.model.Announcement(
                 announcementId = 2,
                 title = "개인정보 처리방침 변경",
@@ -310,12 +295,9 @@ fun PreviewAnnouncementContent() {
                 endDate = "2024.04.05",
                 isRead = "N"
             )
-        ),
-        isLoading = false
+        ), isLoading = false
     )
 
     AnnouncementContent(
-        uiState = mockUiState,
-        onNavigateToDetail = {}
-    )
+        uiState = mockUiState, onNavigateToDetail = {})
 }
