@@ -101,9 +101,8 @@ class HistoryViewModel @Inject constructor(
                             ExerciseRecord(
                                 id = item.runId,
                                 time = try {
-                                    val utcDateTime = LocalDateTime.parse(item.regDate)
-                                    val kstDateTime = utcDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Asia/Seoul"))
-                                    "%02d:%02d".format(kstDateTime.hour, kstDateTime.minute)
+                                    val dateTime = LocalDateTime.parse(item.regDate)
+                                    "%02d:%02d".format(dateTime.hour, dateTime.minute)
                                 } catch (e: Exception) {
                                     ""
                                 },
