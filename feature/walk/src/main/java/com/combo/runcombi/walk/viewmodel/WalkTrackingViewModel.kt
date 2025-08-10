@@ -24,6 +24,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -54,6 +56,9 @@ class WalkTrackingViewModel @Inject constructor(
             is DomainResult.Success -> {
                 val data = result.data
                 val newDistance = _uiState.value.distance + data.distance
+                val km = newDistance / 1000.0
+                val rounded = BigDecimal(km).setScale(2, RoundingMode.HALF_UP).toDouble()
+
                 val exerciseType = _uiState.value.exerciseType
 
                 val memberUiModel = _uiState.value.walkMemberUiModel
@@ -63,7 +68,7 @@ class WalkTrackingViewModel @Inject constructor(
                         exerciseType,
                         member.gender.name,
                         member.weight.toDouble(),
-                        newDistance
+                        rounded
                     ).roundToInt()
                 } ?: 0
 
@@ -71,7 +76,7 @@ class WalkTrackingViewModel @Inject constructor(
                     val pet = petUiModel.pet
                     val petCalorie = calculatePetCalorieUseCase(
                         pet.weight,
-                        newDistance,
+                        rounded,
                         pet.runStyle.activityFactor
                     ).roundToInt()
                     petUiModel.copy(calorie = petCalorie)
