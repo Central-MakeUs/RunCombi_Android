@@ -129,6 +129,20 @@ sealed interface RouteModel {
             }
 
             @Serializable
+            data object Announcement : SettingRouteModel
+
+            @Serializable
+            sealed interface AnnouncementRoute : SettingRouteModel {
+
+                @Serializable
+                data object AnnouncementList : AnnouncementRoute
+
+                @Serializable
+                data class AnnouncementDetail(val id: Int) : AnnouncementRoute
+
+            }
+
+            @Serializable
             data object AccountDeletion : SettingRouteModel
 
             @Serializable

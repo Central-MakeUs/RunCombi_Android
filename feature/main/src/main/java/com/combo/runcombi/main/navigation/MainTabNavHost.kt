@@ -89,6 +89,12 @@ fun MainTabNavHost(
                 mainTabNavigator.navigationToAccountDeletionSurvey()
             }, onSuggestion = {
                 mainTabNavigator.navigateToSuggestion()
+            },
+            onNavigateToAnnouncement = {
+                mainTabNavigator.navigateToAnnouncement()
+            },
+            onNavigateToAnnouncementDetail = { id ->
+                mainTabNavigator.navigateToAnnouncementDetail(id)
             })
     }
 }

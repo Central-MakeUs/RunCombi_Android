@@ -41,17 +41,19 @@ fun MyScreen(
     onClickAddPet: () -> Unit = {},
     onClickEditMember: () -> Unit = {},
     onClickEditPet: (petId: Int) -> Unit = {},
+    onClickAnnouncement: () -> Unit = {},
     viewModel: MyViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
+
     LaunchedEffect(Unit) {
         viewModel.refreshUserInfo()
     }
-    
+
     SettingContent(
         member = uiState.member,
         petList = uiState.petList,
+        hasAnnouncement = uiState.hasAnnouncement,
         onClickSetting = onClickSetting,
         onEditProfile = onClickEditMember,
         onAddPet = onClickAddPet,
@@ -63,11 +65,13 @@ fun MyScreen(
 fun SettingContent(
     member: Member?,
     petList: List<Pet>,
+    hasAnnouncement: Boolean,
     modifier: Modifier = Modifier,
     onClickSetting: () -> Unit = {},
     onEditProfile: () -> Unit = {},
     onAddPet: () -> Unit = {},
     onEditPet: (Int) -> Unit = {},
+    onClickAnnouncement: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -86,6 +90,15 @@ fun SettingContent(
                     .height(56.dp)
             ) {
                 Spacer(Modifier.weight(1f))
+                StableImage(
+                    drawableResId = if (hasAnnouncement) R.drawable.ic_announcement2
+                    else R.drawable.ic_announcement,
+                    modifier = Modifier
+                        .padding(top = 16.dp, end = 16.dp)
+                        .size(24.dp)
+                        .clickableSingle {
+                            onClickAnnouncement()
+                        })
                 StableImage(
                     drawableResId = R.drawable.ic_my_setting,
                     modifier = Modifier
@@ -204,8 +217,7 @@ fun PetCardList(
                         shape = RoundedCornerShape(6.dp)
                     )
                     .clickableSingle { onAddPet() }
-                    .padding(8.dp)
-            ) {
+                    .padding(8.dp)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Row(modifier = Modifier.height(24.dp)) {
                         Spacer(Modifier.weight(1f))
@@ -223,8 +235,7 @@ fun PetCardList(
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     StableImage(
-                        drawableResId = R.drawable.ic_plus,
-                        modifier = Modifier.size(24.dp)
+                        drawableResId = R.drawable.ic_plus, modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -236,7 +247,7 @@ fun PetCardList(
 @Composable
 fun SettingContentPreview() {
     SettingContent(
-        member = Member(
+        hasAnnouncement = false, member = Member(
             nickname = "홍길동",
             gender = Gender.MALE,
             height = 170,

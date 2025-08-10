@@ -3,11 +3,14 @@ package com.combo.runcombi.setting.repository
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.common.convert
 import com.combo.runcombi.common.handleResult
+import com.combo.runcombi.network.model.request.AnnouncementDetailRequest
 import com.combo.runcombi.network.model.request.CheckVersionRequest
 import com.combo.runcombi.network.model.request.LeaveReasonRequest
 import com.combo.runcombi.network.model.request.SuggestionRequest
 import com.combo.runcombi.network.service.SettingService
 import com.combo.runcombi.setting.mapper.toDomainModel
+import com.combo.runcombi.setting.model.Announcement
+import com.combo.runcombi.setting.model.AnnouncementDetail
 import com.combo.runcombi.setting.model.DeleteData
 import javax.inject.Inject
 
@@ -42,4 +45,13 @@ class SettingRepositoryImpl @Inject constructor(private val settingService: Sett
     }.convert {
         it.toDomainModel()
     }
+
+    override suspend fun getAnnouncementList(): DomainResult<List<Announcement>> = handleResult {
+        settingService.getAnnouncementList()
+    }.convert { it.toDomainModel() }
+
+    override suspend fun getAnnouncementDetail(id: Int): DomainResult<AnnouncementDetail> =
+        handleResult {
+            settingService.getAnnouncementDetail(AnnouncementDetailRequest(announcementId = id))
+        }.convert { it.toDomainModel() }
 }

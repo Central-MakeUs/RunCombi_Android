@@ -14,6 +14,8 @@ import com.combo.runcombi.setting.component.InputStepScaffold
 import com.combo.runcombi.setting.screen.AddPetInfoScreen
 import com.combo.runcombi.setting.screen.AddPetProfileScreen
 import com.combo.runcombi.setting.screen.AddPetStyleScreen
+import com.combo.runcombi.setting.screen.AnnouncementDetailScreen
+import com.combo.runcombi.setting.screen.AnnouncementScreen
 import com.combo.runcombi.setting.screen.EditMemberScreen
 import com.combo.runcombi.setting.screen.EditPetScreen
 import com.combo.runcombi.setting.screen.MyScreen
@@ -71,6 +73,14 @@ fun NavController.navigateToSuggestion() {
     this.navigate(RouteModel.MainTabRoute.SettingRouteModel.Suggestion)
 }
 
+fun NavController.navigateToAnnouncement() {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.Announcement)
+}
+
+fun NavController.navigateToAnnouncementDetail(id: Int) {
+    this.navigate(RouteModel.MainTabRoute.SettingRouteModel.AnnouncementRoute.AnnouncementDetail(id = id))
+}
+
 fun NavGraphBuilder.settingNavGraph(
     navController: NavController,
     onClickSetting: () -> Unit = {},
@@ -84,7 +94,9 @@ fun NavGraphBuilder.settingNavGraph(
     onAddPetSuccess: () -> Unit = {},
     onClickAccountDeletion: () -> Unit = {},
     onNavigateToSurvey: () -> Unit = {},
-    onSuggestion: () -> Unit = {}
+    onSuggestion: () -> Unit = {},
+    onClickAnnouncement: () -> Unit = {},
+    onNavigateToAnnouncementDetail: (Int) -> Unit = {},
 ) {
     navigation<MainTabDataModel.Setting>(
         startDestination = RouteModel.MainTabRoute.SettingRouteModel.My,
@@ -95,6 +107,8 @@ fun NavGraphBuilder.settingNavGraph(
                 onClickAddPet = onClickAddPet,
                 onClickEditPet = onClickEditPet,
                 onClickEditMember = onClickEditMember,
+                onClickAnnouncement = onClickAnnouncement
+
             )
         }
 
@@ -137,11 +151,41 @@ fun NavGraphBuilder.settingNavGraph(
         )
 
         accountDeletionNavGraph(
-            navController = navController,
             onBack = onBack,
             onNavigateToSurvey = onNavigateToSurvey,
             onSuccess = goToLogin
         )
+
+        announcementNavGraph(
+            onBack = onBack,
+            onNavigateToDetail = onNavigateToAnnouncementDetail
+        )
+    }
+}
+
+fun NavGraphBuilder.announcementNavGraph(
+    onBack: () -> Unit = {},
+    onNavigateToDetail: (Int) -> Unit = {},
+) {
+    navigation<RouteModel.MainTabRoute.SettingRouteModel.Announcement>(
+        startDestination = RouteModel.MainTabRoute.SettingRouteModel.AnnouncementRoute.AnnouncementList,
+    ) {
+        composable<RouteModel.MainTabRoute.SettingRouteModel.AnnouncementRoute.AnnouncementList> {
+            AnnouncementScreen(
+                onBack = onBack,
+                onNavigateToDetail = onNavigateToDetail,
+            )
+        }
+
+        composable<RouteModel.MainTabRoute.SettingRouteModel.AnnouncementRoute.AnnouncementDetail> { backStackEntry ->
+            val route =
+                backStackEntry.toRoute<RouteModel.MainTabRoute.SettingRouteModel.AnnouncementRoute.AnnouncementDetail>()
+            AnnouncementDetailScreen(
+                id = route.id,
+                onBack = onBack,
+            )
+        }
+
     }
 }
 
@@ -205,7 +249,6 @@ fun NavGraphBuilder.addPetNavGraph(
 }
 
 fun NavGraphBuilder.accountDeletionNavGraph(
-    navController: NavController,
     onBack: () -> Unit = {},
     onNavigateToSurvey: () -> Unit = {},
     onSuccess: () -> Unit = {},

@@ -1,9 +1,12 @@
 package com.combo.runcombi.network.service
 
+import com.combo.runcombi.network.model.request.AnnouncementDetailRequest
 import com.combo.runcombi.network.model.request.CheckVersionRequest
 import com.combo.runcombi.network.model.request.KakaoLoginRequest
 import com.combo.runcombi.network.model.request.LeaveReasonRequest
 import com.combo.runcombi.network.model.request.SuggestionRequest
+import com.combo.runcombi.network.model.response.AnnouncementDetailResponse
+import com.combo.runcombi.network.model.response.AnnouncementResponse
 import com.combo.runcombi.network.model.response.BaseResponse
 import com.combo.runcombi.network.model.response.CheckVersionResponse
 import com.combo.runcombi.network.model.response.DefaultResponse
@@ -28,9 +31,17 @@ interface SettingService {
         @Body request: SuggestionRequest,
     ): Response<BaseResponse>
 
-    @POST("version/check")
+    @POST("/version/check")
     suspend fun checkVersion(
         @Body request: CheckVersionRequest,
     ): Response<CheckVersionResponse>
+
+    @POST("/announcement/getAnnouncementList")
+    suspend fun getAnnouncementList(): Response<AnnouncementResponse>
+
+    @POST("/announcement/getAnnouncementDetail")
+    suspend fun getAnnouncementDetail(
+        @Body request: AnnouncementDetailRequest,
+    ): Response<AnnouncementDetailResponse>
 
 }

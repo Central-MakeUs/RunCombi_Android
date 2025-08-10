@@ -16,6 +16,8 @@ import com.combo.runcombi.setting.navigation.navigateToAccountDeletionSurvey
 import com.combo.runcombi.setting.navigation.navigateToAddPet
 import com.combo.runcombi.setting.navigation.navigateToAddPetInfo
 import com.combo.runcombi.setting.navigation.navigateToAddPetStyle
+import com.combo.runcombi.setting.navigation.navigateToAnnouncement
+import com.combo.runcombi.setting.navigation.navigateToAnnouncementDetail
 import com.combo.runcombi.setting.navigation.navigateToEditMember
 import com.combo.runcombi.setting.navigation.navigateToEditPet
 import com.combo.runcombi.setting.navigation.navigateToSetting
@@ -87,6 +89,13 @@ class MainTabNavigator(
         navController.navigateToSuggestion()
     }
 
+    fun navigateToAnnouncement() {
+        navController.navigateToAnnouncement()
+    }
+
+    fun navigateToAnnouncementDetail(id: Int) {
+        navController.navigateToAnnouncementDetail(id = id)
+    }
 
     fun navigationToAddPetStyle() {
         navController.navigateToAddPetStyle()
