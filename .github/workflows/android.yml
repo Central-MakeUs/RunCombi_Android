@@ -21,6 +21,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
+    - name: Set Gradle Memory Settings
+      run: |
+        echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8" >> gradle.properties
+        echo "Gradle memory settings updated:"
+        cat gradle.properties | grep "org.gradle.jvmargs"
+      
     - name: Add Local Properties
       env:
         BASE_URL: ${{secrets.BASE_URL}}
