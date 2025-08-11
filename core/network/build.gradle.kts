@@ -33,7 +33,7 @@ android {
             )
         }
     }
-    
+
     buildFeatures {
         buildConfig = true
     }
@@ -59,10 +59,5 @@ dependencies {
 }
 
 fun getBaseUrl(): String {
-    val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("BASE_URL")
-    return if (baseUrl.isNullOrBlank()) {
-        "http://api.runcombi.site/"
-    } else {
-        baseUrl
-    }
+    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
 }
