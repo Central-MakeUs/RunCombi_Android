@@ -40,8 +40,10 @@ jobs:
     - name: Get Google Services JSON
       env:
         GOOGLE_SERVICES_JSON: ${{secrets.GOOGLE_SERVICES_JSON}}
-      run:
-        echo '$GOOGLE_SERVICES_JSON' > ./app/google-services.json
+      run: |
+        echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ./app/google-services.json
+        echo "Google Services JSON file created successfully"
+        ls -la ./app/google-services.json
 
     - name: Create Keystore File
       env:
