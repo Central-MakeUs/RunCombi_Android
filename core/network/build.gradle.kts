@@ -21,11 +21,11 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"${getBaseUrl()}\"")
+            buildConfigField("String", "BASE_URL", getBaseUrl())
         }
 
         release {
-            buildConfigField("String", "BASE_URL", "\"${getBaseUrl()}\"")
+            buildConfigField("String", "BASE_URL", getBaseUrl())
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -60,5 +60,9 @@ dependencies {
 
 fun getBaseUrl(): String {
     val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("BASE_URL")
-    return if (baseUrl.isNullOrBlank()) "http://api.runcombi.site/" else baseUrl
+    return if (baseUrl.isNullOrBlank()) {
+        "http://api.runcombi.site/"
+    } else {
+        baseUrl
+    }
 }
