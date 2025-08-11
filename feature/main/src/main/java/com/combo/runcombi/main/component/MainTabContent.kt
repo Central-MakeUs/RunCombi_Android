@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.navOptions
+import com.combo.runcombi.core.designsystem.theme.Grey01
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.main.navigation.MainNavigator
 import com.combo.runcombi.main.navigation.MainTabNavHost
@@ -24,6 +25,7 @@ fun MainTabContent(
         mainTabNavigator.navController.currentBackStackEntryFlow.collectAsState(initial = null)
 
     Scaffold(
+        containerColor = Grey01,
         bottomBar = {
             val isTopLevelTab =
                 MainTab.entries.any { it.isSelected(backStackEntryState.value?.destination) }

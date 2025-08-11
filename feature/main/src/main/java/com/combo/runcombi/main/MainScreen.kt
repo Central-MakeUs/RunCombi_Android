@@ -36,6 +36,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import androidx.core.net.toUri
+import com.combo.runcombi.core.designsystem.theme.Grey01
 
 @OptIn(FlowPreview::class)
 @Composable
@@ -97,6 +98,7 @@ private fun MainScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        containerColor = Grey01,
         modifier = modifier,
         content = { padding ->
             MainNavHost(
