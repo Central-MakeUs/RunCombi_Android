@@ -100,16 +100,65 @@ fun AnnouncementDetailScreen(
             .fillMaxSize()
             .background(Grey01)
     ) {
+        val onApplyClick: (String) -> Unit = { url -> viewModel.openEventApplyUrl(url) }
+        
         Column(modifier = Modifier.fillMaxSize()) {
-            RunCombiAppTopBar(
-                onBack = onBack,
-                title = "",
-                padding = PaddingValues(8.dp)
-            )
-            AnnouncementDetailContent(
-                uiState = uiState,
-                onApplyClick = { url -> viewModel.openEventApplyUrl(url) }
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Grey01)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Grey03)
+                        .align(Alignment.BottomCenter)
+                )
+                
+                RunCombiAppTopBar(
+                    onBack = onBack,
+                    title = "",
+                    padding = PaddingValues(8.dp)
+                )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
+                AnnouncementDetailContent(
+                    uiState = uiState,
+                )
+            }
+
+            if (uiState.detail?.announcementType == "EVENT" && uiState.detail?.eventApplyUrl?.isNotEmpty() == true) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Grey01)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(Grey03)
+                            .align(Alignment.TopCenter)
+                    )
+                    
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 16.dp)
+                    ) {
+                        RunCombiButton(
+                            text = "응모하기",
+                            onClick = { onApplyClick(uiState.detail!!.eventApplyUrl) }
+                        )
+                    }
+                }
+            }
         }
 
         if (uiState.isLoading) {
@@ -128,57 +177,42 @@ fun AnnouncementDetailScreen(
 @Composable
 fun AnnouncementDetailContent(
     uiState: AnnouncementDetailUiState,
-    onApplyClick: (String) -> Unit,
 ) {
     val detail = uiState.detail ?: return
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-        ) {
-            // 상단 고정 영역
-            Spacer(modifier = Modifier.height(20.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
 
-            TitleSection(
-                title = detail.title,
-                startDate = detail.startDate,
-                endDate = detail.endDate
-            )
+        TitleSection(
+            title = detail.title,
+            startDate = detail.startDate,
+            endDate = detail.endDate
+        )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        if (detail.content.isNotEmpty()) {
+            ContentSection(content = detail.content)
             Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                if (detail.content.isNotEmpty()) {
-                    ContentSection(content = detail.content)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+        if (detail.announcementImageUrl.isNotEmpty()) {
+            ImageSection(imageUrl = detail.announcementImageUrl)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-                if (detail.announcementImageUrl.isNotEmpty()) {
-                    ImageSection(imageUrl = detail.announcementImageUrl)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
+        if (detail.announcementType == "EVENT" && detail.code.isNotEmpty()) {
+            EventCodeSection(eventCode = detail.code)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            if (detail.announcementType == "EVENT") {
-                if (detail.code.isNotEmpty()) {
-                    EventCodeSection(eventCode = detail.code)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                if (detail.eventApplyUrl.isNotEmpty()) {
-                    RunCombiButton(
-                        text = "응모하기",
-                        onClick = { onApplyClick(detail.eventApplyUrl) }
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
+        if (detail.announcementType == "EVENT" && detail.eventApplyUrl.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -235,17 +269,13 @@ fun ContentSection(
 fun ImageSection(
     imageUrl: String,
 ) {
-    Box(
+    NetworkImage(
+        imageUrl = imageUrl,
         modifier = Modifier
             .fillMaxWidth()
-            .height(240.dp)
-            .background(Grey03.copy(alpha = 0.1f))
-    ) {
-        NetworkImage(
-            imageUrl = imageUrl,
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
+            .height(240.dp),
+        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+    )
 }
 
 @Composable
@@ -342,6 +372,5 @@ fun PreviewAnnouncementDetailContent() {
 
     AnnouncementDetailContent(
         uiState = mockUiState,
-        onApplyClick = { url -> }
     )
 }
