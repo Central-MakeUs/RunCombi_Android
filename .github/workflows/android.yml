@@ -130,20 +130,3 @@ jobs:
           PR 제목: ${{ github.event.pull_request.title }}
           작성자: @${{ github.event.pull_request.user.login }}
           브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
-
-    - name: If Fail, Send notification on Slack
-      if: ${{failure()}}
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_COLOR: '#ff0000'
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TITLE: 'RunCombi Android PR Check Failed ❌'
-        MSG_MINIMAL: true
-        SLACK_USERNAME: RunCombi Android
-        SLACK_MESSAGE: |
-          RunCombi Android PR 체크 실패 - 확인이 필요합니다 🔍
-          Version: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
-          
-          PR 제목: ${{ github.event.pull_request.title }}
-          작성자: @${{ github.event.pull_request.user.login }}
-          브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
