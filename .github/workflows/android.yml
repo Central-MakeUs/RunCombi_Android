@@ -1,8 +1,6 @@
 name: Android CI
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -51,12 +49,6 @@ jobs:
       run: |
         echo $KEYSTORE_BASE64 | base64 -d > ./app/runcombi-keystore.jks
 
-    - name: Build with Gradle
-      run: ./gradlew build
-
-    - name: Build Release APK
-      run: ./gradlew assembleRelease
-
     - name: Extract App Version
       id: app_version
       run: |
@@ -64,6 +56,13 @@ jobs:
         VERSION_CODE=$(grep 'versionCode' app/build.gradle.kts | sed 's/.*versionCode = \([0-9]*\)/\1/')
         echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
         echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+        echo "Extracted version: $VERSION_NAME ($VERSION_CODE)"
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
 
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
@@ -124,7 +123,13 @@ jobs:
         SLACK_TITLE: 'RunCombi Android PR Check Success ✅'
         MSG_MINIMAL: true
         SLACK_USERNAME: RunCombi Android
-        SLACK_MESSAGE: 'RunCombi Android PR 체크 성공 🎉 (v${{ steps.app_version.outputs.version_name }} - ${{ steps.app_version.outputs.version_code }})%0A%0A**PR 제목:** ${{ github.event.pull_request.title }}%0A**PR 설명:** ${{ github.event.pull_request.body }}%0A**작성자:** @${{ github.event.pull_request.user.login }}%0A**브랜치:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}'
+        SLACK_MESSAGE: |
+          RunCombi Android PR 체크 성공 🎉
+          Version: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          
+          PR 제목: ${{ github.event.pull_request.title }}
+          작성자: @${{ github.event.pull_request.user.login }}
+          브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
 
     - name: If Fail, Send notification on Slack
       if: ${{failure()}}
@@ -135,4 +140,10 @@ jobs:
         SLACK_TITLE: 'RunCombi Android PR Check Failed ❌'
         MSG_MINIMAL: true
         SLACK_USERNAME: RunCombi Android
-        SLACK_MESSAGE: 'RunCombi Android PR 체크 실패 - 확인이 필요합니다 🔍 (v${{ steps.app_version.outputs.version_name }} - ${{ steps.app_version.outputs.version_code }})%0A%0A**PR 제목:** ${{ github.event.pull_request.title }}%0A**PR 설명:** ${{ github.event.pull_request.body }}%0A**작성자:** @${{ github.event.pull_request.user.login }}%0A**브랜치:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}'
+        SLACK_MESSAGE: |
+          RunCombi Android PR 체크 실패 - 확인이 필요합니다 🔍
+          Version: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          
+          PR 제목: ${{ github.event.pull_request.title }}
+          작성자: @${{ github.event.pull_request.user.login }}
+          브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
