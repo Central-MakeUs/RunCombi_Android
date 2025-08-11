@@ -1,6 +1,8 @@
 name: Android CI
 
 on:
+  push:
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -88,6 +90,20 @@ jobs:
           - PR: ${{ github.event.pull_request.title }}
           - Author: @${{ github.event.pull_request.user.login }}
           - Branch: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+
+    - name: Upload artifact to Firebase App Distribution
+      uses: wzieba/Firebase-Distribution-Github-Action@v1
+      with:
+        appId: ${{secrets.FIREBASE_APP_ID}}
+        serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+        groups: testers
+        file: app/build/outputs/apk/release/app-release.apk
+        releaseNotes: |
+          RunCombi Android v${{ steps.app_version.outputs.version_name }}
+          
+          PR: ${{ github.event.pull_request.title }}
+          Author: @${{ github.event.pull_request.user.login }}
+          Branch: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
 
     - name: Upload APK to Slack
       if: ${{success()}}
