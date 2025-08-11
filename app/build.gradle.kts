@@ -3,6 +3,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 plugins {
     id("runcombi.android.application")
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -44,10 +45,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
             isDebuggable = false
         }
+        debug {
+            isDebuggable = true
+        }
     }
+    
+    buildFeatures {
+        buildConfig = true
+    }
+
     flavorDimensions += "mode"
     productFlavors {
         create("mock") {
