@@ -48,6 +48,9 @@ coil-compose = "2.5.0"
 # Lottie
 lottie-compose = "6.5.0"
 
+# Markdown
+compose-markdown = "0.3.6"
+
 # Test
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -114,6 +117,9 @@ lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", versio
 
 # Image Loader
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+
+# Markdown
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "compose-markdown" }
 
 ## DataStore
 dataStore = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore-preferences" }

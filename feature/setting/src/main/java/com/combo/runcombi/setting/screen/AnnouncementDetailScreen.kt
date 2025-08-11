@@ -52,6 +52,7 @@ import com.combo.runcombi.core.designsystem.theme.Primary01
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.title1
+import dev.jeziellago.compose.markdowntext.MarkdownText
 import com.combo.runcombi.feature.setting.R
 import com.combo.runcombi.setting.model.AnnouncementDetailEvent
 import com.combo.runcombi.setting.model.AnnouncementDetailUiState
@@ -147,7 +148,6 @@ fun AnnouncementDetailContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 스크롤 가능한 콘텐츠 영역
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -209,11 +209,25 @@ fun TitleSection(
 fun ContentSection(
     content: String,
 ) {
-    Text(
-        text = content,
-        style = body3,
-        color = Grey08,
-    )
+    val isMarkdown = content.contains("**") || content.contains("*") || 
+                    content.contains("#") || content.contains("```") ||
+                    content.contains("`") || content.contains("[") ||
+                    content.contains(">") || content.contains("- ")
+    
+    if (isMarkdown) {
+        MarkdownText(
+            markdown = content,
+            color = Grey08,
+            fontSize = 14.sp,
+            modifier = Modifier.fillMaxWidth()
+        )
+    } else {
+        Text(
+            text = content,
+            style = body3,
+            color = Grey08,
+        )
+    }
 }
 
 @Composable
