@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+# 전체 워크플로우에 대한 권한 설정
+permissions:
+  contents: write
+
 jobs:
   build:
 
@@ -87,6 +91,23 @@ jobs:
       run: |
         echo $KEYSTORE_BASE64 | base64 -d > ./app/runcombi-keystore.jks
 
+    - name: Check if runcombi-keystore.jks exists
+      run: |
+        if [ -f "./app/runcombi-keystore.jks" ]; then
+          echo "✅ runcombi-keystore.jks file exists in the app directory."
+          ls -la ./app/runcombi-keystore.jks
+        else
+          echo "❌ Error: runcombi-keystore.jks file is missing in the app directory." >&2
+          exit 1
+        fi
+
+    - name: List keys in runcombi-keystore.jks
+      env:
+        SIGNING_STORE_PASSWORD: ${{secrets.SIGNING_STORE_PASSWORD}}
+      run: |
+        echo "Checking keystore contents..."
+        keytool -list -v -keystore ./app/runcombi-keystore.jks -storepass "$SIGNING_STORE_PASSWORD" || echo "Failed to list keystore contents"
+
     - name: Extract App Version
       id: app_version
       run: |
@@ -100,7 +121,30 @@ jobs:
       run: ./gradlew build
 
     - name: Build Release APK
-      run: ./gradlew assembleRelease
+      run: |
+        echo "Starting assembleRelease..."
+        ./gradlew assembleRelease --info --stacktrace
+        echo "assembleRelease completed with exit code: $?"
+        echo "Checking if APK was generated..."
+        if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+          echo "✅ APK file found!"
+          ls -la app/build/outputs/apk/release/
+        else
+          echo "❌ APK file not found!"
+          echo "Checking build directory..."
+          ls -la app/build/outputs/ || echo "Outputs directory not found"
+          echo "Checking for any APK files..."
+          find app/build/outputs/ -name "*.apk" -type f || echo "No APK files found"
+        fi
+
+    - name: Check APK output
+      run: |
+        echo "Checking APK output directory..."
+        ls -la app/build/outputs/apk/release/ || echo "Release directory not found"
+        echo "Checking all APK outputs..."
+        find app/build/outputs/ -name "*.apk" -type f || echo "No APK files found"
+        echo "Checking build directory structure..."
+        ls -la app/build/outputs/ || echo "Outputs directory not found"
 
     - name: Upload Release Build to Artifacts
       uses: actions/upload-artifact@v4
