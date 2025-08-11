@@ -60,12 +60,16 @@ jobs:
         SIGNING_KEY_ALIAS: ${{secrets.SIGNING_KEY_ALIAS}}
         SIGNING_KEY_PASSWORD: ${{secrets.SIGNING_KEY_PASSWORD}}
       run: |
-        echo "BASE_URL=$BASE_URL" >> ./local.properties
-        echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> ./local.properties
-        echo "KAKAO_API_KEY=$KAKAO_API_KEY" >> ./local.properties
-        echo "SIGNING_STORE_PASSWORD=$SIGNING_STORE_PASSWORD" >> ./local.properties
-        echo "SIGNING_KEY_ALIAS=$SIGNING_KEY_ALIAS" >> ./local.properties
-        echo "SIGNING_KEY_PASSWORD=$SIGNING_KEY_PASSWORD" >> ./local.properties
+        cat > ./local.properties << EOF
+        BASE_URL=$BASE_URL
+        GOOGLE_API_KEY=$GOOGLE_API_KEY
+        KAKAO_API_KEY=$KAKAO_API_KEY
+        SIGNING_STORE_PASSWORD=$SIGNING_STORE_PASSWORD
+        SIGNING_KEY_ALIAS=$SIGNING_KEY_ALIAS
+        SIGNING_KEY_PASSWORD=$SIGNING_KEY_PASSWORD
+        EOF
+        echo "Created local.properties with:"
+        cat ./local.properties
 
     - name: Get Google Services JSON
       env:
