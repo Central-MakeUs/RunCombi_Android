@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
@@ -79,6 +80,8 @@ import com.combo.runcombi.ui.ext.clickableWithoutRipple
 import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.ui.util.BitmapUtil
 import com.combo.runcombi.ui.util.BitmapUtil.resizeBitmap
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 @Composable
 fun EditMemberScreen(
@@ -178,6 +181,7 @@ fun EditMemberContent(
 
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .clickableWithoutRipple {
                     keyboardController?.hide()
                     localFocusManager.clearFocus()
