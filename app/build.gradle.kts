@@ -91,4 +91,10 @@ dependencies {
     implementation(project(":core:data:walk"))
     implementation(project(":core:data:history"))
     implementation(project(":core:data:setting"))
+
+    // Test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
