@@ -59,5 +59,5 @@ dependencies {
 }
 
 fun getBaseUrl(): String {
-    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
+    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: "\"\""
 }
