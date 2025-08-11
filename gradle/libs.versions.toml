@@ -51,6 +51,9 @@ lottie-compose = "6.5.0"
 # Markdown
 compose-markdown = "0.3.6"
 
+# Firebase
+firebase-bom = "32.7.4"
+
 # Test
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -137,6 +140,11 @@ v2-user = { module = "com.kakao.sdk:v2-user", version.ref = "v2User" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+
 [plugins]
 # Android
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -154,6 +162,9 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # Hilt
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+# Firebase
+google-services = { id = "com.google.gms.google-services", version = "4.4.3" }
 
 [bundles]
 coroutines = ["coroutines-core", "coroutines-android"]

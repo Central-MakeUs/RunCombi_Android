@@ -2,6 +2,7 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     id("runcombi.android.application")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -62,6 +63,11 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
     implementation(libs.v2.user)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     implementation(project(":feature:main"))
     implementation(project(":feature:login"))
