@@ -165,7 +165,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 # Firebase
 google-services = { id = "com.google.gms.google-services", version = "4.4.3" }
-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.5" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
 
 [bundles]
 coroutines = ["coroutines-core", "coroutines-android"]
