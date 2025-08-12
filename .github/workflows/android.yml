@@ -117,6 +117,10 @@ jobs:
         echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
         echo "Extracted version: $VERSION_NAME ($VERSION_CODE)"
 
+    - name: Get timestamp
+      id: timestamp
+      run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+
     - name: Build with Gradle
       run: ./gradlew build
 
@@ -195,24 +199,45 @@ jobs:
           
           APK: Prod Release Version
 
-    - name: Upload APK to Slack
-      if: ${{success()}}
-      uses: MeilCli/slack-upload-file@v1
+    - name: action-slack
+      uses: 8398a7/action-slack@v3
       with:
-        slack_token: ${{ secrets.SLACK_TOKEN }}
-        channels: ${{ secrets.SLACK_CHANNEL }}
-        file_path: app/build/outputs/apk/prod/release/app-prod-release.apk
-        file_name: RunCombi-Android-v${{ steps.app_version.outputs.version_name }}.apk
-        file_type: apk
-        initial_comment: |
-          🎉 RunCombi Android APK 빌드 완료!
-          
-          **Version:** v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
-          **PR:** ${{ github.event.pull_request.title }}
-          **Author:** @${{ github.event.pull_request.user.login }}
-          **Branch:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
-          
-          **PR 내용:**
-          ${{ github.event.pull_request.body || '내용이 없습니다.' }}
-          
-          APK 파일이 성공적으로 업로드되었습니다.
+        status: ${{ job.status }}
+        author_name: RunCombi Android CI
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        if_mention: failure,cancelled
+        custom_payload: |
+          {
+            "attachments": [{
+              "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
+              "title": "🎉 RunCombi Android 빌드 완료",
+              "fields": [
+                {
+                  "title": "📱 앱 버전",
+                  "value": "v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})",
+                  "short": true
+                },
+                {
+                  "title": "🔗 PR 제목",
+                  "value": "${{ github.event.pull_request.title }}",
+                  "short": true
+                },
+                {
+                  "title": "📝 PR 내용",
+                  "value": "${{ github.event.pull_request.body || '내용이 없습니다.' }}",
+                  "short": false
+                },
+                {
+                  "title": "🚀 GitHub Release",
+                  "value": "https://github.com/${{ github.repository }}/releases/tag/v${{ steps.app_version.outputs.version_name }}",
+                  "short": false
+                }
+              ],
+              "footer": "RunCombi Android CI",
+              "ts": "${{ env.TIMESTAMP }}"
+            }]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        TIMESTAMP: ${{ steps.timestamp.outputs.timestamp }}
+      if: always()
