@@ -197,27 +197,38 @@ jobs:
 
     - name: Upload APK to Slack
       if: ${{success()}}
-      uses: 8398a7/action-slack@v3
+      uses: MeilCli/slack-upload-file@v1
       with:
-        status: success
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        channel: '#general'
-        text: 'RunCombi Android APK 빌드 완료! 🎉'
-        file: app/build/outputs/apk/prod/release/app-prod-release.apk
+        slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
+        channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
+        file_path: app/build/outputs/apk/prod/release/app-prod-release.apk
+        file_name: RunCombi-Android-v${{ steps.app_version.outputs.version_name }}.apk
+        file_type: apk
+        initial_comment: |
+          🎉 RunCombi Android APK 빌드 완료!
+          
+          **Version:** v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          **PR:** ${{ github.event.pull_request.title }}
+          **Author:** @${{ github.event.pull_request.user.login }}
+          **Branch:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+          
+          APK 파일이 성공적으로 업로드되었습니다.
 
     - name: If Success, Send notification on Slack
       if: ${{success()}}
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_COLOR: '#60E0C5'
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TITLE: 'RunCombi Android PR Check Success ✅'
-        MSG_MINIMAL: true
-        SLACK_USERNAME: RunCombi Android
-        SLACK_MESSAGE: |
-          RunCombi Android PR 체크 성공 🎉
-          Version: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+      uses: MeilCli/slack-upload-file@v1
+      with:
+        slack_token: ${{ secrets.SLACK_TOKEN }}
+        channels: ${{ secrets.SLACK_CHANNEL }}
+        file_path: app/build/outputs/apk/prod/release/app-prod-release.apk
+        file_name: RunCombi-Android-v${{ steps.app_version.outputs.version_name }}-notification.apk
+        file_type: apk
+        initial_comment: |
+          ✅ RunCombi Android PR 체크 성공 🎉
           
-          PR 제목: ${{ github.event.pull_request.title }}
-          작성자: @${{ github.event.pull_request.user.login }}
-          브랜치: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+          **Version:** v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          **PR 제목:** ${{ github.event.pull_request.title }}
+          **작성자:** @${{ github.event.pull_request.user.login }}
+          **브랜치:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+          
+          PR 체크가 성공적으로 완료되었습니다.
