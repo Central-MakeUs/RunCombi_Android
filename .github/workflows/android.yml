@@ -199,8 +199,8 @@ jobs:
       if: ${{success()}}
       uses: MeilCli/slack-upload-file@v1
       with:
-        slack_token: ${{ secrets.SLACK_READ_WRITE_TOKEN }}
-        channels: ${{ secrets.SLACK_CHANNEL_DEPLOY }}
+        slack_token: ${{ secrets.SLACK_TOKEN }}
+        channels: ${{ secrets.SLACK_CHANNEL }}
         file_path: app/build/outputs/apk/prod/release/app-prod-release.apk
         file_name: RunCombi-Android-v${{ steps.app_version.outputs.version_name }}.apk
         file_type: apk
@@ -212,23 +212,7 @@ jobs:
           **Author:** @${{ github.event.pull_request.user.login }}
           **Branch:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
           
+          **PR 내용:**
+          ${{ github.event.pull_request.body || '내용이 없습니다.' }}
+          
           APK 파일이 성공적으로 업로드되었습니다.
-
-    - name: If Success, Send notification on Slack
-      if: ${{success()}}
-      uses: MeilCli/slack-upload-file@v1
-      with:
-        slack_token: ${{ secrets.SLACK_TOKEN }}
-        channels: ${{ secrets.SLACK_CHANNEL }}
-        file_path: app/build/outputs/apk/prod/release/app-prod-release.apk
-        file_name: RunCombi-Android-v${{ steps.app_version.outputs.version_name }}-notification.apk
-        file_type: apk
-        initial_comment: |
-          ✅ RunCombi Android PR 체크 성공 🎉
-          
-          **Version:** v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
-          **PR 제목:** ${{ github.event.pull_request.title }}
-          **작성자:** @${{ github.event.pull_request.user.login }}
-          **브랜치:** ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
-          
-          PR 체크가 성공적으로 완료되었습니다.
