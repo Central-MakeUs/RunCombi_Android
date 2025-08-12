@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+@file:OptIn(
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.combo.runcombi.analytics.logScreenView
+import com.combo.runcombi.analytics.logWalkCompleted
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiBottomSheet
 import com.combo.runcombi.core.designsystem.component.StableImage
@@ -91,6 +94,7 @@ fun WalkTrackingScreen(
     walkRecordViewModel: WalkTrackingViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val analyticsHelper = walkRecordViewModel.analyticsHelper
     val uiState by walkRecordViewModel.uiState.collectAsStateWithLifecycle()
     val isPaused = uiState.isPaused
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -113,6 +117,8 @@ fun WalkTrackingScreen(
 
     LaunchedEffect(isInitialized.value) {
         if (!isInitialized.value) {
+            analyticsHelper.logScreenView("WalkTrackingScreen")
+
             walkMainViewModel.startRun()
 
             val member = walkMainViewModel.walkData.value.member
@@ -169,6 +175,11 @@ fun WalkTrackingScreen(
             onAccept = {
                 when (showSheet.value) {
                     BottomSheetType.FINISH -> {
+                        // 산책 완료 이벤트 로깅
+                        val duration = FormatUtils.formatTime(uiState.time)
+                        val distance = String.format("%.2f", uiState.distance / 1000.0)
+                        analyticsHelper.logWalkCompleted(duration, "${distance}km")
+
                         walkMainViewModel.setResultData(
                             time = uiState.time,
                             distance = uiState.distance,

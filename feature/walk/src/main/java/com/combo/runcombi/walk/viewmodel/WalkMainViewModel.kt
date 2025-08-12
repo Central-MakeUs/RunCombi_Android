@@ -2,6 +2,7 @@ package com.combo.runcombi.walk.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.analytics.AnalyticsHelper
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.Pet
@@ -30,6 +31,7 @@ import com.combo.runcombi.walk.usecase.StartRunUseCase
 class WalkMainViewModel @Inject constructor(
     private val getUserInfoUseCase: GetUserInfoUseCase,
     private val startRunUseCase: StartRunUseCase,
+    val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(WalkMainUiState())
     val uiState: StateFlow<WalkMainUiState> = _uiState

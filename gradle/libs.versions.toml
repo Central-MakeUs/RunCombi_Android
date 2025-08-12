@@ -61,6 +61,8 @@ espressoCore = "3.6.1"
 mockk = "1.13.11"
 v2User = "2.21.4"
 playServicesLocation = "21.3.0"
+runtimeAndroid = "1.8.3"
+playServicesMeasurementApi = "23.0.0"
 
 [libraries]
 # AndroidX

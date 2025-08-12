@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.combo.runcombi.analytics.AnalyticsEvent
+import com.combo.runcombi.analytics.logButtonClick
 import com.combo.runcombi.core.designsystem.component.NetworkImage
 import com.combo.runcombi.core.designsystem.component.RunCombiAppTopBar
 import com.combo.runcombi.core.designsystem.component.RunCombiButton
@@ -100,7 +102,9 @@ fun AnnouncementDetailScreen(
             .fillMaxSize()
             .background(Grey01)
     ) {
-        val onApplyClick: (String) -> Unit = { url -> viewModel.openEventApplyUrl(url) }
+        val onApplyClick: (String) -> Unit = { url ->
+            viewModel.analyticsHelper.logButtonClick("onApplyClick", "AnnouncementDetailScreen")
+            viewModel.openEventApplyUrl(url) }
         
         Column(modifier = Modifier.fillMaxSize()) {
             Box(

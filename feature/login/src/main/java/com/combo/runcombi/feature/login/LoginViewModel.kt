@@ -2,6 +2,7 @@ package com.combo.runcombi.feature.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.analytics.AnalyticsHelper
 import com.combo.runcombi.auth.usecase.LoginUseCase
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.domain.user.model.MemberStatus
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val getUserInfoUseCase: GetUserInfoUseCase
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
     private val _eventFlow = MutableSharedFlow<LoginEvent>()
     val eventFlow = _eventFlow.asSharedFlow()

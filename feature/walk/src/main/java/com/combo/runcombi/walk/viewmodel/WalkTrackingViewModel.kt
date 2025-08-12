@@ -2,6 +2,7 @@ package com.combo.runcombi.walk.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.analytics.AnalyticsHelper
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.walk.model.BottomSheetType
 import com.combo.runcombi.walk.model.ExerciseType
@@ -34,6 +35,7 @@ class WalkTrackingViewModel @Inject constructor(
     private val updateWalkRecordUseCase: UpdateWalkRecordUseCase,
     private val calculatePetCalorieUseCase: CalculatePetCalorieUseCase,
     private val calculateMemberCalorieUseCase: CalculateMemberCalorieUseCase,
+    val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WalkUiState())
