@@ -150,7 +150,9 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: release-artifacts
-        path: app/build/outputs/apk/release/
+        path: |
+          app/build/outputs/apk/mock/release/
+          app/build/outputs/apk/prod/release/
         if-no-files-found: error
 
     - name: Create Github Release
@@ -160,7 +162,8 @@ jobs:
         release_name: RunCombi Android v${{ steps.app_version.outputs.version_name }}
         generate_release_notes: true
         files: |
-          app/build/outputs/apk/release/app-release.apk
+          app/build/outputs/apk/mock/release/app-mock-release.apk
+          app/build/outputs/apk/prod/release/app-prod-release.apk
         body: |
           ## RunCombi Android v${{ steps.app_version.outputs.version_name }}
           
@@ -171,6 +174,10 @@ jobs:
           - PR: ${{ github.event.pull_request.title }}
           - Author: @${{ github.event.pull_request.user.login }}
           - Branch: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+          
+          ### APK Files
+          - **Mock Release**: app-mock-release.apk
+          - **Prod Release**: app-prod-release.apk
 
     - name: Upload artifact to Firebase App Distribution
       uses: wzieba/Firebase-Distribution-Github-Action@v1
@@ -178,13 +185,15 @@ jobs:
         appId: ${{secrets.FIREBASE_APP_ID}}
         serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
         groups: testers
-        file: app/build/outputs/apk/release/app-release.apk
+        file: app/build/outputs/apk/prod/release/app-prod-release.apk
         releaseNotes: |
           RunCombi Android v${{ steps.app_version.outputs.version_name }}
           
           PR: ${{ github.event.pull_request.title }}
           Author: @${{ github.event.pull_request.user.login }}
           Branch: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
+          
+          APK: Prod Release Version
 
     - name: Upload APK to Slack
       if: ${{success()}}
@@ -194,7 +203,7 @@ jobs:
         webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
         channel: '#general'
         text: 'RunCombi Android APK 빌드 완료! 🎉'
-        file: app/build/outputs/apk/release/app-release.apk
+        file: app/build/outputs/apk/prod/release/app-prod-release.apk
 
     - name: If Success, Send notification on Slack
       if: ${{success()}}
