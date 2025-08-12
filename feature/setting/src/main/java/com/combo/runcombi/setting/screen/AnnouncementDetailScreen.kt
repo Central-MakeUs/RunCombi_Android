@@ -191,7 +191,9 @@ fun AnnouncementDetailContent(
         TitleSection(
             title = detail.title,
             startDate = detail.startDate,
-            endDate = detail.endDate
+            endDate = detail.endDate,
+            announcementType = detail.announcementType,
+            regDate = detail.regDate
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -222,6 +224,8 @@ fun TitleSection(
     title: String,
     startDate: String,
     endDate: String,
+    announcementType: String,
+    regDate: String,
 ) {
     Column {
         Text(
@@ -232,11 +236,19 @@ fun TitleSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = "기간: ${FormatUtils.formatDate(startDate)} ~ ${FormatUtils.formatDate(endDate)}",
-            style = body3,
-            color = Grey06
-        )
+        if (announcementType == "EVENT") {
+            Text(
+                text = "기간: ${FormatUtils.formatDate(startDate)} ~ ${FormatUtils.formatDate(endDate)}",
+                style = body3,
+                color = Grey06
+            )
+        } else {
+            Text(
+                text = "등록일: ${FormatUtils.formatDate(regDate)}",
+                style = body3,
+                color = Grey06
+            )
+        }
     }
 }
 
