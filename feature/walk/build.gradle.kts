@@ -23,4 +23,10 @@ dependencies {
     implementation(libs.lottie.compose)
 
     implementation(libs.androidx.graphics.shapes)
+    implementation(libs.gson)
+    
+    // Core 모듈 의존성
+    implementation(project(":core:data:common"))
+    implementation(project(":core:domain:walk"))
+    implementation(project(":core:data:walk"))
 }

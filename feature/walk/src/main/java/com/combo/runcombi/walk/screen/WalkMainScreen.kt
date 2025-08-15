@@ -1,9 +1,8 @@
-package com.combo.runcombi.walk.screen
-
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -91,6 +90,8 @@ fun WalkMainScreen(
     val cameraPositionState = rememberCameraPositionState()
     val uiState by walkMainViewModel.uiState.collectAsStateWithLifecycle()
     val locationPermissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val notificationPermissionState =
+        rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
     var showPermissionSettingSheet by remember { mutableStateOf(false) }
     val analyticsHelper = walkMainViewModel.analyticsHelper
 
@@ -100,9 +101,14 @@ fun WalkMainScreen(
         if (!locationPermissionState.status.isGranted) {
             locationPermissionState.launchPermissionRequest()
         }
-        // 화면 진입 시 사용자 정보 갱신
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && notificationPermissionState != null && !notificationPermissionState.status.isGranted) {
+            notificationPermissionState.launchPermissionRequest()
+        }
+
         walkMainViewModel.fetchUserAndPets()
     }
+
     LaunchedEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
             val myLocation = LocationUtil.getCurrentLocation(context)
@@ -163,13 +169,20 @@ fun WalkMainScreen(
         isLocationPermissionGranted = locationPermissionState.status.isGranted,
         onPetClick = { walkMainViewModel.togglePetSelect(it) },
         onStartWalk = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !notificationPermissionState.status.isGranted) {
+                notificationPermissionState.launchPermissionRequest()
+            }
+
             if (!locationPermissionState.status.isGranted) {
                 if (locationPermissionState.status.shouldShowRationale) {
                     locationPermissionState.launchPermissionRequest()
                 } else {
                     walkMainViewModel.onStartWalkClicked(false)
                 }
-            } else if (walkMainViewModel.checkWithInitWalkData()) {
+                return@WalkMainContent
+            }
+
+            if (walkMainViewModel.checkWithInitWalkData()) {
                 onStartWalk()
             } else {
                 Toast.makeText(context, "함께 운동할 콤비를 선택해주세요.", Toast.LENGTH_SHORT).show()
