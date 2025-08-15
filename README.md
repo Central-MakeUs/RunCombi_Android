@@ -2,49 +2,84 @@
 
 ## 📱 프로젝트 개요
 
-**RunCombi**는 반려동물과 함께하는 운동을 기록하고 관리하는 Android 애플리케이션입니다. 사용자와 반려동물의 운동 데이터를 실시간으로 추적하고, 건강한 라이프스타일을 지원합니다.
+**RunCombi**는 반려동물과 함께하는 운동을 기록하고 관리하는 Android 애플리케이션입니다.
 
 ### 주요 기능
-- 🚶‍♂️ 실시간 운동 추적 (걷기, 뛰기)
 - 🐕 반려동물과 함께하는 운동 기록
-- 📊 운동 통계 및 칼로리 계산
 - 🗺️ GPS 기반 경로 추적
-- 🔄 백그라운드 운동 기록 (ForegroundService)
 - 👥 사용자 프로필 및 반려동물 관리
 
-## 🏗️ 프로젝트 아키텍처
+## 🛠️ 프로젝트 기술 스택
 
-### Clean Architecture + MVVM 패턴
+<div align="center">
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Presentation Layer                    │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   Screens   │  │ ViewModels  │  │   Composables│        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                         Domain Layer                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │   UseCases  │  │   Entities  │  │  Repositories│        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-└─────────────────────────────────────────────────────────────┘
-                              │
-┌─────────────────────────────────────────────────────────────┐
-│                         Data Layer                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │ Repositories│  │ DataSources │  │     Models  │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-└─────────────────────────────────────────────────────────────┘
-```
+![Kotlin](https://img.shields.io/badge/Kotlin-100%25-purple?style=for-the-badge&logo=kotlin)
+![Android](https://img.shields.io/badge/Android-API%2026+-green?style=for-the-badge&logo=android)
+![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-blue?style=for-the-badge)
+![Clean Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-orange?style=for-the-badge)
 
-### 아키텍처 특징
-- **Clean Architecture**: 관심사 분리와 의존성 역전 원칙 적용
-- **MVVM**: ViewModel과 StateFlow를 통한 반응형 UI
-- **Repository Pattern**: 데이터 접근 추상화
-- **UseCase Pattern**: 비즈니스 로직 캡슐화
-- **Dependency Injection**: Hilt를 통한 의존성 관리
+</div>
+
+### 📱 Android & Kotlin
+
+| 항목 | 내용 | 버전 |
+|------|------|------|
+| **언어** | Kotlin | 100% |
+| **최소 SDK** | Android 8.0 | API 26 |
+| **타겟 SDK** | Android 15 | API 35 |
+| **UI 프레임워크** | Jetpack Compose | 최신 |
+
+### 🏗️ 아키텍처 & 패턴
+
+| 패턴 | 설명 | 적용 범위 |
+|------|------|-----------|
+| **Clean Architecture** | 계층별 관심사 분리 | 전체 프로젝트 |
+| **MVVM** | Model-View-ViewModel 패턴 | UI 계층 |
+| **Repository Pattern** | 데이터 접근 추상화 | 데이터 계층 |
+| **UseCase Pattern** | 비즈니스 로직 캡슐화 | 도메인 계층 |
+
+### 🔧 주요 라이브러리
+
+<div align="center">
+
+![Hilt](https://img.shields.io/badge/DI-Hilt-red?style=flat-square&logo=android)
+![Coroutines](https://img.shields.io/badge/Async-Coroutines%20%2B%20Flow-green?style=flat-square&logo=kotlin)
+![Navigation](https://img.shields.io/badge/Navigation-Jetpack%20Navigation-blue?style=flat-square&logo=android)
+![StateFlow](https://img.shields.io/badge/State-StateFlow-orange?style=flat-square&logo=kotlin)
+![DataStore](https://img.shields.io/badge/Storage-DataStore%20%2B%20Room-purple?style=flat-square&logo=android)
+![Retrofit](https://img.shields.io/badge/Network-Retrofit%20%2B%20OkHttp-blue?style=flat-square&logo=square)
+![Coil](https://img.shields.io/badge/Image-Coil-green?style=flat-square&logo=android)
+
+</div>
+
+| 카테고리 | 라이브러리 | 용도 |
+|----------|------------|------|
+| **의존성 주입** | Hilt | DI 컨테이너 |
+| **비동기 처리** | Kotlin Coroutines + Flow | 비동기 작업 |
+| **네비게이션** | Jetpack Navigation Compose | 화면 전환 |
+| **상태 관리** | StateFlow, MutableStateFlow | UI 상태 |
+| **데이터 저장** | Proto DataStore, Room | 로컬 데이터 |
+| **네트워크** | Retrofit, OkHttp | API 통신 |
+| **이미지 처리** | Coil | 이미지 로딩 |
+| **권한 관리** | Accompanist Permissions | 권한 처리 |
+
+### 📊 외부 서비스
+
+<div align="center">
+
+![Firebase](https://img.shields.io/badge/Analytics-Firebase%20Analytics-orange?style=flat-square&logo=firebase)
+![Crashlytics](https://img.shields.io/badge/Crash%20Reporting-Firebase%20Crashlytics-red?style=flat-square&logo=firebase)
+![Google Maps](https://img.shields.io/badge/Maps-Google%20Maps%20API-blue?style=flat-square&logo=google-maps)
+![Kakao](https://img.shields.io/badge/Login-Kakao%20SDK-yellow?style=flat-square&logo=kakao)
+
+</div>
+
+| 서비스 | 용도 | 통합 방식 |
+|--------|------|-----------|
+| **Firebase Analytics** | 사용자 행동 분석 | SDK 통합 |
+| **Firebase Crashlytics** | 크래시 리포팅 | SDK 통합 |
+| **Google Maps API** | 지도 및 위치 서비스 | API 키 |
+| **Kakao SDK** | 소셜 로그인 | SDK 통합 |
 
 ## 📁 프로젝트 모듈 트리
 
@@ -81,115 +116,6 @@ RunCombi_Android/
     ├── signup/                            # 회원가입
     └── walk/                              # 운동 추적
 ```
-
-## 🔧 프로젝트 모듈별 설명
-
-### 📱 App Module
-- **역할**: 메인 애플리케이션 진입점
-- **주요 구성**: Application 클래스, AndroidManifest
-- **특징**: 모든 모듈을 통합하고 의존성 주입 설정
-
-### 🏗️ Build-Logic Module
-- **역할**: 커스텀 Gradle 플러그인 및 빌드 로직
-- **주요 구성**: 
-  - `runcombi.android.application.gradle.kts`
-  - `runcombi.android.compose.gradle.kts`
-  - `runcombi.android.feature.gradle.kts`
-  - `runcombi.android.library.gradle.kts`
-
-### 🎯 Core Module
-#### Analytics
-- **역할**: 사용자 행동 분석 및 이벤트 추적
-- **기술**: Firebase Analytics, 커스텀 이벤트 로깅
-
-#### Data Layer
-- **역할**: 데이터 접근 및 관리
-- **구성**:
-  - **Auth**: 사용자 인증 및 권한 관리
-  - **Common**: 공통 데이터 모델 및 유틸리티
-  - **History**: 운동 기록 데이터 관리
-  - **Setting**: 사용자 설정 데이터
-  - **User**: 사용자 프로필 및 정보
-  - **Walk**: 운동 추적 데이터
-  - **Datastore**: 로컬 데이터 저장 (Proto DataStore)
-  - **Network**: API 통신 및 네트워크 처리
-
-#### Domain Layer
-- **역할**: 비즈니스 로직 및 엔티티 정의
-- **구성**: 각 데이터 모듈에 대응하는 도메인 모듈
-- **특징**: UseCase 패턴으로 비즈니스 로직 캡슐화
-
-#### Design System
-- **역할**: 일관된 UI/UX 컴포넌트 제공
-- **구성**: 테마, 색상, 타이포그래피, 공통 컴포넌트
-
-#### Navigation
-- **역할**: 화면 간 네비게이션 관리
-- **기술**: Jetpack Navigation Compose
-
-#### UI
-- **역할**: 공통 UI 컴포넌트 및 유틸리티
-- **구성**: 재사용 가능한 Compose 컴포넌트
-
-### ⚡ Feature Modules
-#### History
-- **역할**: 운동 기록 조회 및 통계
-- **기능**: 운동 히스토리, 통계 차트, 필터링
-
-#### Login
-- **역할**: 사용자 인증 및 로그인
-- **기능**: 카카오 로그인, 자동 로그인
-
-#### Main
-- **역할**: 메인 화면 및 네비게이션
-- **기능**: 하단 네비게이션, 홈 화면
-
-#### Setting
-- **역할**: 사용자 설정 및 프로필 관리
-- **기능**: 개인정보 수정, 알림 설정
-
-#### Signup
-- **역할**: 회원가입 및 초기 설정
-- **기능**: 사용자 정보 입력, 반려동물 등록
-
-#### Walk
-- **역할**: 운동 추적 및 기록
-- **기능**: GPS 추적, 실시간 기록, ForegroundService 연동
-
-## 🛠️ 프로젝트 기술 스택
-
-### 📱 Android & Kotlin
-- **언어**: Kotlin 100%
-- **최소 SDK**: API 26 (Android 8.0)
-- **타겟 SDK**: API 35 (Android 15)
-- **Jetpack Compose**: UI 프레임워크
-
-### 🏗️ 아키텍처 & 패턴
-- **Clean Architecture**: 계층별 관심사 분리
-- **MVVM**: Model-View-ViewModel 패턴
-- **Repository Pattern**: 데이터 접근 추상화
-- **UseCase Pattern**: 비즈니스 로직 캡슐화
-
-### 🔧 주요 라이브러리
-- **의존성 주입**: Hilt
-- **비동기 처리**: Kotlin Coroutines + Flow
-- **네비게이션**: Jetpack Navigation Compose
-- **상태 관리**: StateFlow, MutableStateFlow
-- **데이터 저장**: Proto DataStore, Room
-- **네트워크**: Retrofit, OkHttp
-- **이미지 처리**: Coil
-- **권한 관리**: Accompanist Permissions
-
-### 📊 외부 서비스
-- **분석**: Firebase Analytics
-- **크래시 리포팅**: Firebase Crashlytics
-- **지도**: Google Maps API
-- **소셜 로그인**: Kakao SDK
-
-### 🚀 빌드 도구
-- **빌드 시스템**: Gradle (Kotlin DSL)
-- **모듈화**: Feature-based 모듈 구조
-- **커스텀 플러그인**: 자체 Gradle 플러그인
 
 ## 🏭 Flavor 시스템
 
@@ -250,7 +176,6 @@ app/
 ### 📱 Slack 빌드 알림 예시
 ![RunCombi Android 빌드 성공 알림](./docs/images/slack_notification.png)
 
-### 🔄 QA 중심 CI/CD 파이프라인 흐름
 
 ```
 1. 개발자 코드 Push/PR 생성
@@ -268,13 +193,7 @@ app/
    ├── Firebase 콘솔에서 APK 다운로드
    ├── 테스트 환경에서 기능 검증
    └── 피드백 수집 및 이슈 등록
-   ↓
-6. QA 피드백 반영 및 재배포
-   ├── 이슈 수정 및 코드 개선
-   ├── 재빌드 및 재배포
-   └── 최종 QA 승인
-   ↓
-7. 스토어 배포 준비 완료
+
 ```
 
 ## 🎨 뷰모델 및 UI 로직 패턴
@@ -286,7 +205,6 @@ app/
 @HiltViewModel
 class ExampleViewModel @Inject constructor(
     private val useCase: ExampleUseCase,
-    private val repository: ExampleRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(ExampleUiState())
@@ -375,30 +293,3 @@ fun ExampleScreen(
 }
 ```
 
-#### 컴포넌트 구조
-```kotlin
-@Composable
-fun ExampleContent(
-    uiState: ExampleUiState,
-    onAction: (ExampleAction) -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        when {
-            uiState.isLoading -> LoadingIndicator()
-            uiState.error != null -> ErrorContent(
-                error = uiState.error!!,
-                onRetry = { onAction(ExampleAction.Load) }
-            )
-            else -> DataContent(
-                data = uiState.data,
-                onItemClick = { item ->
-                    onAction(ExampleAction.SelectItem(item))
-                }
-            )
-        }
-    }
-}
-```
