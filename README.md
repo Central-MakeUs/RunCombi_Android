@@ -51,18 +51,7 @@
 ```
 RunCombi_Android/
 ├── app/                                    # 메인 애플리케이션 모듈
-│   ├── src/main/
-│   │   ├── java/com/combo/runcombi/
-│   │   │   ├── Application.kt             # 애플리케이션 클래스
-│   │   │   └── service/                   # ForegroundService
-│   │   │       ├── WalkTrackingService.kt
-│   │   │       ├── WalkTrackingServiceHelper.kt
-│   │   │       └── WalkTrackingDataManager.kt
-│   │   └── AndroidManifest.xml
-│   └── build.gradle.kts
 ├── build-logic/                           # 빌드 로직 모듈
-│   └── src/main/java/
-│       └── runcombi.android.*.gradle.kts  # 커스텀 플러그인
 ├── core/                                  # 핵심 공통 모듈
 │   ├── analytics/                         # 분석 도구
 │   ├── data/                              # 데이터 계층
@@ -97,7 +86,7 @@ RunCombi_Android/
 
 ### 📱 App Module
 - **역할**: 메인 애플리케이션 진입점
-- **주요 구성**: Application 클래스, ForegroundService, AndroidManifest
+- **주요 구성**: Application 클래스, AndroidManifest
 - **특징**: 모든 모듈을 통합하고 의존성 주입 설정
 
 ### 🏗️ Build-Logic Module
