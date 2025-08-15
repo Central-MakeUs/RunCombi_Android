@@ -2,6 +2,7 @@ package com.combo.runcombi.setting.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.analytics.AnalyticsHelper
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.setting.model.AnnouncementDetailEvent
 import com.combo.runcombi.setting.model.AnnouncementDetailUiState
@@ -22,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AnnouncementDetailViewModel @Inject constructor(
     private val getAnnouncementDetailUseCase: GetAnnouncementDetailUseCase,
+    val analyticsHelper: AnalyticsHelper
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AnnouncementDetailUiState())
     val uiState: StateFlow<AnnouncementDetailUiState> = _uiState.asStateFlow()

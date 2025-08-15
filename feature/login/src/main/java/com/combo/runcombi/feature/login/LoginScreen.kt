@@ -24,10 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.combo.runcombi.analytics.logButtonClick
+import com.combo.runcombi.analytics.logScreenView
 import com.combo.runcombi.core.designsystem.component.StableImage
-import com.combo.runcombi.ui.ext.screenDefaultPadding
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography
 import com.combo.runcombi.domain.user.model.MemberStatus
+import com.combo.runcombi.ui.ext.screenDefaultPadding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -71,9 +73,16 @@ private fun rememberLoginManager(): LoginManager {
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
     onKakaoLoginClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
+    val analyticsHelper = viewModel.analyticsHelper
+
+    LaunchedEffect(Unit) {
+        analyticsHelper.logScreenView("LoginScreen")
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -92,7 +101,11 @@ fun LoginScreen(
                 .align(Alignment.BottomCenter)
         ) {
             Button(
-                onClick = onKakaoLoginClick,
+                onClick = {
+                    // 카카오 로그인 버튼 클릭 이벤트 로깅
+                    analyticsHelper.logButtonClick("kakao_login", "LoginScreen")
+                    onKakaoLoginClick()
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFEE102),
                     contentColor = Color.Black

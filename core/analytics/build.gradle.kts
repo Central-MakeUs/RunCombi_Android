@@ -1,15 +1,12 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 android {
-    namespace = "com.combo.runcombi.network"
+    namespace = "com.combo.runcombi.analytics"
     compileSdk = 35
 
     defaultConfig {
@@ -20,12 +17,7 @@ android {
     }
 
     buildTypes {
-        debug {
-            buildConfigField("String", "BASE_URL", getBaseUrl())
-        }
-
         release {
-            buildConfigField("String", "BASE_URL", getBaseUrl())
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -33,11 +25,6 @@ android {
             )
         }
     }
-
-    buildFeatures {
-        buildConfig = true
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -48,16 +35,11 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.bundles.test)
-    implementation(libs.bundles.network)
-    implementation(libs.kotlin.serialization.json)
-    implementation(libs.bundles.coroutines)
-
-    ksp(libs.hilt.compiler)
+    // Hilt
     implementation(libs.hilt.android)
-}
+    ksp(libs.hilt.compiler)
 
-fun getBaseUrl(): String {
-    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 }

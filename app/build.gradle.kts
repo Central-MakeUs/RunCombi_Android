@@ -2,6 +2,8 @@ import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     id("runcombi.android.application")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -43,10 +45,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-
             isDebuggable = false
         }
+        debug {
+            isDebuggable = true
+        }
     }
+    
+    buildFeatures {
+        buildConfig = true
+    }
+
     flavorDimensions += "mode"
     productFlavors {
         create("mock") {
@@ -63,6 +72,11 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.v2.user)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+
     implementation(project(":feature:main"))
     implementation(project(":feature:login"))
     implementation(project(":feature:history"))
@@ -77,4 +91,10 @@ dependencies {
     implementation(project(":core:data:walk"))
     implementation(project(":core:data:history"))
     implementation(project(":core:data:setting"))
+
+    // Test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }
