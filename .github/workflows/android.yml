@@ -215,16 +215,13 @@ jobs:
       with:
         appId: ${{secrets.FIREBASE_APP_ID}}
         serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
-        groups: testers
+        groups: testers,beta-testers
         file: app/build/outputs/apk/prod/release/app-prod-release.apk
         releaseNotes: |
-          RunCombi Android v${{ steps.app_version.outputs.version_name }}
+          🚀 RunCombi Android v${{ steps.app_version.outputs.version_name }} 배포 완료!
           
-          PR: ${{ github.event.pull_request.title }}
-          Author: @${{ github.event.pull_request.user.login }}
-          Branch: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}
-          
-          APK: Prod Release Version
+          📱 **앱 버전**: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+        notifyTesters: true
 
     - name: If Success, Send notification on Slack
       if: ${{success()}}
