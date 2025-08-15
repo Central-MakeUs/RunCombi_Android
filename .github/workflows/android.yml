@@ -243,18 +243,4 @@ jobs:
           📝 **PR 내용**: ${{ github.event.pull_request.body || '내용이 없습니다.' }}
           🚀 **GitHub Release**: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.app_version.outputs.version_name }}
 
-    - name: If Fail, Send notification on Slack
-      if: ${{failure()}}
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_COLOR: '#ff0000'
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_TITLE: 'RunCombi Android 빌드 실패 ❌'
-        MSG_MINIMAL: true
-        SLACK_USERNAME: RunCombi Android CI
-        SLACK_MESSAGE: |
-          ❌ RunCombi Android 빌드 실패 - 확인이 필요합니다!
-          
-          📱 **앱 버전**: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
-          🔗 **PR 제목**: ${{ github.event.pull_request.title }}
-          📝 **PR 내용**: ${{ github.event.pull_request.body || '내용이 없습니다.' }}
+
