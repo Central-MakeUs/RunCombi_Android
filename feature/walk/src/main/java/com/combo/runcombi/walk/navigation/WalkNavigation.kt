@@ -1,5 +1,6 @@
 package com.combo.runcombi.walk.navigation
 
+import WalkMainScreen
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -10,7 +11,6 @@ import androidx.navigation.compose.navigation
 import com.combo.runcombi.core.navigation.model.MainTabDataModel
 import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.walk.screen.WalkCountdownScreen
-import com.combo.runcombi.walk.screen.WalkMainScreen
 import com.combo.runcombi.walk.screen.WalkReadyScreen
 import com.combo.runcombi.walk.screen.WalkResultScreen
 import com.combo.runcombi.walk.screen.WalkTrackingScreen

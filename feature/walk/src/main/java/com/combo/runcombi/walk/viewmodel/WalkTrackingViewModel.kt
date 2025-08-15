@@ -3,19 +3,16 @@ package com.combo.runcombi.walk.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.combo.runcombi.analytics.AnalyticsHelper
-import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.walk.model.BottomSheetType
 import com.combo.runcombi.walk.model.ExerciseType
-import com.combo.runcombi.walk.model.LocationPoint
 import com.combo.runcombi.walk.model.WalkMemberUiModel
 import com.combo.runcombi.walk.model.WalkPetUIModel
 import com.combo.runcombi.walk.model.WalkTrackingEvent
 import com.combo.runcombi.walk.model.WalkUiState
+import com.combo.runcombi.walk.service.WalkTrackingDataManager
+import com.combo.runcombi.walk.service.WalkTrackingServiceHelper
 import com.combo.runcombi.walk.usecase.CalculateMemberCalorieUseCase
 import com.combo.runcombi.walk.usecase.CalculatePetCalorieUseCase
-import com.combo.runcombi.walk.usecase.EndRunUseCase
-import com.combo.runcombi.walk.usecase.UpdateWalkRecordUseCase
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,9 +29,10 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class WalkTrackingViewModel @Inject constructor(
-    private val updateWalkRecordUseCase: UpdateWalkRecordUseCase,
     private val calculatePetCalorieUseCase: CalculatePetCalorieUseCase,
     private val calculateMemberCalorieUseCase: CalculateMemberCalorieUseCase,
+    private val dataManager: WalkTrackingDataManager,
+    private val serviceHelper: WalkTrackingServiceHelper,
     val analyticsHelper: AnalyticsHelper,
 ) : ViewModel() {
 
@@ -44,77 +42,63 @@ class WalkTrackingViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<WalkTrackingEvent>()
     val eventFlow: SharedFlow<WalkTrackingEvent> = _eventFlow.asSharedFlow()
 
-    private var lastPoint: LocationPoint? = null
-    private var speedList: List<Double> = emptyList()
-
-    fun addPathPointFromService(
-        lat: Double,
-        lng: Double,
-        accuracy: Float,
-        timestamp: Long = System.currentTimeMillis(),
-    ) {
-        val newPoint = LocationPoint(lat, lng, timestamp, accuracy)
-        when (val result = updateWalkRecordUseCase(lastPoint, newPoint, speedList)) {
-            is DomainResult.Success -> {
-                val data = result.data
-                val newDistance = _uiState.value.distance + data.distance
-                val km = newDistance / 1000.0
-                val rounded = BigDecimal(km).setScale(2, RoundingMode.HALF_UP).toDouble()
-
-                val exerciseType = _uiState.value.exerciseType
-
-                val memberUiModel = _uiState.value.walkMemberUiModel
-                val memberCalorie = memberUiModel?.let {
-                    val member = it.member
-                    calculateMemberCalorieUseCase(
-                        exerciseType,
-                        member.gender.name,
-                        member.weight.toDouble(),
-                        rounded
-                    ).roundToInt()
-                } ?: 0
-
-                val newPetUiModelList = _uiState.value.walkPetUIModelList?.map { petUiModel ->
-                    val pet = petUiModel.pet
-                    val petCalorie = calculatePetCalorieUseCase(
-                        pet.weight,
-                        rounded,
-                        pet.runStyle.activityFactor
-                    ).roundToInt()
-                    petUiModel.copy(calorie = petCalorie)
-                }
-
-                _uiState.update { state ->
-                    state.copy(
-                        pathPoints = state.pathPoints + LatLng(lat, lng),
-                        distance = newDistance,
-                        walkMemberUiModel = memberUiModel?.copy(calorie = memberCalorie),
-                        walkPetUIModelList = newPetUiModelList
-                    )
-                }
-                lastPoint = newPoint
-                speedList =
-                    (speedList + (if (lastPoint != null) data.distance / ((newPoint.timestamp - (lastPoint?.timestamp
-                        ?: newPoint.timestamp)).coerceAtLeast(1000L) / 1000.0) else 0.0)).takeLast(
-                        100
-                    )
-            }
-
-            is DomainResult.Error, is DomainResult.Exception -> {
-                _uiState.update { state ->
-                    state.copy(pathPoints = state.pathPoints + LatLng(lat, lng))
-                }
-                lastPoint = newPoint
+    init {
+        viewModelScope.launch {
+            dataManager.trackingData.collect { serviceData ->
+                updateUiStateFromService(serviceData)
             }
         }
     }
 
-    fun updateTime(time: Int) {
-        _uiState.update { it.copy(time = time) }
+    private fun updateUiStateFromService(serviceData: WalkTrackingDataManager.TrackingData) {
+        val exerciseType = try {
+            ExerciseType.valueOf(serviceData.exerciseType)
+        } catch (e: IllegalArgumentException) {
+            ExerciseType.WALKING
+        }
+
+        val distanceKm = serviceData.distance / 1000.0
+        val rounded = BigDecimal(distanceKm).setScale(2, RoundingMode.HALF_UP).toDouble()
+        
+        val memberUiModel = serviceData.member?.let { member ->
+            val memberCalorie = calculateMemberCalorieUseCase(
+                exerciseType,
+                member.member.gender.name,
+                member.member.weight.toDouble(),
+                rounded
+            ).roundToInt()
+            member.copy(calorie = memberCalorie)
+        }
+        
+        val petUiModelList = serviceData.petList?.map { petUiModel ->
+            val pet = petUiModel.pet
+            val petCalorie = calculatePetCalorieUseCase(
+                pet.weight,
+                rounded,
+                pet.runStyle.activityFactor
+            ).roundToInt()
+            petUiModel.copy(calorie = petCalorie)
+        }
+
+        _uiState.update { state ->
+            state.copy(
+                time = serviceData.time,
+                distance = serviceData.distance,
+                pathPoints = serviceData.pathPoints,
+                isPaused = serviceData.isPaused,
+                exerciseType = exerciseType,
+                walkMemberUiModel = memberUiModel,
+                walkPetUIModelList = petUiModelList
+            )
+        }
     }
 
     fun togglePause() {
-        _uiState.update { it.copy(isPaused = !it.isPaused) }
+        if (_uiState.value.isPaused) {
+            serviceHelper.resumeTracking()
+        } else {
+            serviceHelper.pauseTracking()
+        }
     }
 
     fun emitShowBottomSheet(type: BottomSheetType) {
@@ -128,12 +112,44 @@ class WalkTrackingViewModel @Inject constructor(
         member: WalkMemberUiModel,
         petList: List<WalkPetUIModel>,
     ) {
-        _uiState.update { state ->
-            state.copy(
-                walkMemberUiModel = member,
-                walkPetUIModelList = petList,
-                exerciseType = exerciseType
-            )
+        val initialDistance = 0.0
+        val memberCalorie = calculateMemberCalorieUseCase(
+            exerciseType,
+            member.member.gender.name,
+            member.member.weight.toDouble(),
+            initialDistance
+        ).roundToInt()
+        
+        val initialPetList = petList.map { petUiModel ->
+            val pet = petUiModel.pet
+            val petCalorie = calculatePetCalorieUseCase(
+                pet.weight,
+                initialDistance,
+                pet.runStyle.activityFactor
+            ).roundToInt()
+            petUiModel.copy(calorie = petCalorie)
+        }
+        
+        val initialMember = member.copy(calorie = memberCalorie)
+
+        dataManager.updateInitialData(
+            exerciseType.name,
+            initialMember,
+            initialPetList
+        )
+        
+        // 서비스 시작
+        serviceHelper.startTracking(exerciseType)
+    }
+
+    fun stopTracking() {
+        serviceHelper.stopTracking()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        if (serviceHelper.isTracking()) {
+            serviceHelper.stopTracking()
         }
     }
 }

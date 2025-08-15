@@ -2,7 +2,6 @@ package com.combo.runcombi.walk.screen
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.os.Looper
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,12 +70,6 @@ import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkTrackingViewModel
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("MissingPermission")
@@ -92,35 +84,22 @@ fun WalkTrackingScreen(
     val analyticsHelper = walkRecordViewModel.analyticsHelper
     val uiState by walkRecordViewModel.uiState.collectAsStateWithLifecycle()
     val isPaused = uiState.isPaused
-    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val isInitialized = rememberSaveable { mutableStateOf(false) }
-
     val showSheet = remember { mutableStateOf(BottomSheetType.NONE) }
-
-    val locationCallback = remember {
-        object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { location ->
-                    walkRecordViewModel.addPathPointFromService(
-                        location.latitude, location.longitude, location.accuracy, location.time
-                    )
-                }
-            }
-        }
-    }
 
     LaunchedEffect(isInitialized.value) {
         if (!isInitialized.value) {
             analyticsHelper.logScreenView("WalkTrackingScreen")
 
-            walkMainViewModel.startRun()
-
             val member = walkMainViewModel.walkData.value.member
             val exerciseType = walkMainViewModel.walkData.value.exerciseType
             val selectedPetList = walkMainViewModel.walkData.value.petList
+
             if (member != null) {
                 walkRecordViewModel.initWalkData(exerciseType, member, selectedPetList)
+
+                walkMainViewModel.startRun()
             }
             isInitialized.value = true
         }
@@ -129,27 +108,6 @@ fun WalkTrackingScreen(
             if (event is WalkTrackingEvent.ShowBottomSheet) {
                 showSheet.value = event.type
             }
-        }
-    }
-
-    DisposableEffect(isPaused) {
-        if (!isPaused) {
-            val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-                .setMinUpdateIntervalMillis(1000).build()
-
-            fusedLocationClient.requestLocationUpdates(
-                request, locationCallback, Looper.getMainLooper()
-            )
-        }
-        onDispose {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-        }
-    }
-
-    LaunchedEffect(isPaused) {
-        while (!isPaused) {
-            walkRecordViewModel.updateTime(uiState.time + 1)
-            delay(1000)
         }
     }
 
@@ -170,7 +128,6 @@ fun WalkTrackingScreen(
             onAccept = {
                 when (showSheet.value) {
                     BottomSheetType.FINISH -> {
-                        // 산책 완료 이벤트 로깅
                         val duration = FormatUtils.formatTime(uiState.time)
                         val distance = String.format("%.2f", uiState.distance / 1000.0)
                         analyticsHelper.logWalkCompleted(duration, "${distance}km")
@@ -182,10 +139,15 @@ fun WalkTrackingScreen(
                             member = uiState.walkMemberUiModel,
                             petList = uiState.walkPetUIModelList ?: emptyList()
                         )
+
+                        walkRecordViewModel.stopTracking()
                         onFinish()
                     }
 
-                    BottomSheetType.CANCEL -> onBack()
+                    BottomSheetType.CANCEL -> {
+                        walkRecordViewModel.stopTracking()
+                        onBack()
+                    }
                     else -> Unit
                 }
                 showSheet.value = BottomSheetType.NONE
