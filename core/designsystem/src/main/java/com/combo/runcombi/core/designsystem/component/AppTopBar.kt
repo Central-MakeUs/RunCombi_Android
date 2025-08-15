@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +26,7 @@ fun RunCombiAppTopBar(
     title: String = "",
     onBack: () -> Unit = {},
     onClose: () -> Unit = {},
+    buttonTint: Color? = null,
     isVisibleBackBtn: Boolean = true,
     isVisibleCloseBtn: Boolean = false,
     padding: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -39,7 +41,8 @@ fun RunCombiAppTopBar(
             IconButton(onClick = onBack) {
                 StableImage(
                     drawableResId = R.drawable.ic_back,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = buttonTint
                 )
             }
         } else {
@@ -60,7 +63,8 @@ fun RunCombiAppTopBar(
             IconButton(onClick = onClose) {
                 StableImage(
                     drawableResId = R.drawable.ic_close,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
+                    tint = buttonTint
                 )
             }
         } else {

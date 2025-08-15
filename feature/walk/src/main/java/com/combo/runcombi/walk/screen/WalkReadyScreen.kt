@@ -32,11 +32,16 @@ import com.combo.runcombi.ui.ext.clickableSingle
 @Composable
 fun WalkReadyScreen(
     onBack: () -> Unit,
+    onClose: () -> Unit,
     onCompleteReady: () -> Unit,
 ) {
     Column(modifier = Modifier.background(color = Grey01)) {
         RunCombiAppTopBar(
-            isVisibleBackBtn = true, onBack = onBack
+            isVisibleBackBtn = true,
+            isVisibleCloseBtn = true,
+            buttonTint = Color.White,
+            onBack = onBack,
+            onClose = onClose
         )
         Spacer(modifier = Modifier.height(50.dp))
         WalkReadyContent(onCompleteReady = onCompleteReady)
@@ -81,7 +86,7 @@ private fun WalkReadyContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF1c1c1c)
 @Composable
 private fun WalkReadyContentPreview() {
     WalkReadyContent(

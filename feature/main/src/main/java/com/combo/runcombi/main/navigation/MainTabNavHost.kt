@@ -10,6 +10,7 @@ import com.combo.runcombi.core.navigation.model.RouteModel
 import com.combo.runcombi.history.navigation.historyNavGraph
 import com.combo.runcombi.setting.navigation.navigateToSuggestion
 import com.combo.runcombi.setting.navigation.settingNavGraph
+import com.combo.runcombi.walk.navigation.navigateToWalkMain
 import com.combo.runcombi.walk.navigation.walkNavGraph
 
 @Composable
@@ -60,6 +61,14 @@ fun MainTabNavHost(
                     popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
                         inclusive = false
                     }
+                })
+            },
+            onClose = {
+                mainTabNavigator.navigationToWalkMain(navOptions = navOptions {
+                    popUpTo(RouteModel.MainTabRoute.WalkRouteModel.WalkMain) {
+                        inclusive = false
+                    }
+                    launchSingleTop = true
                 })
             })
 

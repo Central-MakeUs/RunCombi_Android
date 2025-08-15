@@ -158,10 +158,11 @@ fun TabItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier
-        .height(48.dp)
-        .clickable { onClick() }
-        .background(Grey01),
+    Box(
+        modifier = modifier
+            .height(48.dp)
+            .clickable { onClick() }
+            .background(Grey01),
         contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -227,14 +228,15 @@ fun EventList(
 
 @Composable
 fun AnnouncementItem(
-    announcement: com.combo.runcombi.setting.model.Announcement,
+    announcement: Announcement,
     onClick: () -> Unit,
 ) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(88.dp)
-        .clickable { onClick() }
-        .padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(88.dp)
+            .clickable { onClick() }
+            .padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -258,7 +260,13 @@ fun AnnouncementItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = FormatUtils.formatDate(announcement.regDate), style = body3, color = Grey06
+                text = if (announcement.announcementType == "NOTICE") FormatUtils.formatDate(
+                    announcement.regDate
+                ) else "${FormatUtils.formatDate(announcement.startDate)} ~  ${
+                    FormatUtils.formatDate(
+                        announcement.endDate
+                    )
+                }", style = body3, color = Grey06
             )
         }
     }

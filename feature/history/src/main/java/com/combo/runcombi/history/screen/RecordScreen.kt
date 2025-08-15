@@ -251,7 +251,8 @@ fun RecordContent(
                     profileUrl = uiState.memberImageUrl,
                     name = uiState.nickname,
                     cal = uiState.memberCal,
-                    description = getCalorieDescription(uiState.memberCal)
+                    description = getMemberCalorieDescription(uiState.memberCal),
+                    isPet = false
                 )
             }
             item { Spacer(modifier = Modifier.height(12.dp)) }
@@ -260,7 +261,8 @@ fun RecordContent(
                     profileUrl = petCalUi.petImageUrl,
                     name = petCalUi.petName,
                     cal = petCalUi.petCal,
-                    description = getCalorieDescription(petCalUi.petCal)
+                    description = getPetCalorieDescription(petCalUi.petCal),
+                    isPet = true
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -509,6 +511,7 @@ fun CalorieProfileCard(
     name: String,
     cal: Int,
     description: String,
+    isPet: Boolean = false,
 ) {
     Card(
         modifier = Modifier
@@ -530,10 +533,10 @@ fun CalorieProfileCard(
                 ) {
                     NetworkImage(
                         imageUrl = profileUrl,
+                        drawableResId = if (isPet) R.drawable.ic_pet_defalut else R.drawable.person_profile,
                         modifier = Modifier
                             .size(47.dp)
                             .clip(RoundedCornerShape(2.dp)),
-
                         contentScale = ContentScale.Crop
                     )
                 }
@@ -671,7 +674,7 @@ fun RecordMemoSection(memo: String, onMemoChanged: () -> Unit, onAddMemo: () -> 
 
 }
 
-fun getCalorieDescription(cal: Int): String {
+fun getMemberCalorieDescription(cal: Int): String {
     return when (cal) {
         in 0..49 -> "조금 움직였어요!"
         in 50..99 -> "막대사탕 하나 태웠어요!"
@@ -693,6 +696,32 @@ fun getCalorieDescription(cal: Int): String {
         in 1500..1999 -> "햄버거 두 세트 태웠어요!"
         in 2000..2499 -> "치킨 한 마리 태웠어요!"
         else -> "피자 한 판 태웠어요!"
+    }
+}
+
+fun getPetCalorieDescription(cal: Int): String {
+    return when (cal) {
+        in 0..9 -> "조금 움직였어요!"
+        in 10..19 -> "사료 10알 태웠어요!"
+        in 20..29 -> "사료 15알 태웠어요!"
+        in 30..39 -> "사료 20알 태웠어요!"
+        in 40..49 -> "사료 25알 태웠어요!"
+        in 50..59 -> "사료 30알 태웠어요!"
+        in 60..69 -> "사료 35알 태웠어요!"
+        in 70..79 -> "사료 40알 태웠어요!"
+        in 80..89 -> "사료 50알 태웠어요!"
+        in 90..99 -> "사료 55알 태웠어요!"
+        in 100..119 -> "사료 60알 태웠어요!"
+        in 120..139 -> "사료 70알 태웠어요!"
+        in 140..159 -> "사료 80알 태웠어요!"
+        in 160..179 -> "사료 100알 태웠어요!"
+        in 180..199 -> "사료 110알 태웠어요!"
+        in 200..249 -> "사료 130알 태웠어요!"
+        in 250..299 -> "사료 160알 태웠어요!"
+        in 300..349 -> "사료 180알 태웠어요!"
+        in 350..399 -> "사료 200알 태웠어요!"
+        in 400..Int.MAX_VALUE -> "사료 한 줌 태웠어요!"
+        else -> "사료 한 줌 태웠어요!"
     }
 }
 
