@@ -8,19 +8,48 @@ on:
 permissions:
   contents: write
 
+# 워크플로우 최적화
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    
+    # 빌드 캐시 설정
+    env:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.configureondemand=true -Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError
 
     steps:
     - uses: actions/checkout@v4
-    - name: set up JDK 17
+    
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+        
+    - name: Setup Gradle Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: Setup Android SDK Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.android/build-cache
+          ~/.android/cache
+        key: ${{ runner.os }}-android-${{ hashFiles('**/gradle.properties', '**/local.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-android-
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -117,17 +146,15 @@ jobs:
         echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
         echo "Extracted version: $VERSION_NAME ($VERSION_CODE)"
 
-    - name: Get timestamp
-      id: timestamp
-      run: echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build --parallel --max-workers=2 --daemon
 
     - name: Build Release APK
       run: |
         echo "Starting assembleRelease..."
-        ./gradlew assembleRelease --info --stacktrace
+        ./gradlew assembleRelease --parallel --max-workers=2 --daemon --info --stacktrace
         echo "assembleRelease completed with exit code: $?"
         echo "Checking if APK was generated..."
         if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
@@ -199,45 +226,35 @@ jobs:
           
           APK: Prod Release Version
 
-    - name: action-slack
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        author_name: RunCombi Android CI
-        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        if_mention: failure,cancelled
-        custom_payload: |
-          {
-            "attachments": [{
-              "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
-              "title": "🎉 RunCombi Android 빌드 완료",
-              "fields": [
-                {
-                  "title": "📱 앱 버전",
-                  "value": "v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})",
-                  "short": true
-                },
-                {
-                  "title": "🔗 PR 제목",
-                  "value": "${{ github.event.pull_request.title }}",
-                  "short": true
-                },
-                {
-                  "title": "📝 PR 내용",
-                  "value": "${{ github.event.pull_request.body || '내용이 없습니다.' }}",
-                  "short": false
-                },
-                {
-                  "title": "🚀 GitHub Release",
-                  "value": "https://github.com/${{ github.repository }}/releases/tag/v${{ steps.app_version.outputs.version_name }}",
-                  "short": false
-                }
-              ],
-              "footer": "RunCombi Android CI",
-              "ts": "${{ env.TIMESTAMP }}"
-            }]
-          }
+    - name: If Success, Send notification on Slack
+      if: ${{success()}}
+      uses: rtCamp/action-slack-notify@v2
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        TIMESTAMP: ${{ steps.timestamp.outputs.timestamp }}
-      if: always()
+        SLACK_COLOR: '#60E0C5'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_TITLE: 'RunCombi Android 빌드 성공 ✅'
+        MSG_MINIMAL: true
+        SLACK_USERNAME: RunCombi Android CI
+        SLACK_MESSAGE: |
+          🎉 RunCombi Android 빌드 성공!
+          
+          📱 **앱 버전**: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          🔗 **PR 제목**: ${{ github.event.pull_request.title }}
+          📝 **PR 내용**: ${{ github.event.pull_request.body || '내용이 없습니다.' }}
+          🚀 **GitHub Release**: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.app_version.outputs.version_name }}
+
+    - name: If Fail, Send notification on Slack
+      if: ${{failure()}}
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_COLOR: '#ff0000'
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_TITLE: 'RunCombi Android 빌드 실패 ❌'
+        MSG_MINIMAL: true
+        SLACK_USERNAME: RunCombi Android CI
+        SLACK_MESSAGE: |
+          ❌ RunCombi Android 빌드 실패 - 확인이 필요합니다!
+          
+          📱 **앱 버전**: v${{ steps.app_version.outputs.version_name }} (${{ steps.app_version.outputs.version_code }})
+          🔗 **PR 제목**: ${{ github.event.pull_request.title }}
+          📝 **PR 내용**: ${{ github.event.pull_request.body || '내용이 없습니다.' }}
