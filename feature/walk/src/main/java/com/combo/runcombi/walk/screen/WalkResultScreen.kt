@@ -182,7 +182,9 @@ fun WalkResultScreen(
         pathPoints = walkData.pathPoints,
         isFirstRun = startRunData?.isFirstRun == "Y",
         nthRun = startRunData?.nthRun ?: 0,
-        onBack = onBack,
+        onBack =  {
+            onNavigateToRecord(walkData.runData?.runId ?: 0)
+        },
         showCaptureRequest = showCaptureRequest.value,
         onCaptured = { bitmap ->
             val file = BitmapUtil.bitmapToFile(

@@ -111,8 +111,8 @@ class MainTabNavigator(
         )
     }
 
-    fun navigationToWalkMain() {
-        navController.navigateToWalkMain()
+    fun navigationToWalkMain(navOptions: NavOptions? = null) {
+        navController.navigateToWalkMain(navOptions)
     }
 
     fun navigationToWalkTypeSelect() {

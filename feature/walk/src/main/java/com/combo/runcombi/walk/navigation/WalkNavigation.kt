@@ -18,13 +18,7 @@ import com.combo.runcombi.walk.screen.WalkTypeSelectScreen
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 
 fun NavController.navigateToWalkMain(
-    navOptions: NavOptions? = androidx.navigation.navOptions {
-        popUpTo(this@navigateToWalkMain.graph.id) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    },
+    navOptions: NavOptions?,
 ) {
     this.navigate(MainTabDataModel.Walk, navOptions)
 }
@@ -63,6 +57,7 @@ fun NavGraphBuilder.walkNavGraph(
     onCountdownFinished: () -> Unit,
     onFinish: () -> Unit,
     onBack: () -> Unit,
+    onClose: () -> Unit,
     onNavigateToRecord: (Int) -> Unit,
 ) {
     navigation<MainTabDataModel.Walk>(
@@ -95,6 +90,7 @@ fun NavGraphBuilder.walkNavGraph(
         composable<RouteModel.MainTabRoute.WalkRouteModel.WalkReady> {
             WalkReadyScreen(
                 onBack = onBack,
+                onClose = onClose,
                 onCompleteReady = onCompleteReady,
             )
         }

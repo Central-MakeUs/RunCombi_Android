@@ -14,6 +14,7 @@ import com.combo.runcombi.main.navigation.MainNavigator
 import com.combo.runcombi.main.navigation.MainTabNavHost
 import com.combo.runcombi.main.navigation.MainTabNavigator
 import com.combo.runcombi.main.navigation.rememberMainTabNavigator
+import com.combo.runcombi.walk.navigation.navigateToWalkMain
 
 @Composable
 fun MainTabContent(
@@ -34,7 +35,13 @@ fun MainTabContent(
                     currentDestination = backStackEntryState.value?.destination,
                     onTabClick = { mainTab ->
                         when (mainTab) {
-                            MainTab.WALK -> mainTabNavigator.navigationToWalkMain()
+                            MainTab.WALK -> mainTabNavigator.navigationToWalkMain(navOptions {
+                                popUpTo(mainTabNavigator.navController.graph.id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            })
                             MainTab.HISTORY -> mainTabNavigator.navigationToHistory()
                             MainTab.My -> mainTabNavigator.navigationToSettingMain()
                         }

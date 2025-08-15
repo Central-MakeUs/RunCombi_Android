@@ -1,8 +1,3 @@
-@file:OptIn(
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
-)
-
 package com.combo.runcombi.walk.screen
 
 import android.annotation.SuppressLint
@@ -305,6 +300,7 @@ fun ResumeButton(onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FinishButtonLongPress(onLongClick: () -> Unit) {
     Box(
