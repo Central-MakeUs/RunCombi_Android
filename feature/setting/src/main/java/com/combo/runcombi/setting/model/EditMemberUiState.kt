@@ -13,4 +13,5 @@ data class EditMemberUiState(
     val isWeightError: Boolean = false,
     val isButtonEnabled: Boolean = false,
     val isLoading: Boolean = false,
+    val hasChanges: Boolean = false,
 )

@@ -41,6 +41,12 @@ class EditPetViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<EditPetEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    // 초기 데이터를 저장하기 위한 변수들
+    private var initialName: String = ""
+    private var initialAge: String = ""
+    private var initialWeight: String = ""
+    private var initialRunStyle: RunStyle = RunStyle.RUNNING
+    private var initialProfileImageUrl: String = ""
 
     fun getMemberProfile(petId: Int) {
         viewModelScope.launch {
@@ -53,6 +59,13 @@ class EditPetViewModel @Inject constructor(
                         }
 
                         pet?.let { petData ->
+                            // 초기 데이터 저장
+                            initialName = petData.name
+                            initialAge = petData.age.toString()
+                            initialWeight = petData.weight.toString()
+                            initialRunStyle = petData.runStyle
+                            initialProfileImageUrl = petData.profileImageUrl ?: ""
+                            
                             _uiState.update {
                                 it.copy(
                                     name = petData.name,
@@ -61,7 +74,8 @@ class EditPetViewModel @Inject constructor(
                                     profileImageUrl = petData.profileImageUrl ?: "",
                                     runStyle = petData.runStyle,
                                     isLoading = false,
-                                    isRemovable = result.data.petList.size >= 2
+                                    isRemovable = result.data.petList.size >= 2,
+                                    hasChanges = false
                                 )
                             }
                         }
@@ -78,6 +92,18 @@ class EditPetViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    // 수정사항이 있는지 확인하는 함수
+    private fun checkForChanges() {
+        val currentState = _uiState.value
+        val hasChanges = currentState.name != initialName ||
+                currentState.age != initialAge ||
+                currentState.weight != initialWeight ||
+                currentState.runStyle != initialRunStyle ||
+                _profileBitmap.value != null
+
+        _uiState.update { it.copy(hasChanges = hasChanges) }
     }
 
     fun savePetInfo(petImage: File?, petId: Int) {
@@ -163,6 +189,7 @@ class EditPetViewModel @Inject constructor(
 
     fun setProfileBitmap(bitmap: Bitmap) {
         _profileBitmap.value = bitmap
+        checkForChanges()
     }
 
     fun onNameChange(newName: String) {
@@ -172,6 +199,7 @@ class EditPetViewModel @Inject constructor(
                 isNameError = false
             )
         }
+        checkForChanges()
     }
 
     private fun filterInvalidChars(input: String): String {
@@ -233,6 +261,7 @@ class EditPetViewModel @Inject constructor(
                 runStyle = runStyle
             )
         }
+        checkForChanges()
     }
 
     fun onAgeChange(newAge: String) {
@@ -244,6 +273,7 @@ class EditPetViewModel @Inject constructor(
                     isAgeError = false
                 )
             }
+            checkForChanges()
             return
         }
         
@@ -254,6 +284,7 @@ class EditPetViewModel @Inject constructor(
                 isAgeError = false
             )
         }
+        checkForChanges()
     }
 
     fun onWeightChange(newWeight: String) {
@@ -264,6 +295,7 @@ class EditPetViewModel @Inject constructor(
                     isWeightError = false
                 )
             }
+            checkForChanges()
             return
         }
         
@@ -284,6 +316,7 @@ class EditPetViewModel @Inject constructor(
                 isWeightError = false
             )
         }
+        checkForChanges()
     }
 
     private fun validateAge(age: String): Boolean {

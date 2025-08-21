@@ -176,7 +176,8 @@ fun EditMemberContent(
     ) {
         EditMemberAppBar(
             onCancel = onCancel,
-            onSave = onSave
+            onSave = onSave,
+            isSaveEnabled = uiState.hasChanges
         )
 
         Column(
@@ -320,6 +321,7 @@ fun EditMemberContent(
 fun EditMemberAppBar(
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    isSaveEnabled: Boolean = true,
 ) {
     Box(
         modifier = Modifier
@@ -350,8 +352,12 @@ fun EditMemberAppBar(
             Text(
                 text = "저장",
                 style = title4,
-                color = Primary01,
-                modifier = Modifier.clickableWithoutRipple { onSave() }
+                color = if (isSaveEnabled) Primary01 else Primary03,
+                modifier = if (isSaveEnabled) {
+                    Modifier.clickableWithoutRipple { onSave() }
+                } else {
+                    Modifier
+                }
             )
         }
     }
