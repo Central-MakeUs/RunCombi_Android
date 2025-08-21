@@ -34,6 +34,13 @@ class EditMemberViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<EditMemberEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    // 초기 데이터를 저장하기 위한 변수들
+    private var initialName: String = ""
+    private var initialHeight: String = ""
+    private var initialWeight: String = ""
+    private var initialGender: Gender = Gender.MALE
+    private var initialProfileImageUrl: String = ""
+
     init {
         getMemberProfile()
     }
@@ -45,6 +52,13 @@ class EditMemberViewModel @Inject constructor(
                 when (result) {
                     is DomainResult.Success -> {
                         with(result.data.member) {
+                            // 초기 데이터 저장
+                            initialName = nickname
+                            initialHeight = height.toString()
+                            initialWeight = weight.toString()
+                            initialGender = gender
+                            initialProfileImageUrl = profileImageUrl ?: ""
+                            
                             _uiState.update {
                                 it.copy(
                                     name = nickname,
@@ -52,7 +66,8 @@ class EditMemberViewModel @Inject constructor(
                                     weight = weight.toString(),
                                     gender = gender,
                                     profileImageUrl = profileImageUrl ?: "",
-                                    isLoading = false
+                                    isLoading = false,
+                                    hasChanges = false
                                 )
                             }
                         }
@@ -71,6 +86,18 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
+    // 수정사항이 있는지 확인하는 함수
+    private fun checkForChanges() {
+        val currentState = _uiState.value
+        val hasChanges = currentState.name != initialName ||
+                currentState.height != initialHeight ||
+                currentState.weight != initialWeight ||
+                currentState.gender != initialGender ||
+                _profileBitmap.value != null
+
+        _uiState.update { it.copy(hasChanges = hasChanges) }
+    }
+
     fun onNameChange(newName: String) {
         _uiState.update {
             it.copy(
@@ -78,6 +105,29 @@ class EditMemberViewModel @Inject constructor(
                 isNameError = false,
                 isButtonEnabled = isFormValid(newName, it.height, it.weight)
             )
+        }
+        checkForChanges()
+    }
+
+    private fun filterInvalidChars(input: String): String {
+        // 한글과 영문만 허용
+        return input.filter { char ->
+            char in '가'..'힣' || char in 'a'..'z' || char in 'A'..'Z'
+        }
+    }
+
+    private fun applyLengthLimit(input: String): String {
+        if (input.isBlank()) return input
+        
+        val isKoreanOnly = isKorean(input)
+        val isEnglishOnly = isEnglish(input)
+        val isMixed = isMixed(input)
+        
+        return when {
+            isKoreanOnly -> input.take(5)
+            isEnglishOnly -> input.take(7)
+            isMixed -> input.take(7)
+            else -> input
         }
     }
 
@@ -90,6 +140,7 @@ class EditMemberViewModel @Inject constructor(
                 isButtonEnabled = isFormValid(it.name, filtered, it.weight)
             )
         }
+        checkForChanges()
     }
 
     fun onWeightChange(newWeight: String) {
@@ -101,16 +152,19 @@ class EditMemberViewModel @Inject constructor(
                 isButtonEnabled = isFormValid(it.name, it.height, filtered)
             )
         }
+        checkForChanges()
     }
 
     fun selectGender(gender: Gender) {
         _uiState.update {
             it.copy(gender = gender)
         }
+        checkForChanges()
     }
 
     fun setProfileBitmap(bitmap: Bitmap) {
         _profileBitmap.value = bitmap
+        checkForChanges()
     }
 
     fun saveMemberInfo(memberImage: File?) {
@@ -180,9 +234,9 @@ class EditMemberViewModel @Inject constructor(
         val isMixed = isMixed(name)
 
         return when {
-            isMixed && name.length > 5 -> true
-            isKoreanOnly && name.length > 10 -> true
+            isKoreanOnly && name.length > 5 -> true
             isEnglishOnly && name.length > 7 -> true
+            isMixed && name.length > 7 -> true
             !isKoreanOnly && !isEnglishOnly && !isMixed -> true
             else -> false
         }

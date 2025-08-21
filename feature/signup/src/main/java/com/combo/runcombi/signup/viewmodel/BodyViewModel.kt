@@ -12,20 +12,14 @@ class BodyViewModel : ViewModel() {
     val uiState: StateFlow<BodyUiState> = _uiState
 
     fun setDefaultValues(gender: Gender) {
-        val defaultHeight = when (gender) {
-            Gender.MALE -> "172"
-            Gender.FEMALE -> "160"
-        }
-        val defaultWeight = when (gender) {
-            Gender.MALE -> "68"
-            Gender.FEMALE -> "55"
-        }
         _uiState.value = _uiState.value.copy(
-            height = defaultHeight,
-            weight = defaultWeight,
-            isButtonEnabled = true,
+            height = "",
+            weight = "",
+            isButtonEnabled = false,
             isError = false,
-            errorMessage = ""
+            errorMessage = "",
+            isHeightError = false,
+            isWeightError = false
         )
     }
 
@@ -36,7 +30,8 @@ class BodyViewModel : ViewModel() {
                 height = filtered,
                 isButtonEnabled = isValid(filtered, it.weight),
                 isError = false,
-                errorMessage = ""
+                errorMessage = "",
+                isHeightError = false
             )
         }
     }
@@ -48,7 +43,8 @@ class BodyViewModel : ViewModel() {
                 weight = filtered,
                 isButtonEnabled = isValid(it.height, filtered),
                 isError = false,
-                errorMessage = ""
+                errorMessage = "",
+                isWeightError = false
             )
         }
     }
@@ -56,21 +52,45 @@ class BodyViewModel : ViewModel() {
     fun validateAndProceed(gender: Gender, onSuccess: () -> Unit) {
         val height = uiState.value.height
         val weight = uiState.value.weight
-        val (hasError, message) = validate(height, weight, gender)
-        if (hasError) {
+        
+        val heightValidation = validateHeight(height)
+        val weightValidation = validateWeight(weight)
+        
+        if (heightValidation || weightValidation) {
             _uiState.update {
-                it.copy(isError = true, errorMessage = message)
+                it.copy(
+                    isError = true,
+                    isHeightError = heightValidation,
+                    isWeightError = weightValidation
+                )
             }
-        } else {
-            _uiState.update {
-                it.copy(isError = false, errorMessage = "")
-            }
-            onSuccess()
+            return
         }
+        
+        _uiState.update {
+            it.copy(
+                isError = false,
+                isHeightError = false,
+                isWeightError = false
+            )
+        }
+        onSuccess()
     }
 
     private fun isValid(height: String, weight: String): Boolean {
         return height.isNotBlank() && weight.isNotBlank()
+    }
+
+    private fun validateHeight(height: String): Boolean {
+        if (height.isBlank()) return true
+        val heightInt = height.toIntOrNull()
+        return heightInt == null || heightInt !in 91..242
+    }
+
+    private fun validateWeight(weight: String): Boolean {
+        if (weight.isBlank()) return true
+        val weightInt = weight.toIntOrNull()
+        return weightInt == null || weightInt !in 10..227
     }
 
     private fun validate(height: String, weight: String, gender: Gender): Pair<Boolean, String> {

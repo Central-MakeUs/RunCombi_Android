@@ -35,12 +35,34 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
+    private fun filterInvalidChars(input: String): String {
+        // 한글과 영문만 허용
+        return input.filter { char ->
+            char in '가'..'힣' || char in 'a'..'z' || char in 'A'..'Z'
+        }
+    }
+
+    private fun applyLengthLimit(input: String): String {
+        if (input.isBlank()) return input
+        
+        val isKoreanOnly = isKorean(input)
+        val isEnglishOnly = isEnglish(input)
+        val isMixed = isMixed(input)
+        
+        return when {
+            isKoreanOnly -> input.take(5)
+            isEnglishOnly -> input.take(7)
+            isMixed -> input.take(7)
+            else -> input
+        }
+    }
+
     private fun validateName(input: String): Pair<Boolean, String> {
         if (input.isBlank()) {
             return true to "이름을 입력해주세요."
         }
         if (containsInvalidChars(input)) {
-            return true to "이모지, 공백, 특수문자, 숫자, 기타 언어는 입력할 수 없습니다."
+            return true to "한글과 영문만 입력할 수 있어요!"
         }
 
         val isKoreanOnly = isKorean(input)
@@ -48,9 +70,9 @@ class ProfileViewModel : ViewModel() {
         val isMixed = isMixed(input)
 
         return when {
-            isMixed && input.length > 5 -> true to "한글·영문 혼합은 5자 이하로 입력해주세요."
-            isKoreanOnly && input.length > 10 -> true to "한글은 10자 이하로 입력해주세요."
-            isEnglishOnly && input.length > 7 -> true to "영문은 7자 이하로 입력해주세요."
+            isKoreanOnly && input.length > 5 -> true to "한글은 최대 5자까지 입력할 수 있어요!"
+            isEnglishOnly && input.length > 7 -> true to "이름은 최대 7자까지 입력할 수 있어요!"
+            isMixed && input.length > 7 -> true to "이름은 최대 7자까지 입력할 수 있어요!"
             !isKoreanOnly && !isEnglishOnly && !isMixed -> true to "한글 또는 영문만 입력 가능합니다."
             else -> false to ""
         }

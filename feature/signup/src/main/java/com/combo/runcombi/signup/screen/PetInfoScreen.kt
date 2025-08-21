@@ -75,12 +75,13 @@ fun PetInfoScreen(
             RunCombiTextField(
                 value = uiState.age,
                 maxLength = 2,
+                placeholder = uiState.age.ifEmpty { "5" },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
                 onValueChange = { petInfoViewModel.onAgeChange(it) },
                 modifier = Modifier.width(134.dp),
-                isError = uiState.isError && uiState.errorMessage.contains("나이"),
+                isError = uiState.isAgeError,
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
                 singleLine = true,
@@ -94,12 +95,13 @@ fun PetInfoScreen(
             RunCombiTextField(
                 value = uiState.weight,
                 maxLength = 4,
+                placeholder = uiState.weight.ifEmpty { "5.5" },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
                 onValueChange = { petInfoViewModel.onWeightChange(it) },
                 modifier = Modifier.width(134.dp),
-                isError = uiState.isError && uiState.errorMessage.contains("몸무게"),
+                isError = uiState.isWeightError,
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
                 singleLine = true,
