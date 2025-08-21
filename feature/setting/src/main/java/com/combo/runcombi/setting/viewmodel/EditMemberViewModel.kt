@@ -81,6 +81,28 @@ class EditMemberViewModel @Inject constructor(
         }
     }
 
+    private fun filterInvalidChars(input: String): String {
+        // 한글과 영문만 허용
+        return input.filter { char ->
+            char in '가'..'힣' || char in 'a'..'z' || char in 'A'..'Z'
+        }
+    }
+
+    private fun applyLengthLimit(input: String): String {
+        if (input.isBlank()) return input
+        
+        val isKoreanOnly = isKorean(input)
+        val isEnglishOnly = isEnglish(input)
+        val isMixed = isMixed(input)
+        
+        return when {
+            isKoreanOnly -> input.take(5)
+            isEnglishOnly -> input.take(7)
+            isMixed -> input.take(7)
+            else -> input
+        }
+    }
+
     fun onHeightChange(newHeight: String) {
         val filtered = newHeight.filter { it.isDigit() }
         _uiState.update {
@@ -180,9 +202,9 @@ class EditMemberViewModel @Inject constructor(
         val isMixed = isMixed(name)
 
         return when {
-            isMixed && name.length > 5 -> true
-            isKoreanOnly && name.length > 10 -> true
+            isKoreanOnly && name.length > 5 -> true
             isEnglishOnly && name.length > 7 -> true
+            isMixed && name.length > 7 -> true
             !isKoreanOnly && !isEnglishOnly && !isMixed -> true
             else -> false
         }

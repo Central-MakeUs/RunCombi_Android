@@ -174,6 +174,59 @@ class EditPetViewModel @Inject constructor(
         }
     }
 
+    private fun filterInvalidChars(input: String): String {
+        // 한글과 영문만 허용
+        return input.filter { char ->
+            char in '가'..'힣' || char in 'a'..'z' || char in 'A'..'Z'
+        }
+    }
+
+    private fun applyLengthLimit(input: String): String {
+        if (input.isBlank()) return input
+        
+        val isKoreanOnly = isKorean(input)
+        val isEnglishOnly = isEnglish(input)
+        val isMixed = isMixed(input)
+        
+        return when {
+            isKoreanOnly -> input.take(5)
+            isEnglishOnly -> input.take(7)
+            isMixed -> input.take(7)
+            else -> input
+        }
+    }
+
+    private fun isKorean(input: String) = input.matches(Regex("^[가-힣]+$"))
+    private fun isEnglish(input: String) = input.matches(Regex("^[a-zA-Z]+$"))
+    private fun isMixed(input: String): Boolean {
+        val hasKorean = input.any { it in '\uAC00'..'\uD7A3' }
+        val hasEnglish = input.any { it.isLetter() && (it in 'a'..'z' || it in 'A'..'Z') }
+        return hasKorean && hasEnglish
+    }
+
+    private fun validateName(name: String): Boolean {
+        if (name.isBlank()) return true
+        
+        if (containsInvalidChars(name)) return true
+
+        val isKoreanOnly = isKorean(name)
+        val isEnglishOnly = isEnglish(name)
+        val isMixed = isMixed(name)
+
+        return when {
+            isKoreanOnly && name.length > 5 -> true
+            isEnglishOnly && name.length > 7 -> true
+            isMixed && name.length > 7 -> true
+            !isKoreanOnly && !isEnglishOnly && !isMixed -> true
+            else -> false
+        }
+    }
+
+    private fun containsInvalidChars(input: String): Boolean {
+        val regex = Regex("^[가-힣a-zA-Z]+$")
+        return !regex.matches(input)
+    }
+
     fun onSelectRunStyle(runStyle: RunStyle) {
         _uiState.update {
             it.copy(
@@ -209,10 +262,6 @@ class EditPetViewModel @Inject constructor(
                 isWeightError = false
             )
         }
-    }
-
-    private fun validateName(name: String): Boolean {
-        return name.isBlank() || name.length < 2 || name.length > 10
     }
 
     private fun validateAge(age: String): Boolean {
