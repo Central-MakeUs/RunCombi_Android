@@ -37,6 +37,7 @@ import com.combo.runcombi.signup.viewmodel.BodyViewModel
 import com.combo.runcombi.signup.viewmodel.SignupViewModel
 import com.combo.runcombi.ui.ext.clickableWithoutRipple
 import com.combo.runcombi.ui.ext.screenDefaultPadding
+import com.combo.runcombi.domain.user.model.Gender
 
 @Composable
 fun BodyScreen(
@@ -82,6 +83,12 @@ fun BodyScreen(
             RunCombiTextField(
                 value = uiState.height,
                 maxLength = 3,
+                placeholder = uiState.height.ifEmpty { 
+                    when (gender) {
+                        Gender.MALE -> "172"
+                        Gender.FEMALE -> "160"
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
@@ -89,7 +96,7 @@ fun BodyScreen(
                 modifier = Modifier
                     .width(134.dp)
                     .height(40.dp),
-                isError = uiState.isError && uiState.errorMessage.contains("키"),
+                isError = uiState.isHeightError,
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
                 singleLine = true,
@@ -103,6 +110,12 @@ fun BodyScreen(
             RunCombiTextField(
                 value = uiState.weight,
                 maxLength = 3,
+                placeholder = uiState.weight.ifEmpty { 
+                    when (gender) {
+                        Gender.MALE -> "68"
+                        Gender.FEMALE -> "55"
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
@@ -110,7 +123,7 @@ fun BodyScreen(
                 modifier = Modifier
                     .width(134.dp)
                     .height(40.dp),
-                isError = uiState.isError && uiState.errorMessage.contains("몸무게"),
+                isError = uiState.isWeightError,
                 visualTransformation = androidx.compose.ui.text.input.VisualTransformation.None,
                 enabled = true,
                 singleLine = true,

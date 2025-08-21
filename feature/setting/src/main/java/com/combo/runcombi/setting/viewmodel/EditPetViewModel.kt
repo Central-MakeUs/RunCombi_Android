@@ -236,6 +236,17 @@ class EditPetViewModel @Inject constructor(
     }
 
     fun onAgeChange(newAge: String) {
+        // 빈 문자열이면 바로 반환
+        if (newAge.isEmpty()) {
+            _uiState.update {
+                it.copy(
+                    age = "",
+                    isAgeError = false
+                )
+            }
+            return
+        }
+        
         val filtered = newAge.filter { it.isDigit() }
         _uiState.update {
             it.copy(
@@ -246,6 +257,16 @@ class EditPetViewModel @Inject constructor(
     }
 
     fun onWeightChange(newWeight: String) {
+        if (newWeight.isEmpty()) {
+            _uiState.update {
+                it.copy(
+                    weight = "",
+                    isWeightError = false
+                )
+            }
+            return
+        }
+        
         var filtered = newWeight.filter { it.isDigit() || it == '.' }
         val dotCount = filtered.count { it == '.' }
         if (dotCount > 1) {
@@ -256,6 +277,7 @@ class EditPetViewModel @Inject constructor(
             val parts = filtered.split('.')
             filtered = parts[0] + "." + parts.getOrNull(1)?.take(1).orEmpty()
         }
+        
         _uiState.update {
             it.copy(
                 weight = filtered,

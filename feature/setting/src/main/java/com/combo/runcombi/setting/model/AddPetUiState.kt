@@ -13,7 +13,9 @@ data class PetInfoUiState(
     val weight: String = "",
     val isButtonEnabled: Boolean = false,
     val isError: Boolean = false,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val isAgeError: Boolean = false,
+    val isWeightError: Boolean = false
 )
 
 data class PetStyleUiState(
