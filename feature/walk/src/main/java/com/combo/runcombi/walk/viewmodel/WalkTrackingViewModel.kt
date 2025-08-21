@@ -146,6 +146,14 @@ class WalkTrackingViewModel @Inject constructor(
         serviceHelper.stopTracking()
     }
 
+    fun isTracking(): Boolean {
+        return serviceHelper.isTracking()
+    }
+
+    fun restartNotification() {
+        serviceHelper.restartNotification()
+    }
+
     override fun onCleared() {
         super.onCleared()
         if (serviceHelper.isTracking()) {

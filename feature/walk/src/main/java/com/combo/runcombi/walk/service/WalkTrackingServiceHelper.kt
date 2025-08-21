@@ -72,6 +72,19 @@ class WalkTrackingServiceHelper @Inject constructor(
         }
     }
 
+    fun restartNotification() {
+        Log.d(TAG, "restartNotification: 알림 재시작")
+        val intent = Intent(context, WalkTrackingService::class.java).apply {
+            action = WalkTrackingService.ACTION_RESTART_NOTIFICATION
+        }
+        try {
+            context.startService(intent)
+            Log.d(TAG, "restartNotification: 알림 재시작 요청 성공")
+        } catch (e: Exception) {
+            Log.e(TAG, "restartNotification: 알림 재시작 요청 실패", e)
+        }
+    }
+
     fun isTracking(): Boolean {
         Log.d(TAG, "isTracking: 서비스 상태 확인 중")
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
