@@ -181,7 +181,7 @@ fun RecordContent(
                     RecordImagePager(imagePaths = uiState.imagePaths, onAddPhoto = onAddPhoto)
                     RecordAppBar(
                         date = uiState.date,
-                        hasRunImage = uiState.imagePaths.size == 2,
+                        hasRunImage = uiState.imagePaths.isNotEmpty(),
                         onBack = onBack,
                         onEdit = onEdit,
                         onAddPhoto = onAddPhoto,
