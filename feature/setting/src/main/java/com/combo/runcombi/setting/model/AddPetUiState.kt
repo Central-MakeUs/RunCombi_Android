@@ -17,7 +17,7 @@ data class PetInfoUiState(
 )
 
 data class PetStyleUiState(
-    val selectedStyle: RunStyle = RunStyle.RUNNING,
-    val isButtonEnabled: Boolean = true,
+    val selectedStyle: RunStyle? = null,
+    val isButtonEnabled: Boolean = false,
     val isLoading: Boolean = false
 ) 
