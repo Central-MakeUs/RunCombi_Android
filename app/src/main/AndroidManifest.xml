@@ -53,6 +53,15 @@
                     android:scheme="kakao${kakaoApiKey}" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name="com.combo.runcombi.main.wear.MobileWearDataListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear" android:host="*" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

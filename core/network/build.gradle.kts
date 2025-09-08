@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.bundles.network)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.bundles.coroutines)
+    implementation(libs.play.services.wearable)
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)

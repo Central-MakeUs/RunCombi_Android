@@ -64,6 +64,10 @@ v2User = "2.21.4"
 playServicesLocation = "21.3.0"
 runtimeAndroid = "1.8.3"
 playServicesMeasurementApi = "23.0.0"
+playServicesWearable = "19.0.0"
+composeMaterialVersion = "1.2.1"
+composeFoundation = "1.2.1"
+wearToolingPreview = "1.0.0"
 
 [libraries]
 # AndroidX
@@ -148,6 +152,10 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
+androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterialVersion" }
+androidx-compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "composeFoundation" }
+androidx-wear-tooling-preview = { group = "androidx.wear", name = "wear-tooling-preview", version.ref = "wearToolingPreview" }
 
 [plugins]
 # Android

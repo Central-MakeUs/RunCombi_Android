@@ -17,6 +17,9 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
+    // Wear OS
+    implementation(libs.play.services.wearable)
+
     implementation(project(":feature:login"))
     implementation(project(":feature:signup"))
     implementation(project(":feature:history"))
