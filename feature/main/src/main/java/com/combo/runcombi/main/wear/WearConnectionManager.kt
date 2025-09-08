@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AndroidEntryPoint
+
 class WearConnectionManager @Inject constructor(
     private val wearSyncService: WearSyncService,
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
