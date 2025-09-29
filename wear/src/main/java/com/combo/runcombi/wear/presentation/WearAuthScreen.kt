@@ -52,10 +52,13 @@ fun WearAuthScreen(
             
             else -> {
                 LoginRequiredScreen(
-                    onLoginClick = { /* TODO: 로그인 기능 */ },
+                    onLoginClick = { 
+                        android.util.Log.d("WearAuthScreen", "로그인 버튼 클릭됨")
+                        viewModel.requestTokenFromMobile() 
+                    },
                     error = uiState.error,
                     onClearError = { viewModel.clearError() },
-                    isWaitingForResponse = false
+                    isWaitingForResponse = uiState.isWaitingForMobileResponse
                 )
             }
         }

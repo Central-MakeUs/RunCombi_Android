@@ -10,16 +10,11 @@ import javax.inject.Singleton
 class WearTokenManager @Inject constructor(
     private val authDataSource: AuthDataSource
 ) {
-    companion object {
-        // 하드코딩된 실제 토큰
-        private const val HARDCODED_ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NTg1NDU5MDcsInN1YiI6IjEzMiIsImV4cCI6MTc1OTE1MDcwNywicm9sZSI6IlVTRVIifQ.1Vpd4jIy36CBWsVxasKOWGLegZMWengjJyd8rL4EmHnd7OcLz1Us0ZYX3uwNfhBPMKgpV0upPei-bq_IUbkGtg"
-        private const val HARDCODED_REFRESH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NTg1MzYyNTAsInN1YiI6Ijc5IiwiZXhwIjoxNzYxMTI4MjUwLCJtZW1iZXJJZCI6NzksInJvbGUiOiJVU0VSIn0.f9-eYiqwJ_c5kdZAbHr6j07DYEMVWjkSMpQzGqQbIkLWcHKDHsJ8K8FXSUC2yyO7QjR1xt143cp5lHhbTytnIA"
-    }
 
     suspend fun initializeTokens() {
-        // 앱 시작 시 하드코딩된 토큰을 저장
-        authDataSource.setAccessToken(HARDCODED_ACCESS_TOKEN).collect()
-        authDataSource.setRefreshToken(HARDCODED_REFRESH_TOKEN).collect()
+        // 하드코딩된 토큰 초기화 비활성화
+        // 모바일로부터 토큰을 받아서 사용
+        android.util.Log.d("WearTokenManager", "하드코딩된 토큰 초기화 비활성화됨")
     }
 
     suspend fun getAccessToken(): String? {
@@ -33,5 +28,10 @@ class WearTokenManager @Inject constructor(
     suspend fun clearTokens() {
         authDataSource.deleteAccessToken()
         authDataSource.deleteRefreshToken()
+    }
+
+    suspend fun saveAccessTokenFromMobile(accessToken: String) {
+        android.util.Log.d("WearTokenManager", "Saving access token from mobile: ${accessToken.take(20)}...")
+        authDataSource.setAccessToken(accessToken).collect()
     }
 }

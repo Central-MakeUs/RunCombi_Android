@@ -71,6 +71,9 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
     implementation(libs.v2.user)
+    
+    // Wear OS 연동
+    implementation(libs.play.services.wearable)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

@@ -27,19 +27,24 @@ class WearDataSyncService @Inject constructor(
         val putDataMapRequest = PutDataMapRequest.create("/auth_token")
         putDataMapRequest.dataMap.putAll(dataMap)
 
+        android.util.Log.d("WearDataSyncService", "Sending token to wear: ${accessToken.take(20)}...")
+
         suspendCancellableCoroutine { continuation ->
             dataClient.putDataItem(putDataMapRequest.asPutDataRequest())
                 .addOnSuccessListener { dataItem ->
+                    android.util.Log.d("WearDataSyncService", "Token sent successfully to wear")
                     continuation.resume(dataItem)
                 }
                 .addOnFailureListener { exception ->
+                    android.util.Log.e("WearDataSyncService", "Failed to send token to wear", exception)
                     continuation.resumeWithException(exception)
                 }
         }
     }
 
     suspend fun requestMobileLogin() {
-        android.util.Log.d("WearDataSyncService", "Creating login request...")
+        android.util.Log.d("WearDataSyncService", "=== 모바일 로그인 요청 시작 ===")
+        android.util.Log.d("WearDataSyncService", "DataClient 상태 확인 중...")
         
         val dataMap = DataMap().apply {
             putString("action", "request_login")
@@ -49,16 +54,22 @@ class WearDataSyncService @Inject constructor(
         val putDataMapRequest = PutDataMapRequest.create("/request_login")
         putDataMapRequest.dataMap.putAll(dataMap)
 
-        android.util.Log.d("WearDataSyncService", "Sending login request to mobile...")
+        android.util.Log.d("WearDataSyncService", "로그인 요청 데이터 생성 완료")
+        android.util.Log.d("WearDataSyncService", "경로: /request_login")
+        android.util.Log.d("WearDataSyncService", "액션: request_login")
+        android.util.Log.d("WearDataSyncService", "타임스탬프: ${System.currentTimeMillis()}")
+
+        android.util.Log.d("WearDataSyncService", "모바일로 로그인 요청 전송 중...")
 
         suspendCancellableCoroutine { continuation ->
             dataClient.putDataItem(putDataMapRequest.asPutDataRequest())
                 .addOnSuccessListener { dataItem ->
-                    android.util.Log.d("WearDataSyncService", "Login request sent successfully")
+                    android.util.Log.d("WearDataSyncService", "=== 로그인 요청 전송 성공 ===")
+                    android.util.Log.d("WearDataSyncService", "DataItem URI: ${dataItem.uri}")
                     continuation.resume(dataItem)
                 }
                 .addOnFailureListener { exception ->
-                    android.util.Log.e("WearDataSyncService", "Failed to send login request", exception)
+                    android.util.Log.e("WearDataSyncService", "=== 로그인 요청 전송 실패 ===", exception)
                     continuation.resumeWithException(exception)
                 }
         }

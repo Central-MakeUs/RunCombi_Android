@@ -11,6 +11,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.bundles.lifecycle)
+    implementation(libs.play.services.wearable)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.android.test)

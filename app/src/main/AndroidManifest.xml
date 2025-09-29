@@ -54,8 +54,6 @@
             </intent-filter>
         </activity>
 
-        <!-- 워치 연동 비활성화 -->
-        <!--
         <service
             android:name="com.combo.runcombi.main.wear.MobileWearDataListenerService"
             android:exported="true">
@@ -64,7 +62,6 @@
                 <data android:scheme="wear" android:host="*" />
             </intent-filter>
         </service>
-        -->
     </application>
 
 </manifest>

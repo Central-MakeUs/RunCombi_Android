@@ -63,6 +63,7 @@ dependencies {
 
     // Wear OS
     implementation(libs.play.services.wearable)
+    implementation(libs.play.services.location)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.wear.tooling.preview)

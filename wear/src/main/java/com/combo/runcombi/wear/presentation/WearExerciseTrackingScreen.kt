@@ -76,7 +76,6 @@ fun WearExerciseTrackingScreen(
     val uiState by viewModel.uiState.collectAsState()
     var isInitialized by remember { mutableStateOf(false) }
 
-    // 초기화 - 운동 시작
     LaunchedEffect(selectedPets, exerciseType) {
         if (!isInitialized && selectedPets.isNotEmpty()) {
             viewModel.startExercise(selectedPets, exerciseType)
@@ -84,21 +83,15 @@ fun WearExerciseTrackingScreen(
         }
     }
 
-    // 시간 업데이트 및 거리 계산
     LaunchedEffect(uiState.isTracking, uiState.isPaused) {
         while (uiState.isTracking) {
             delay(1000)
-            val currentTime = System.currentTimeMillis()
-            val elapsed = currentTime - uiState.startTime - uiState.totalPausedDuration
-            val timeString = formatTime(elapsed)
-            viewModel.updateTime(timeString)
             
-            // 거리 계산 (간단한 시뮬레이션 - 실제로는 GPS 데이터 사용)
             if (!uiState.isPaused) {
-                val elapsedSeconds = elapsed / 1000.0
-                val simulatedSpeed = 3.0 // km/h (평균 걷기 속도)
-                val newDistance = (simulatedSpeed * elapsedSeconds) / 3600.0
-                viewModel.updateDistance(newDistance)
+                val currentTime = System.currentTimeMillis()
+                val elapsed = currentTime - uiState.startTime - uiState.totalPausedDuration
+                val timeString = formatTime(elapsed)
+                viewModel.updateTime(timeString)
             }
         }
     }
@@ -113,7 +106,6 @@ fun WearExerciseTrackingScreen(
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 4.dp)
     ) {
         item {
-            // 헤더 - 더 작게
             Text(
                 text = "운동 중",
                 style = MaterialTheme.typography.body1,
@@ -123,7 +115,6 @@ fun WearExerciseTrackingScreen(
         }
 
         item {
-            // 시간 표시
             Text(
                 text = uiState.currentTime,
                 style = MaterialTheme.typography.title1,
@@ -133,7 +124,6 @@ fun WearExerciseTrackingScreen(
         }
 
         item {
-            // 거리 표시
             Text(
                 text = "${String.format("%.1f", uiState.distance)}km",
                 style = MaterialTheme.typography.body2,
@@ -143,7 +133,6 @@ fun WearExerciseTrackingScreen(
         }
 
         item {
-            // 콤비 정보
             Text(
                 text = "${member.nickname} + ${selectedPets.map { it.name }.joinToString(", ")}",
                 style = MaterialTheme.typography.body2,
@@ -157,7 +146,7 @@ fun WearExerciseTrackingScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator()
             } else {
-                // 컨트롤 버튼들 - WearOS에 맞게 간단하게
+                // 컨트롤 버튼들 
                 if (!uiState.isTracking) {
                     // 시작 버튼
                     RunCombiButton(
@@ -215,7 +204,6 @@ fun WearExerciseTrackingScreen(
         }
 
         item {
-            // 에러 표시
             uiState.error?.let { error ->
                 Text(
                     text = error,
@@ -226,13 +214,14 @@ fun WearExerciseTrackingScreen(
             }
         }
 
-        item {
-            // 뒤로가기 버튼 - 작게
-            RunCombiButton(
-                text = "뒤로",
-                onClick = onBack,
-                modifier = Modifier.padding(top = 4.dp, start = 16.dp, end = 16.dp)
-            )
+        if (uiState.error != null) {
+            item {
+                RunCombiButton(
+                    text = "뒤로",
+                    onClick = onBack,
+                    modifier = Modifier.padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                )
+            }
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.combo.runcombi.wear.presentation
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,6 +26,16 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    
+    private val locationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val hasPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                           permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        
+        android.util.Log.d("MainActivity", "위치 권한 요청 결과: $hasPermission")
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
@@ -30,16 +44,31 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            WearApp()
+            WearApp(
+                onRequestLocationPermission = { requestLocationPermission() }
+            )
         }
+    }
+    
+    private fun requestLocationPermission() {
+        android.util.Log.d("MainActivity", "위치 권한 요청 시작")
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 }
 
 @Composable
-fun WearApp() {
+fun WearApp(
+    onRequestLocationPermission: () -> Unit = {}
+) {
     RunCombi_AndroidTheme {
-        val viewModel: WearAuthViewModel = hiltViewModel()
-        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+        val authViewModel: WearAuthViewModel = hiltViewModel()
+        val exerciseViewModel: WearExerciseViewModel = hiltViewModel()
+        val uiState by authViewModel.uiState.collectAsStateWithLifecycle()
         var currentScreen by remember { mutableStateOf("main") }
         var selectedPets by remember {
             mutableStateOf<List<com.combo.runcombi.domain.user.model.Pet>>(
@@ -61,6 +90,7 @@ fun WearApp() {
                             WearMainScreen(
                                 userInfo = uiState.userInfo!!,
                                 onStartExercise = { currentScreen = "petSelect" },
+                                onRequestLocationPermission = onRequestLocationPermission
                             )
                         }
 
@@ -125,7 +155,7 @@ fun WearApp() {
                 }
 
                 else -> {
-                    WearAuthScreen(viewModel = viewModel)
+                    WearAuthScreen(viewModel = authViewModel)
                 }
             }
         }
