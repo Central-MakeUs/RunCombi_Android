@@ -3,6 +3,7 @@ package com.combo.runcombi.walk.repository
 import com.combo.runcombi.common.DomainResult
 import com.combo.runcombi.common.convert
 import com.combo.runcombi.common.handleResult
+import com.combo.runcombi.network.model.request.MidRunUpdateRequest
 import com.combo.runcombi.network.model.request.StartRunRequest
 import com.combo.runcombi.network.model.response.MemberRunData
 import com.combo.runcombi.network.model.response.PetId
@@ -71,6 +72,20 @@ class WalkRepositoryImpl @Inject constructor(private val walkService: WalkServic
             memberRunData = memberRunDataBody,
             petRunData = petRunDataBody,
             routeImage = routeImagePart,
+        )
+    }.convert {}
+
+    override suspend fun midRunUpdate(
+        runId: Int,
+        runTime: Int,
+        runDistance: Double,
+    ): DomainResult<Unit> = handleResult {
+        walkService.requestMidRunUpdate(
+            MidRunUpdateRequest(
+                runId = runId,
+                runTime = runTime,
+                runDistance = runDistance
+            )
         )
     }.convert {}
 }

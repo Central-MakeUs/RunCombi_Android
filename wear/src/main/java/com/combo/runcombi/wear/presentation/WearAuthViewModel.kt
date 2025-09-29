@@ -2,14 +2,20 @@ package com.combo.runcombi.wear.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.combo.runcombi.common.DomainResult
+import com.combo.runcombi.domain.user.model.Gender
+import com.combo.runcombi.domain.user.model.Member
 import com.combo.runcombi.domain.user.model.MemberStatus
+import com.combo.runcombi.domain.user.model.Pet
+import com.combo.runcombi.domain.user.model.RunStyle
 import com.combo.runcombi.domain.user.model.UserInfo
-import com.combo.runcombi.wear.auth.WearAuthManager
-import com.combo.runcombi.wear.data.WearDataSyncService
+import com.combo.runcombi.domain.user.usecase.GetUserInfoUseCase
+import com.combo.runcombi.wear.auth.WearTokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,94 +30,85 @@ data class WearAuthUiState(
 
 @HiltViewModel
 class WearAuthViewModel @Inject constructor(
-    private val wearAuthManager: WearAuthManager,
-    private val wearDataSyncService: WearDataSyncService
+    private val getUserInfoUseCase: GetUserInfoUseCase,
+    private val wearTokenManager: WearTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WearAuthUiState())
     val uiState: StateFlow<WearAuthUiState> = _uiState.asStateFlow()
 
     init {
-        checkAuthStatus()
-        wearAuthManager.setOnTokenReceivedCallback {
-            onTokenReceived()
-        }
-    }
-
-    private fun checkAuthStatus() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            
-            try {
-                val isLoggedIn = wearAuthManager.isLoggedIn()
-                
-                if (isLoggedIn) {
-                    val memberStatus = wearAuthManager.getUserStatus()
-                    val userInfo = if (memberStatus == MemberStatus.LIVE) {
-                        wearAuthManager.getUserInfo()
-                    } else null
-                    
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isLoggedIn = true,
-                        userInfo = userInfo,
-                        memberStatus = memberStatus
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isLoggedIn = false
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message
-                )
-            }
-        }
-    }
-
-    fun requestMobileLogin() {
-        viewModelScope.launch {
-            try {
-                android.util.Log.d("WearAuthViewModel", "Requesting mobile login...")
-                _uiState.value = _uiState.value.copy(isWaitingForMobileResponse = true)
-                
-                wearDataSyncService.requestMobileLogin()
-                android.util.Log.d("WearAuthViewModel", "Mobile login request sent")
-                
-                // 10초 후 응답이 없으면 타임아웃 처리
-                kotlinx.coroutines.delay(10000)
-                if (_uiState.value.isWaitingForMobileResponse) {
-                    _uiState.value = _uiState.value.copy(
-                        isWaitingForMobileResponse = false,
-                        error = "모바일 앱이 실행되지 않았거나 연결되지 않았습니다"
-                    )
-                }
-            } catch (e: Exception) {
-                android.util.Log.e("WearAuthViewModel", "Failed to request mobile login", e)
-                _uiState.value = _uiState.value.copy(
-                    isWaitingForMobileResponse = false,
-                    error = "모바일 로그인 요청 실패: ${e.message}"
-                )
-            }
-        }
-    }
-
-    fun refreshAuthStatus() {
-        checkAuthStatus()
+        // 하드코딩된 토큰 초기화 및 유저 정보 조회
+        initializeTokensAndLoadUserInfo()
     }
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
 
-    fun onTokenReceived() {
-        _uiState.value = _uiState.value.copy(
-            isWaitingForMobileResponse = false
-        )
-        // 토큰을 받았으므로 인증 상태 다시 확인
-        checkAuthStatus()
+    private fun initializeTokensAndLoadUserInfo() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            try {
+                // 하드코딩된 토큰 초기화
+                android.util.Log.d("WearAuthViewModel", "토큰 초기화 시작")
+                wearTokenManager.initializeTokens()
+                android.util.Log.d("WearAuthViewModel", "토큰 초기화 완료")
+                
+                // 실제 API로 유저 정보 조회
+                android.util.Log.d("WearAuthViewModel", "유저 정보 API 호출 시작")
+                val result = getUserInfoUseCase().first()
+                android.util.Log.d("WearAuthViewModel", "유저 정보 API 호출 완료: $result")
+                
+                // 결과 타입별 상세 로그
+                when (result) {
+                    is DomainResult.Success -> {
+                        android.util.Log.d("WearAuthViewModel", "Success - 데이터: ${result.data}")
+                    }
+                    is DomainResult.Error -> {
+                        android.util.Log.e("WearAuthViewModel", "Error - 코드: ${result.code}, 메시지: ${result.message}")
+                    }
+                    is DomainResult.Exception -> {
+                        android.util.Log.e("WearAuthViewModel", "Exception - 에러: ${result.error}")
+                    }
+                }
+                
+                when (result) {
+                    is DomainResult.Success -> {
+                        android.util.Log.d("WearAuthViewModel", "유저 정보 조회 성공: ${result.data}")
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isLoggedIn = true,
+                            userInfo = result.data,
+                            memberStatus = result.data.memberStatus
+                        )
+                    }
+                    is DomainResult.Error -> {
+                        android.util.Log.e("WearAuthViewModel", "유저 정보 조회 실패: ${result.message}")
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isLoggedIn = false,
+                            error = "유저 정보 조회 실패: ${result.message}"
+                        )
+                    }
+                    else -> {
+                        android.util.Log.e("WearAuthViewModel", "알 수 없는 오류: $result")
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            isLoggedIn = false,
+                            error = "알 수 없는 오류"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("WearAuthViewModel", "유저 정보 조회 중 오류 발생", e)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isLoggedIn = false,
+                    error = "유저 정보 조회 중 오류 발생: ${e.message}"
+                )
+            }
+        }
     }
 }

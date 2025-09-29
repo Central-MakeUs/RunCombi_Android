@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,7 +31,7 @@ fun WearAuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(8.dp),
         contentAlignment = Alignment.Center
     ) {
         when {
@@ -46,16 +46,16 @@ fun WearAuthScreen(
             uiState.isLoggedIn && uiState.memberStatus != MemberStatus.LIVE -> {
                 IncompleteProfileScreen(
                     memberStatus = uiState.memberStatus,
-                    onRefresh = { viewModel.refreshAuthStatus() }
+                    onRefresh = { /* TODO: 새로고침 기능 */ }
                 )
             }
             
             else -> {
                 LoginRequiredScreen(
-                    onLoginClick = { viewModel.requestMobileLogin() },
+                    onLoginClick = { /* TODO: 로그인 기능 */ },
                     error = uiState.error,
                     onClearError = { viewModel.clearError() },
-                    isWaitingForResponse = uiState.isWaitingForMobileResponse
+                    isWaitingForResponse = false
                 )
             }
         }
@@ -64,20 +64,24 @@ fun WearAuthScreen(
 
 @Composable
 private fun LoadingScreen() {
-    val scrollState = rememberScrollState()
+    val listState = rememberScalingLazyListState()
     
-    Column(
+    ScalingLazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.verticalScroll(scrollState)
+        verticalArrangement = Arrangement.Center
     ) {
-        CircularProgressIndicator()
-        Text(
-            text = "로그인 상태 확인 중...",
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
-        )
+        item {
+            CircularProgressIndicator()
+        }
+        item {
+            Text(
+                text = "확인 중...",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
     }
 }
 
@@ -88,56 +92,67 @@ private fun LoginRequiredScreen(
     onClearError: () -> Unit,
     isWaitingForResponse: Boolean = false
 ) {
-    val scrollState = rememberScrollState()
+    val listState = rememberScalingLazyListState()
     
-    Column(
+    ScalingLazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.verticalScroll(scrollState)
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "RunCombi",
-            textAlign = TextAlign.Center
-        )
+        item {
+            Text(
+                text = "RunCombi",
+                style = MaterialTheme.typography.title2,
+                textAlign = TextAlign.Center
+            )
+        }
         
         if (isWaitingForResponse) {
-            Text(
-                text = "모바일 앱 응답 대기 중...",
-                style = MaterialTheme.typography.body2,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            item {
+                Text(
+                    text = "응답 대기 중...",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
             
-            CircularProgressIndicator(
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
         } else {
-            Text(
-                text = "모바일 앱에서 로그인해주세요",
-                style = MaterialTheme.typography.body2,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            item {
+                Text(
+                    text = "모바일 앱에서 로그인",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
         }
         
         if (error != null) {
-            Text(
-                text = error,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.error,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            item {
+                Text(
+                    text = error,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.error,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
         }
         
         if (!isWaitingForResponse) {
-            RunCombiButton(
-                modifier = Modifier.padding(horizontal = 30.dp),
-                text = "로그인",
-                onClick = {
-                    onClearError()
-                    onLoginClick()
-                }
-            )
+            item {
+                RunCombiButton(
+                    text = "로그인",
+                    onClick = {
+                        onClearError()
+                        onLoginClick()
+                    }
+                )
+            }
         }
     }
 }
@@ -147,35 +162,42 @@ private fun IncompleteProfileScreen(
     memberStatus: MemberStatus,
     onRefresh: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
+    val listState = rememberScalingLazyListState()
     
-    Column(
+    ScalingLazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.verticalScroll(scrollState)
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "프로필 설정 필요",
-            textAlign = TextAlign.Center
-        )
-        
-        val message = when (memberStatus) {
-            MemberStatus.PENDING_AGREE -> "약관 동의가 필요합니다"
-            MemberStatus.PENDING_MEMBER_DETAIL -> "회원 정보 입력이 필요합니다"
-            MemberStatus.LIVE -> "이미 완료된 상태입니다"
+        item {
+            Text(
+                text = "프로필 설정 필요",
+                style = MaterialTheme.typography.title2,
+                textAlign = TextAlign.Center
+            )
         }
         
-        Text(
-            text = message,
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
+        item {
+            val message = when (memberStatus) {
+                MemberStatus.PENDING_AGREE -> "약관 동의 필요"
+                MemberStatus.PENDING_MEMBER_DETAIL -> "회원 정보 입력 필요"
+                MemberStatus.LIVE -> "완료됨"
+            }
+            
+            Text(
+                text = message,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
         
-        RunCombiButton(
-            text = "새로고침",
-            onClick = onRefresh
-        )
+        item {
+            RunCombiButton(
+                text = "새로고침",
+                onClick = onRefresh
+            )
+        }
     }
 }
 

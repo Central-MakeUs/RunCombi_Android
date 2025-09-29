@@ -1,5 +1,7 @@
 package com.combo.runcombi.main.wear
 
+// 워치 연동 비활성화
+/*
 import com.combo.runcombi.auth.usecase.GetAccessTokenUseCase
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
@@ -65,3 +67,4 @@ class MobileWearDataListenerService : WearableListenerService() {
         }
     }
 }
+*/

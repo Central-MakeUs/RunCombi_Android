@@ -1,6 +1,7 @@
 package com.combo.runcombi.network.service
 
 import com.combo.runcombi.network.model.request.KakaoLoginRequest
+import com.combo.runcombi.network.model.request.MidRunUpdateRequest
 import com.combo.runcombi.network.model.request.StartRunRequest
 import com.combo.runcombi.network.model.response.DefaultResponse
 import com.combo.runcombi.network.model.response.LoginResponse
@@ -27,5 +28,10 @@ interface WalkService {
         @Part("memberRunData") memberRunData: RequestBody,
         @Part("petRunData") petRunData: RequestBody,
         @Part routeImage: MultipartBody.Part?,
+    ): Response<DefaultResponse>
+
+    @POST("api/run/midRunUpdate")
+    suspend fun requestMidRunUpdate(
+        @Body request: MidRunUpdateRequest,
     ): Response<DefaultResponse>
 }

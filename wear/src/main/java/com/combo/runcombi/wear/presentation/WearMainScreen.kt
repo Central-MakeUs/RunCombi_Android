@@ -2,10 +2,12 @@ package com.combo.runcombi.wear.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,63 +30,41 @@ import com.combo.runcombi.wear.presentation.theme.RunCombi_AndroidTheme
 fun WearMainScreen(
     userInfo: UserInfo,
     onStartExercise: () -> Unit = {},
-    onViewHistory: () -> Unit = {},
-    onSettings: () -> Unit = {}
 ) {
-    val scrollState = rememberScrollState()
+    val listState = rememberScalingLazyListState()
     
-    Column(
+    ScalingLazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState)
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
     ) {
-        // 환영 메시지
-        Text(
-            text = "안녕하세요!",
-            textAlign = TextAlign.Center
-        )
+        item {
+            Text(
+                text = userInfo.member.nickname,
+                style = MaterialTheme.typography.title2,
+                textAlign = TextAlign.Center
+            )
+        }
         
-        Text(
-            text = userInfo.member.nickname,
-            textAlign = TextAlign.Center
-        )
+        item {
+            Text(
+                text = "콤비 ${userInfo.petList.size}마리",
+                style = MaterialTheme.typography.body2,
+                textAlign = TextAlign.Center
+            )
+        }
         
-        Text(
-            text = "콤비 ${userInfo.petList.size}마리와 함께",
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center
-        )
+        item {
+            // 운동 시작 버튼
+            RunCombiButton(
+                text = "운동 시작",
+                onClick = onStartExercise,
+                modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp)
+            )
+        }
         
-        // 운동 시작 버튼
-        RunCombiButton(
-            text = "운동 시작",
-            onClick = onStartExercise,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        
-        // 운동 기록 보기 버튼
-        RunCombiButton(
-            text = "운동 기록",
-            onClick = onViewHistory,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-        
-        // 설정 버튼
-        RunCombiButton(
-            text = "설정",
-            onClick = onSettings,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
-        
-        // 추가 정보
-        Text(
-            text = "오늘도 화이팅!",
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 16.dp)
-        )
     }
 }
 

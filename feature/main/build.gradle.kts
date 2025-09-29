@@ -17,8 +17,8 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    // Wear OS
-    implementation(libs.play.services.wearable)
+    // Wear OS - 비활성화
+    // implementation(libs.play.services.wearable)
 
     implementation(project(":feature:login"))
     implementation(project(":feature:signup"))

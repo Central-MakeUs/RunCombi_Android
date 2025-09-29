@@ -1,5 +1,7 @@
 package com.combo.runcombi.main.wear
 
+// 워치 연동 비활성화
+/*
 import android.content.Context
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataMap
@@ -44,3 +46,4 @@ class WearSyncService @Inject constructor(
         }
     }
 }
+*/

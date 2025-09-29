@@ -20,8 +20,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"http://api.runcombi.site/\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("String", "BASE_URL", "\"http://api.runcombi.site/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,6 +41,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     flavorDimensions += "mode"
@@ -81,10 +86,21 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:datastore"))
     implementation(project(":core:network"))
+    implementation(project(":core:data:auth"))
     implementation(project(":core:data:user"))
+    implementation(project(":core:data:walk"))
     implementation(project(":core:domain:user"))
+    implementation(project(":core:domain:walk"))
     implementation(project(":core:domain:auth"))
     implementation(project(":core:domain:common"))
+    
+    // Feature modules for resources - 제거 (history 의존성 문제)
+    // implementation(project(":feature:walk"))
+
+    // Network dependencies
+    implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.retrofit.kotlinx.serialization)
 
     // Test dependencies
     testImplementation(libs.junit)

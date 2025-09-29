@@ -24,9 +24,15 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(private val userService: UserService) :
     UserRepository {
     override suspend fun getUserInfo(): DomainResult<UserInfo> = handleResult {
-        userService.getUserInfo()
+        android.util.Log.d("UserRepositoryImpl", "getUserInfo API 호출 시작")
+        val response = userService.getUserInfo()
+        android.util.Log.d("UserRepositoryImpl", "getUserInfo API 응답: ${response.code()}, ${response.body()}")
+        response
     }.convert {
-        it.toDomainModel()
+        android.util.Log.d("UserRepositoryImpl", "getUserInfo 데이터 변환 시작: $it")
+        val result = it.toDomainModel()
+        android.util.Log.d("UserRepositoryImpl", "getUserInfo 데이터 변환 완료: $result")
+        result
     }
 
     override suspend fun setUserTerms(agreeTerms: List<String>): DomainResult<Unit> = handleResult {

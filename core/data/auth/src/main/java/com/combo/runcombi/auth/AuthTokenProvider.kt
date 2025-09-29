@@ -11,7 +11,10 @@ class AuthTokenProvider @Inject constructor(
     private val authDataSource: AuthDataSource,
 ) : TokenProvider {
     override suspend fun getAccessToken(): String? {
-        return authDataSource.getAccessToken().firstOrNull()
+        android.util.Log.d("AuthTokenProvider", "getAccessToken 호출")
+        val token = authDataSource.getAccessToken().firstOrNull()
+        android.util.Log.d("AuthTokenProvider", "getAccessToken 결과: ${token?.take(20)}...")
+        return token
     }
 
     override suspend fun getRefreshToken(): String? {

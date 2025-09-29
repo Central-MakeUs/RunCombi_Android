@@ -20,15 +20,20 @@ class TokenInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        android.util.Log.d("TokenInterceptor", "API 요청 시작: ${chain.request().url}")
+        
         val newRequest = chain.request().newBuilder().apply {
             runBlocking {
                 val token = tokenProvider.getAccessToken()
+                android.util.Log.d("TokenInterceptor", "토큰 확인: ${token?.take(20)}...")
                 token?.let {
                     addHeader("Authorization", "Bearer $it")
+                    android.util.Log.d("TokenInterceptor", "Authorization 헤더 추가됨")
                 }
             }
         }
 
+        android.util.Log.d("TokenInterceptor", "실제 API 호출 시작")
         val response = chain.proceed(newRequest.build())
 
         when (response.code) {
