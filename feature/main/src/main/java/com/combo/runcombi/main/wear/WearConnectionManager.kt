@@ -49,8 +49,39 @@ class MobileWearDataListenerService : WearableListenerService() {
         try {
             dataClient = com.google.android.gms.wearable.Wearable.getDataClient(this)
             android.util.Log.d("MobileWearDataListenerService", "DataClient initialized")
+            
+            // 연결된 워치 확인
+            checkConnectedWearables()
         } catch (e: Exception) {
             android.util.Log.e("MobileWearDataListenerService", "Failed to initialize DataClient", e)
+        }
+    }
+    
+    private fun checkConnectedWearables() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val nodeClient = com.google.android.gms.wearable.Wearable.getNodeClient(this@MobileWearDataListenerService)
+                val connectedNodes = suspendCancellableCoroutine<List<com.google.android.gms.wearable.Node>> { continuation ->
+                    nodeClient.connectedNodes.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            continuation.resume(task.result)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception("Failed to get connected nodes"))
+                        }
+                    }
+                }
+                
+                android.util.Log.d("MobileWearDataListenerService", "연결된 워치 수: ${connectedNodes.size}")
+                connectedNodes.forEach { node ->
+                    android.util.Log.d("MobileWearDataListenerService", "연결된 워치: ${node.displayName} (${node.id})")
+                }
+                
+                if (connectedNodes.isEmpty()) {
+                    android.util.Log.w("MobileWearDataListenerService", "연결된 워치가 없습니다")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("MobileWearDataListenerService", "워치 연결 확인 실패", e)
+            }
         }
     }
 
@@ -59,23 +90,34 @@ class MobileWearDataListenerService : WearableListenerService() {
         
         android.util.Log.d("MobileWearDataListenerService", "onDataChanged called with ${dataEvents.count} events")
 
-        for (event in dataEvents) {
-            if (event.type == DataEvent.TYPE_CHANGED) {
-                val dataItem = event.dataItem
-                android.util.Log.d("MobileWearDataListenerService", "Data changed: ${dataItem.uri.path}")
+        dataEvents.forEach { event ->
+            if (event.type == DataEvent.TYPE_CHANGED && event.dataItem.uri.path == "/authRequest") {
+                android.util.Log.d("MobileWearDataListenerService", "Received auth request from wear")
+                
+                // 로그인 상태 확인
+                val isLoggedIn = checkLoginStatus()
+                android.util.Log.d("MobileWearDataListenerService", "Login status: $isLoggedIn")
 
-                when (dataItem.uri.path) {
-                    "/request_login" -> {
-                        android.util.Log.d("MobileWearDataListenerService", "Received login request from wear")
-                        // 워치에서 로그인 요청을 받았을 때
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                sendTokenToWear()
-                                android.util.Log.d("MobileWearDataListenerService", "Token sent to wear")
-                            } catch (e: Exception) {
-                                android.util.Log.e("MobileWearDataListenerService", "Failed to send token to wear", e)
-                            }
+                if (isLoggedIn) {
+                    // 토큰이 있으면 토큰 전송
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            sendTokenToWear()
+                            android.util.Log.d("MobileWearDataListenerService", "Token sent to wear")
+                        } catch (e: Exception) {
+                            android.util.Log.e("MobileWearDataListenerService", "Failed to send token to wear", e)
                         }
+                    }
+                } else {
+                    // 로그인 상태 응답 전송
+                    val putDataReq = com.google.android.gms.wearable.PutDataMapRequest.create("/authStatus").apply {
+                        dataMap.putBoolean("isLoggedIn", false)
+                    }.asPutDataRequest().setUrgent()
+
+                    dataClient.putDataItem(putDataReq).addOnSuccessListener {
+                        android.util.Log.d("MobileWearDataListenerService", "Login status response sent to watch")
+                    }.addOnFailureListener { e ->
+                        android.util.Log.e("MobileWearDataListenerService", "Failed to send login status response", e)
                     }
                 }
             }
@@ -119,10 +161,23 @@ class MobileWearDataListenerService : WearableListenerService() {
         }
     }
     
+    private fun checkLoginStatus(): Boolean {
+        val token = getStoredAccessToken()
+        val isLoggedIn = token != null
+        android.util.Log.d("MobileWearDataListenerService", "Login status check: $isLoggedIn")
+        return isLoggedIn
+    }
+    
     private fun getStoredAccessToken(): String? {
-        // 고정 토큰 사용 (개발용)
-        val fixedToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3NTkxNDg3ODYsInN1YiI6IjEzMiIsImV4cCI6MTc1OTc1MzU4Niwicm9sZSI6IlVTRVIifQ.rlUVKbI7BFqcm3W2JryWvqVtOt2PtYiS_qoz7Elcw_hgzlYiwWjaZlAZk1PAwRJmhl0VdddFVOzhd-mle6rRQA"
-        android.util.Log.d("MobileWearDataListenerService", "고정 토큰 사용: ${fixedToken.take(20)}...")
-        return fixedToken
+        // SharedPreferences에서 토큰을 가져오는 로직
+        val sharedPref = getSharedPreferences("auth_prefs", android.content.Context.MODE_PRIVATE)
+        val token = sharedPref.getString("access_token", null)
+        android.util.Log.d("MobileWearDataListenerService", "저장된 토큰 확인: ${token != null}")
+        if (token != null) {
+            android.util.Log.d("MobileWearDataListenerService", "토큰: ${token.take(20)}...")
+        } else {
+            android.util.Log.w("MobileWearDataListenerService", "저장된 토큰이 없습니다")
+        }
+        return token
     }
 }

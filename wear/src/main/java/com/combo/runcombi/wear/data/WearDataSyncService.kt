@@ -44,25 +44,20 @@ class WearDataSyncService @Inject constructor(
 
     suspend fun requestMobileLogin() {
         android.util.Log.d("WearDataSyncService", "=== 모바일 로그인 요청 시작 ===")
-        android.util.Log.d("WearDataSyncService", "DataClient 상태 확인 중...")
         
-        val dataMap = DataMap().apply {
-            putString("action", "request_login")
-            putLong("timestamp", System.currentTimeMillis())
-        }
-
-        val putDataMapRequest = PutDataMapRequest.create("/request_login")
-        putDataMapRequest.dataMap.putAll(dataMap)
+        val authDataReq = PutDataMapRequest.create("/authRequest").apply {
+            dataMap.putString("String", "GIVE ME LOGIN")
+            dataMap.putLong("timestamp", System.currentTimeMillis()) // 매번 다른 데이터로 인식되도록
+        }.asPutDataRequest().setUrgent()
 
         android.util.Log.d("WearDataSyncService", "로그인 요청 데이터 생성 완료")
-        android.util.Log.d("WearDataSyncService", "경로: /request_login")
-        android.util.Log.d("WearDataSyncService", "액션: request_login")
+        android.util.Log.d("WearDataSyncService", "경로: /authRequest")
         android.util.Log.d("WearDataSyncService", "타임스탬프: ${System.currentTimeMillis()}")
 
         android.util.Log.d("WearDataSyncService", "모바일로 로그인 요청 전송 중...")
 
         suspendCancellableCoroutine { continuation ->
-            dataClient.putDataItem(putDataMapRequest.asPutDataRequest())
+            dataClient.putDataItem(authDataReq)
                 .addOnSuccessListener { dataItem ->
                     android.util.Log.d("WearDataSyncService", "=== 로그인 요청 전송 성공 ===")
                     android.util.Log.d("WearDataSyncService", "DataItem URI: ${dataItem.uri}")

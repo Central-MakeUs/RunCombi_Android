@@ -23,7 +23,7 @@ class WearTokenReceiver : WearableListenerService() {
         
         android.util.Log.d("WearTokenReceiver", "onDataChanged called with ${dataEvents.count} events")
 
-        for (event in dataEvents) {
+        dataEvents.forEach { event ->
             if (event.type == DataEvent.TYPE_CHANGED) {
                 val dataItem = event.dataItem
                 android.util.Log.d("WearTokenReceiver", "Data changed: ${dataItem.uri.path}")
@@ -53,6 +53,18 @@ class WearTokenReceiver : WearableListenerService() {
                             }
                         } else {
                             android.util.Log.w("WearTokenReceiver", "모바일로부터 null 토큰 수신")
+                        }
+                    }
+                    "/authStatus" -> {
+                        android.util.Log.d("WearTokenReceiver", "=== 모바일로부터 로그인 상태 수신 ===")
+                        val dataMapItem = DataMapItem.fromDataItem(dataItem)
+                        val dataMap = dataMapItem.dataMap
+                        
+                        val isLoggedIn = dataMap.getBoolean("isLoggedIn")
+                        android.util.Log.d("WearTokenReceiver", "로그인 상태: $isLoggedIn")
+                        
+                        if (!isLoggedIn) {
+                            android.util.Log.w("WearTokenReceiver", "모바일에서 로그인되지 않음")
                         }
                     }
                 }
