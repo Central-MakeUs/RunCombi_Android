@@ -16,4 +16,10 @@ interface WalkRepository {
         routeImage: File?,
     ): DomainResult<Unit>
 
+    suspend fun midRunUpdate(
+        runId: Int,
+        runTime: Int,
+        runDistance: Double,
+    ): DomainResult<Unit>
+
 }

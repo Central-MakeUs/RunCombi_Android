@@ -423,14 +423,6 @@ private fun PetProfile(
                     )
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            pet.name,
-            style = body1,
-            color = Grey06,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(start = startPadding),
-        )
     }
 }
 

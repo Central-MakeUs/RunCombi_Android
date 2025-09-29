@@ -13,5 +13,6 @@ data class EditPetUiState(
     val isAgeError: Boolean = false,
     val isWeightError: Boolean = false,
     val isLoading: Boolean = false,
-    val isRemovable: Boolean = true
+    val isRemovable: Boolean = true,
+    val hasChanges: Boolean = false,
 )

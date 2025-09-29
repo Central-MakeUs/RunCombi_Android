@@ -53,11 +53,12 @@ dependencies {
     implementation(libs.bundles.network)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.bundles.coroutines)
+    implementation(libs.play.services.wearable)
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
 }
 
 fun getBaseUrl(): String {
-    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: ""
+    return gradleLocalProperties(rootDir, providers).getProperty("BASE_URL") ?: "http://api.runcombi.site/"
 }

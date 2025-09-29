@@ -6,4 +6,6 @@ data class BodyUiState(
     val isError: Boolean = false,
     val errorMessage: String = "",
     val isButtonEnabled: Boolean = false,
+    val isHeightError: Boolean = false,
+    val isWeightError: Boolean = false
 ) 

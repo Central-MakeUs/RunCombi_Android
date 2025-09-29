@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.update
 class PetInfoViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(
         PetInfoUiState(
-            age = "5",
-            weight = "5.5",
+            age = "",
+            weight = "",
             isButtonEnabled = true,
             isError = false,
-            errorMessage = ""
+            errorMessage = "",
+            isAgeError = false,
+            isWeightError = false
         )
     )
     val uiState: StateFlow<PetInfoUiState> = _uiState
@@ -25,7 +27,8 @@ class PetInfoViewModel : ViewModel() {
                 age = filtered,
                 isButtonEnabled = isValid(filtered, it.weight),
                 isError = false,
-                errorMessage = ""
+                errorMessage = "",
+                isAgeError = false
             )
         }
     }
@@ -44,9 +47,10 @@ class PetInfoViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 weight = filtered,
-                isButtonEnabled = isValid(it.age, filtered),
+                isButtonEnabled = isValid(filtered, it.age),
                 isError = false,
-                errorMessage = ""
+                errorMessage = "",
+                isWeightError = false
             )
         }
     }
@@ -54,21 +58,54 @@ class PetInfoViewModel : ViewModel() {
     fun validateAndProceed(onSuccess: () -> Unit) {
         val age = uiState.value.age
         val weight = uiState.value.weight
-        val (hasError, message) = validate(age, weight)
-        if (hasError) {
+        
+        val ageValidation = validateAge(age)
+        val weightValidation = validateWeight(weight)
+        
+        if (ageValidation || weightValidation) {
             _uiState.update {
-                it.copy(isError = true, errorMessage = message)
+                it.copy(
+                    isError = true,
+                    isAgeError = ageValidation,
+                    isWeightError = weightValidation
+                )
             }
-        } else {
-            _uiState.update {
-                it.copy(isError = false, errorMessage = "")
-            }
-            onSuccess()
+            return
         }
+        
+        _uiState.update {
+            it.copy(
+                isError = false,
+                isAgeError = false,
+                isWeightError = false
+            )
+        }
+        onSuccess()
     }
 
     private fun isValid(age: String, weight: String): Boolean {
         return age.isNotBlank() && weight.isNotBlank()
+    }
+
+    private fun validateAge(age: String): Boolean {
+        if (age.isBlank()) return true
+        val ageInt = age.toIntOrNull()
+        return ageInt == null || ageInt !in 1..25
+    }
+
+    private fun validateWeight(weight: String): Boolean {
+        if (weight.isBlank()) return true
+        val weightFloat = weight.toFloatOrNull()
+        if (weightFloat == null || weightFloat < 0.5f || weightFloat > 100f) {
+            return true
+        }
+        if (weight.contains('.')) {
+            val parts = weight.split('.')
+            if ((parts.getOrNull(1)?.length ?: 0) > 1) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun validate(age: String, weight: String): Pair<Boolean, String> {

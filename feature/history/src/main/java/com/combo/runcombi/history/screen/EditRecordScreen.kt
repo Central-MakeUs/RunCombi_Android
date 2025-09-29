@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -246,9 +249,9 @@ fun EditRecordContent(
                                 }
                             },
                         value = distanceText,
-                        onValueChange = {
-                            distanceText = it
-                            updateDistance(it)
+                        onValueChange = { newValue ->
+                            distanceText = newValue
+                            updateDistance(newValue)
                         },
                         placeholder = "",
                         trailingText = "km",
@@ -257,6 +260,10 @@ fun EditRecordContent(
                         singleLine = true,
                         leadingText = "거리",
                         textAlign = TextAlign.End,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal,
+                            imeAction = ImeAction.Next
+                        ),
                     )
                     Spacer(Modifier.width(12.dp))
                     RunCombiTextField(
@@ -275,9 +282,9 @@ fun EditRecordContent(
                                 }
                             },
                         value = timeText,
-                        onValueChange = {
-                            timeText = it
-                            updateTime(it)
+                        onValueChange = { newValue ->
+                            timeText = newValue
+                            updateTime(newValue)
                         },
                         placeholder = "",
                         trailingText = "min",
@@ -286,6 +293,10 @@ fun EditRecordContent(
                         singleLine = true,
                         leadingText = "시간",
                         textAlign = TextAlign.End,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
                     )
                 }
                 Spacer(Modifier.height(24.dp))

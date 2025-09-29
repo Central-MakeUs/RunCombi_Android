@@ -65,6 +65,7 @@ import com.combo.runcombi.core.designsystem.theme.Grey05
 import com.combo.runcombi.core.designsystem.theme.Grey06
 import com.combo.runcombi.core.designsystem.theme.Grey08
 import com.combo.runcombi.core.designsystem.theme.Primary01
+import com.combo.runcombi.core.designsystem.theme.Primary03
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body1
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body2
 import com.combo.runcombi.core.designsystem.theme.RunCombiTypography.body3
@@ -209,7 +210,8 @@ fun EditPetContent(
     ) {
         EditPetAppBar(
             onCancel = onCancel,
-            onSave = onSave
+            onSave = onSave,
+            isSaveEnabled = uiState.hasChanges
         )
 
         Column(
@@ -370,6 +372,7 @@ fun EditPetContent(
 fun EditPetAppBar(
     onCancel: () -> Unit,
     onSave: () -> Unit,
+    isSaveEnabled: Boolean = true,
 ) {
     Box(
         modifier = Modifier
@@ -400,8 +403,12 @@ fun EditPetAppBar(
             Text(
                 text = "저장",
                 style = title4,
-                color = Primary01,
-                modifier = Modifier.clickableWithoutRipple { onSave() }
+                color = if (isSaveEnabled) Primary01 else Primary03,
+                modifier = if (isSaveEnabled) {
+                    Modifier.clickableWithoutRipple { onSave() }
+                } else {
+                    Modifier
+                }
             )
         }
     }

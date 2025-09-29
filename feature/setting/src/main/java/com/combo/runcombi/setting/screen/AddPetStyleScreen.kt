@@ -122,13 +122,15 @@ fun AddPetStyleScreen(
                     keyboardController?.hide()
                     localFocusManager.clearFocus()
 
-                    addPetViewModel.setPetStyle(PetStyleData(walkStyle = uiState.selectedStyle))
+                    uiState.selectedStyle?.let { selectedStyle ->
+                        addPetViewModel.setPetStyle(PetStyleData(walkStyle = selectedStyle))
 
-                    val addPetData = addPetViewModel.getAddPetData()
-                    petStyleViewModel.addPet(addPetData)
+                        val addPetData = addPetViewModel.getAddPetData()
+                        petStyleViewModel.addPet(addPetData)
+                    }
                 },
                 text = "완료",
-                enabled = uiState.isButtonEnabled && !uiState.isLoading
+                enabled = uiState.isButtonEnabled && !uiState.isLoading && uiState.selectedStyle != null
             )
         }
         

@@ -1,6 +1,8 @@
 package com.combo.runcombi.walk.screen
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -70,6 +72,7 @@ import com.combo.runcombi.walk.model.WalkUiState
 import com.combo.runcombi.walk.model.getBottomSheetContent
 import com.combo.runcombi.walk.viewmodel.WalkMainViewModel
 import com.combo.runcombi.walk.viewmodel.WalkTrackingViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("MissingPermission")
@@ -87,6 +90,22 @@ fun WalkTrackingScreen(
 
     val isInitialized = rememberSaveable { mutableStateOf(false) }
     val showSheet = remember { mutableStateOf(BottomSheetType.NONE) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            
+            if (walkRecordViewModel.isTracking()) {
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val activeNotifications = notificationManager.activeNotifications
+                val hasNotification = activeNotifications.any { it.id == 1001 }
+                
+                if (!hasNotification) {
+                    walkRecordViewModel.restartNotification()
+                }
+            }
+        }
+    }
 
     LaunchedEffect(isInitialized.value) {
         if (!isInitialized.value) {

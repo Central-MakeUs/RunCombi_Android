@@ -49,6 +49,7 @@ class WalkTrackingService : Service() {
         const val ACTION_STOP_TRACKING = "com.combo.runcombi.STOP_TRACKING"
         const val ACTION_PAUSE_TRACKING = "com.combo.runcombi.PAUSE_TRACKING"
         const val ACTION_RESUME_TRACKING = "com.combo.runcombi.RESUME_TRACKING"
+        const val ACTION_RESTART_NOTIFICATION = "com.combo.runcombi.RESTART_NOTIFICATION"
 
         const val EXTRA_EXERCISE_TYPE = "exercise_type"
 
@@ -111,6 +112,11 @@ class WalkTrackingService : Service() {
                 resumeTracking()
             }
 
+            ACTION_RESTART_NOTIFICATION -> {
+                Log.d(TAG, "onStartCommand: 알림 재시작")
+                restartNotification()
+            }
+
             else -> {
                 Log.w(TAG, "onStartCommand: 알 수 없는 action=${intent?.action}")
             }
@@ -140,6 +146,7 @@ class WalkTrackingService : Service() {
     }
 
     private fun stopTracking() {
+        Log.d(TAG, "stopTracking: 운동 추적 중지 및 서비스 종료")
         dataManager.updateTrackingState(false)
         stopLocationUpdates()
         stopTimeUpdates()
@@ -344,6 +351,20 @@ class WalkTrackingService : Service() {
             .setSmallIcon(com.combo.runcombi.core.designsystem.R.drawable.ic_walk_selected)
             .setOngoing(true)
             .build()
+    }
+
+    private fun restartNotification() {
+        try {
+            // 현재 알림을 제거하고 새로운 알림으로 교체
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(NOTIFICATION_ID)
+            
+            // 새로운 알림으로 포그라운드 서비스 재시작
+            startForeground(NOTIFICATION_ID, createNotification())
+            Log.d(TAG, "restartNotification: 알림 재시작 완료")
+        } catch (e: Exception) {
+            Log.e(TAG, "restartNotification: 알림 재시작 실패", e)
+        }
     }
 
     override fun onDestroy() {
